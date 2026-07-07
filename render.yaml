@@ -1,20 +1,17 @@
+# 無料プランで最短公開するための設定(カード登録不要)。
+# 無料プランは永続ディスクが使えないため、再起動・再デプロイでリード/診断データはリセットされます。
+# 本格運用する際は runtime を docker に変え、有料プラン+ディスク(このファイルの過去バージョン参照)に切り替えてください。
 services:
   - type: web
     name: kyusei-mayan-fortune
-    runtime: docker
-    plan: starter
-    disk:
-      name: data
-      mountPath: /app/data
-      sizeGB: 1
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: PORT
         value: 3000
       - key: BASE_URL
-        sync: false
-      - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: STRIPE_WEBHOOK_SECRET
         sync: false
       - key: REPORT_PRICE_JPY
         value: 980

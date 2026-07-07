@@ -74,16 +74,35 @@ public/
 
 ## デプロイ
 
+### 無料で最短公開する(カード登録不要・初めての方向け)
+
+決済(Stripe)の設定をしなくても、無料診断部分は今すぐ公開できます。以下の手順で進めてください。
+
+1. [Render.com](https://render.com) にアクセスし、GitHubアカウントで無料サインアップ(クレジットカード登録は不要です)。
+2. ダッシュボードで「New +」→「Blueprint」を選び、`yuppi314/my-tool` リポジトリを選択します。
+3. リポジトリ内の `render.yaml` を自動で読み込み、無料プランのWeb Serviceが作成されます。
+4. `BASE_URL` の入力を求められたら、Renderが発行するURL(例: `https://kyusei-mayan-fortune.onrender.com`)を入力します(一度作成してURLが確定してから設定し直しても構いません)。
+5. `ADMIN_TOKEN` は好きな文字列(他人に推測されにくいもの)を入力してください。
+6. 数分待つとURLが発行され、誰でもアクセスして無料診断が使えるようになります。
+
+> 注意: 無料プランは永続ディスクが使えないため、Renderが再起動するとリード・診断データはリセットされます。
+> 「ユーザーが増えてきたので有料プランにしたい」というタイミングで、`runtime: docker` + 永続ディスク構成に切り替えてください(下記「本格運用する場合」参照)。
+
+決済(詳細レポート販売)は `STRIPE_SECRET_KEY` を設定するまでモックモードのままなので、
+このステップでは何も設定しなくて大丈夫です。準備ができたら教えてください、Stripe連携を一緒に進めます。
+
+### 本格運用する場合(Docker + 永続ディスク)
+
+ユーザー数が増え、リードや購入データを失いたくない段階になったら、Docker + 永続ディスクの構成に切り替えます。
+
 `Dockerfile` を用意しているため、Docker対応のホスティング(Render / Railway / Fly.io など)にそのままデプロイできます。
 SQLiteでデータを永続化するため、コンテナの `/app/data` に永続ディスク(ボリューム)をマウントしてください。
 
-### Renderの場合
+Renderの場合は `render.yaml` の `runtime` を `docker` に、`plan` を `starter` 以上に変更し、
+`disk` セクション(`mountPath: /app/data`)を追加してください。`STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` も
+このタイミングで環境変数に設定します。
 
-`render.yaml` を同梱しています。Renderのダッシュボードで「Blueprint」からこのリポジトリを指定すると、
-Web ServiceとDiskが自動構成されます。`BASE_URL` / `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` / `ADMIN_TOKEN` は
-Renderの環境変数設定画面から入力してください(`sync: false` のためRenderが値の入力を求めます)。
-
-### 手動でDockerを動かす場合
+手動でDockerを動かす場合:
 
 ```bash
 docker build -t kyusei-mayan-fortune .
