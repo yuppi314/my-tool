@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: kyusei-mayan-fortune
+    runtime: docker
+    plan: starter
+    disk:
+      name: data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: BASE_URL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: REPORT_PRICE_JPY
+        value: 980
+      - key: ADMIN_TOKEN
+        sync: false

@@ -67,5 +67,25 @@ public/
 
 ## 法的な注意事項
 
-`public/index.html` 等に「娯楽目的である」旨の免責表記を入れています。実際にサービス化する際は、
-特定商取引法に基づく表記・利用規約・プライバシーポリシー(メール収集を行うため)を別途整備してください。
+`public/index.html` 等に「娯楽目的である」旨の免責表記を入れています。
+`public/tokushoho.html`(特定商取引法に基づく表記)・`public/terms.html`(利用規約)・`public/privacy.html`(プライバシーポリシー)の
+テンプレートを用意していますが、`[事業者名を記入してください]` 等のプレースホルダー箇所は
+実際の事業者情報に置き換えてから公開してください。プレースホルダーのまま公開すると法令違反になります。
+
+## デプロイ
+
+`Dockerfile` を用意しているため、Docker対応のホスティング(Render / Railway / Fly.io など)にそのままデプロイできます。
+SQLiteでデータを永続化するため、コンテナの `/app/data` に永続ディスク(ボリューム)をマウントしてください。
+
+### Renderの場合
+
+`render.yaml` を同梱しています。Renderのダッシュボードで「Blueprint」からこのリポジトリを指定すると、
+Web ServiceとDiskが自動構成されます。`BASE_URL` / `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` / `ADMIN_TOKEN` は
+Renderの環境変数設定画面から入力してください(`sync: false` のためRenderが値の入力を求めます)。
+
+### 手動でDockerを動かす場合
+
+```bash
+docker build -t kyusei-mayan-fortune .
+docker run -p 3000:3000 -v $(pwd)/data:/app/data --env-file .env kyusei-mayan-fortune
+```
