@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>九星気学×マヤ暦 無料診断</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>九星気学 × マヤ暦 診断</h1>
+      <p>生年月日を入力するだけで、あなたの「本命星」と「マヤ暦KIN」がわかる無料診断</p>
+    </header>
+
+    <div class="card">
+      <form id="diagnosis-form">
+        <label for="birthdate">生年月日</label>
+        <input type="date" id="birthdate" name="birthdate" required />
+
+        <label for="name">お名前(任意)</label>
+        <input type="text" id="name" name="name" placeholder="例: 山田 花子" />
+
+        <label for="email">メールアドレス(結果をお届け・任意)</label>
+        <input type="email" id="email" name="email" placeholder="example@mail.com" />
+
+        <button type="submit" class="primary">無料で診断する</button>
+        <p class="error-text" id="form-error"></p>
+      </form>
+    </div>
+
+    <div class="card" id="result-card" style="display:none;">
+      <div class="result-grid">
+        <div class="stat-box">
+          <div class="label">本命星</div>
+          <div class="value" id="r-star"></div>
+        </div>
+        <div class="stat-box">
+          <div class="label">マヤ暦 KIN</div>
+          <div class="value" id="r-kin"></div>
+        </div>
+        <div class="stat-box">
+          <div class="label">太陽の紋章</div>
+          <div class="value" id="r-seal"></div>
+        </div>
+        <div class="stat-box">
+          <div class="label">銀河の音</div>
+          <div class="value" id="r-tone"></div>
+        </div>
+      </div>
+
+      <div class="summary-text" id="r-summary"></div>
+
+      <div class="cta-box">
+        <div class="price" id="price-label">¥980</div>
+        <p>今年の運気サイクル・月間運勢・相性診断まで見られる<br>「詳細鑑定レポート」をアンロック</p>
+        <button class="primary" id="checkout-btn">詳細レポートを見る</button>
+      </div>
+
+      <div class="ad-slot">[広告枠プレースホルダー: アフィリエイト/純広告を掲載可能]</div>
+    </div>
+
+    <footer class="legal">
+      本診断は九星気学・マヤ暦の一般的な考え方に基づく娯楽コンテンツです。医療・法律・investment等の専門的助言に代わるものではありません。
+    </footer>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

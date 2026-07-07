@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>管理統計 | 九星気学×マヤ暦</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>マネタイズ状況</h1>
+      <p>リード数・診断数・売上を確認できます</p>
+    </header>
+
+    <div class="card">
+      <label for="token">管理トークン</label>
+      <input type="text" id="token" placeholder="ADMIN_TOKEN を入力" />
+      <button class="primary" id="load-btn">読み込む</button>
+    </div>
+
+    <div class="card" id="stats-card" style="display:none;">
+      <table class="stats-table">
+        <tr><td>累計リード数(メール取得数)</td><td id="s-leads"></td></tr>
+        <tr><td>累計診断数</td><td id="s-diagnoses"></td></tr>
+        <tr><td>有料購入数</td><td id="s-paid"></td></tr>
+        <tr><td>売上合計(円)</td><td id="s-revenue"></td></tr>
+        <tr><td>コンバージョン率</td><td id="s-cvr"></td></tr>
+      </table>
+    </div>
+    <p class="error-text" id="admin-error"></p>
+  </div>
+
+  <script>
+    document.getElementById('load-btn').addEventListener('click', async () => {
+      const token = document.getElementById('token').value;
+      const errorEl = document.getElementById('admin-error');
+      errorEl.textContent = '';
+      try {
+        const res = await fetch(`/api/admin/stats?token=${encodeURIComponent(token)}`);
+        const data = await res.json();
+        if (!res.ok) {
+          errorEl.textContent = data.error || '取得に失敗しました。';
+          document.getElementById('stats-card').style.display = 'none';
+          return;
+        }
+        document.getElementById('s-leads').textContent = data.leadCount;
+        document.getElementById('s-diagnoses').textContent = data.diagnosisCount;
+        document.getElementById('s-paid').textContent = data.paidCount;
+        document.getElementById('s-revenue').textContent = data.revenueJpy.toLocaleString();
+        document.getElementById('s-cvr').textContent = `${data.conversionRatePercent}%`;
+        document.getElementById('stats-card').style.display = 'block';
+      } catch (err) {
+        errorEl.textContent = '通信エラーが発生しました。';
+      }
+    });
+  </script>
+</body>
+</html>

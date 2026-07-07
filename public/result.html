@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>詳細鑑定レポート | 九星気学×マヤ暦</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>あなたの詳細鑑定レポート</h1>
+      <p id="status-line"></p>
+    </header>
+
+    <div class="card">
+      <div class="result-grid">
+        <div class="stat-box"><div class="label">本命星</div><div class="value" id="r-star"></div></div>
+        <div class="stat-box"><div class="label">マヤ暦 KIN</div><div class="value" id="r-kin"></div></div>
+        <div class="stat-box"><div class="label">太陽の紋章</div><div class="value" id="r-seal"></div></div>
+        <div class="stat-box"><div class="label">銀河の音</div><div class="value" id="r-tone"></div></div>
+      </div>
+      <div class="summary-text" id="r-summary"></div>
+    </div>
+
+    <div class="card" id="full-card">
+      <div class="section-title">パーソナリティ詳細</div>
+      <p id="f-personality"></p>
+      <div class="section-title">今年の運気サイクル</div>
+      <p id="f-yearly"></p>
+      <div class="section-title">今月の運勢</div>
+      <p id="f-monthly"></p>
+      <div class="section-title">アドバイス</div>
+      <p id="f-advice"></p>
+    </div>
+
+    <div class="card" id="locked-card" style="display:none;">
+      <p>この先の詳細鑑定は購入者限定です。</p>
+      <button class="primary" id="unlock-btn">詳細レポートを購入する(¥980)</button>
+    </div>
+
+    <div class="card" id="compat-card" style="display:none;">
+      <div class="section-title">相性診断(購入者限定特典)</div>
+      <label for="partner-birthdate">お相手の生年月日</label>
+      <input type="date" id="partner-birthdate" />
+      <button class="secondary" id="compat-btn">相性を見る</button>
+      <div id="compat-result" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="ad-slot">[広告枠プレースホルダー: アフィリエイト/純広告を掲載可能]</div>
+
+    <footer class="legal">
+      本診断は九星気学・マヤ暦の一般的な考え方に基づく娯楽コンテンツです。医療・法律・投資等の専門的助言に代わるものではありません。
+    </footer>
+  </div>
+
+  <script src="/js/result.js"></script>
+</body>
+</html>
