@@ -20,6 +20,19 @@ function addMonths(dateStr, months) {
   return d.toISOString().slice(0, 10);
 }
 
+// 青色申告承認申請書・青色事業専従者給与に関する届出書の提出期限ルール:
+// 1月1日〜1月15日に開業した場合はその年の3月15日まで、
+// 1月16日以後に開業した場合は開業日から2か月以内。
+function taxOfficeSpecialDeadline(dateStr) {
+  const d = new Date(`${dateStr}T00:00:00`);
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  if (month === 1 && day <= 15) {
+    return `${d.getFullYear()}-03-15`;
+  }
+  return addMonths(dateStr, 2);
+}
+
 // タスクのもとになる定義。condition(profile) が true のものだけタスクになる。
 const TASK_TEMPLATES = [
   {
@@ -41,8 +54,8 @@ const TASK_TEMPLATES = [
       '確定申告のときに税金の計算がおトクになる「青色申告」を選びたい人が出す書類です。期限を過ぎると、その年は青色申告を選べなくなるので気をつけましょう。',
     whereToSubmit: '住んでいる場所を担当する税務署',
     condition: (p) => !!p.wants_blue_tax_return,
-    dueDate: (p) => addMonths(p.start_date, 2),
-    dueNote: '開業日から2か月以内が目安です(1月1日〜1月15日に開業した人は、その年の3月15日までのこともあります)。',
+    dueDate: (p) => taxOfficeSpecialDeadline(p.start_date),
+    dueNote: '開業日から2か月以内が期限です(1月1日〜1月15日に開業した場合は、その年の3月15日が期限になります)。',
   },
   {
     key: 'senju_kyuyo',
@@ -52,8 +65,8 @@ const TASK_TEMPLATES = [
       '家族が仕事を手伝ってくれて、その人にお給料を払う場合に必要な書類です。この届け出をしないと、家族への給料を経費にできません。',
     whereToSubmit: '住んでいる場所を担当する税務署',
     condition: (p) => !!p.has_family_employee,
-    dueDate: (p) => addMonths(p.start_date, 2),
-    dueNote: '開業日から2か月以内が目安です。',
+    dueDate: (p) => taxOfficeSpecialDeadline(p.start_date),
+    dueNote: '開業日から2か月以内が期限です(1月1日〜1月15日に開業した場合は、その年の3月15日が期限になります)。',
   },
   {
     key: 'kyuyo_jimusho',
@@ -138,4 +151,4 @@ function buildTasksForProfile(profile) {
   });
 }
 
-module.exports = { CATEGORIES, TASK_TEMPLATES, buildTasksForProfile, addDays, addMonths };
+module.exports = { CATEGORIES, TASK_TEMPLATES, buildTasksForProfile, addDays, addMonths, taxOfficeSpecialDeadline };
