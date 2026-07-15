@@ -75,7 +75,7 @@ document.getElementById('search-form').addEventListener('submit', async (e) => {
   const errorEl = document.getElementById('search-error');
   const resultsEl = document.getElementById('search-results');
   errorEl.textContent = '';
-  resultsEl.innerHTML = '<p class="muted">さがしています...</p>';
+  resultsEl.innerHTML = '<p class="muted">さがしています...(無料サーバーがお休みしていた場合、最初の1回だけ30秒くらいかかることがあります)</p>';
 
   const keyword = document.getElementById('keyword').value.trim();
   const prefecture = document.getElementById('prefecture').value.trim();

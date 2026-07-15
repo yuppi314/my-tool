@@ -4,8 +4,15 @@
 
 const BASE_URL = 'https://api.jgrants-portal.go.jp/exp/v1/public';
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10分間はおなじ検索結果を使い回す
+const REQUEST_TIMEOUT_MS = 15 * 1000; // 15秒待っても返事がなければあきらめる
 
 const cache = new Map();
+
+function fetchWithTimeout(url, options) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
 
 function getCache(key) {
   const hit = cache.get(key);
@@ -58,7 +65,7 @@ async function searchSubsidies({ keyword, prefecture, employeeCount, acceptingOn
   if (cached) return { ok: true, results: cached, fromCache: true };
 
   try {
-    const res = await fetch(`${BASE_URL}/subsidies?${params.toString()}`, {
+    const res = await fetchWithTimeout(`${BASE_URL}/subsidies?${params.toString()}`, {
       headers: { accept: 'application/json' },
     });
     if (!res.ok) {
@@ -81,7 +88,7 @@ async function getSubsidyDetail(id) {
   if (cached) return { ok: true, detail: cached, fromCache: true };
 
   try {
-    const res = await fetch(`${BASE_URL}/subsidies/id/${encodeURIComponent(id)}`, {
+    const res = await fetchWithTimeout(`${BASE_URL}/subsidies/id/${encodeURIComponent(id)}`, {
       headers: { accept: 'application/json' },
     });
     if (!res.ok) {
