@@ -13,6 +13,12 @@ function yenLabel(value) {
   return `上限 ${num.toLocaleString()}円くらい`;
 }
 
+document.getElementById('keyword-preset').addEventListener('change', (e) => {
+  if (!e.target.value) return;
+  document.getElementById('keyword').value = e.target.value;
+  document.getElementById('keyword').focus();
+});
+
 async function prefillFromProfile() {
   const { ok, data } = await kaigyoFetch('/api/kaigyo/profile');
   if (ok && data.profile) {

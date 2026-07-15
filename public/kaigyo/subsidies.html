@@ -19,6 +19,25 @@
     <div class="card">
       <h2>さがす</h2>
       <form id="search-form">
+        <label for="keyword-preset">よく使われるキーワードから選ぶ(任意)
+          <span class="hint">選ぶと下の入力欄に自動で入ります。そのあとで自由に書き換えても大丈夫です。</span>
+        </label>
+        <select id="keyword-preset">
+          <option value="">-- 選んでください --</option>
+          <option value="創業">創業・開業したばかりの人向け</option>
+          <option value="IT">IT・ホームページ・システム導入</option>
+          <option value="DX">DX・デジタル化</option>
+          <option value="ものづくり">ものづくり・製造</option>
+          <option value="販路開拓">販路開拓・売り上げアップ</option>
+          <option value="観光">観光・地域活性化</option>
+          <option value="農業">農業・林業・漁業</option>
+          <option value="飲食">飲食・小売・サービス業</option>
+          <option value="女性">女性・若者・シニアの起業</option>
+          <option value="雇用">人を雇う・働き方改善</option>
+          <option value="省エネ">省エネ・環境</option>
+          <option value="事業承継">事業承継・引き継ぎ</option>
+        </select>
+
         <label for="keyword">キーワード(2文字以上)</label>
         <input type="text" id="keyword" placeholder="例: 創業、IT、飲食" required />
 
