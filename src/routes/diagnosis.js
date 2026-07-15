@@ -89,7 +89,14 @@ router.get('/diagnosis/:id', (req, res) => {
   const input = rowToInput(row);
   const calc = evaluatePlan({ ...input, periodDays: row.period_days });
   const freeResult = plan.buildFreeResult(input, calc);
-  res.json({ id: row.id, paid: !!row.paid, ...freeResult });
+  res.json({
+    id: row.id,
+    paid: !!row.paid,
+    weightKg: row.weight_kg,
+    targetKg: row.target_kg,
+    createdAt: row.created_at,
+    ...freeResult,
+  });
 });
 
 // 4週間の詳細プラン(有料コンテンツ)

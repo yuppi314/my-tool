@@ -6,6 +6,7 @@ const cors = require('cors');
 const diagnosisRoutes = require('./routes/diagnosis');
 const { router: paymentRoutes, stripeWebhookHandler } = require('./routes/payment');
 const adminRoutes = require('./routes/admin');
+const trackingRoutes = require('./routes/tracking');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/api', diagnosisRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', trackingRoutes);
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 

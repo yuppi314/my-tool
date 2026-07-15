@@ -49,6 +49,7 @@ function renderResult(data) {
   document.getElementById('r-protein').textContent = `${data.macros.proteinG} g`;
   document.getElementById('r-fat').textContent = `${data.macros.fatG} g`;
   document.getElementById('r-carb').textContent = `${data.macros.carbG} g`;
+  document.getElementById('progress-link').href = `/progress.html?id=${currentDiagnosisId}`;
   resultCard.style.display = 'block';
   resultCard.scrollIntoView({ behavior: 'smooth' });
 }

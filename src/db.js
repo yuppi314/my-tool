@@ -44,6 +44,31 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (diagnosis_id) REFERENCES diagnoses(id)
 );
+
+CREATE TABLE IF NOT EXISTS weight_logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  diagnosis_id TEXT NOT NULL,
+  log_date TEXT NOT NULL,
+  weight_kg REAL NOT NULL,
+  created_at TEXT DEFAULT (datetime('now')),
+  FOREIGN KEY (diagnosis_id) REFERENCES diagnoses(id),
+  UNIQUE (diagnosis_id, log_date)
+);
+
+CREATE TABLE IF NOT EXISTS meal_logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  diagnosis_id TEXT NOT NULL,
+  log_date TEXT NOT NULL,
+  food_key TEXT NOT NULL,
+  food_name TEXT NOT NULL,
+  grams REAL NOT NULL,
+  calories REAL NOT NULL,
+  protein_g REAL NOT NULL,
+  fat_g REAL NOT NULL,
+  carb_g REAL NOT NULL,
+  created_at TEXT DEFAULT (datetime('now')),
+  FOREIGN KEY (diagnosis_id) REFERENCES diagnoses(id)
+);
 `);
 
 module.exports = db;
