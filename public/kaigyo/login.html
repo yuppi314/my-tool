@@ -28,7 +28,7 @@
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const token = document.getElementById('token').value;
-      const res = await fetch('/api/kaigyo/profile', { headers: { 'x-kaigyo-token': token } });
+      const res = await fetch('/api/kaigyo/profile', { headers: { 'x-kaigyo-token': encodeURIComponent(token) } });
       if (!res.ok) {
         document.getElementById('login-error').textContent = '合言葉が正しくありません。もう一度お試しください。';
         return;

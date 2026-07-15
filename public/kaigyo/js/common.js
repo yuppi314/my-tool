@@ -16,7 +16,7 @@ function requireKaigyoLogin() {
 
 async function kaigyoFetch(path, options = {}) {
   const opts = { ...options };
-  opts.headers = { ...(opts.headers || {}), 'x-kaigyo-token': getKaigyoToken() };
+  opts.headers = { ...(opts.headers || {}), 'x-kaigyo-token': encodeURIComponent(getKaigyoToken()) };
   if (opts.body && typeof opts.body !== 'string') {
     opts.headers['Content-Type'] = 'application/json';
     opts.body = JSON.stringify(opts.body);
