@@ -13,17 +13,24 @@ CREATE TABLE IF NOT EXISTS leads (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT NOT NULL,
   name TEXT,
-  birthdate TEXT,
   created_at TEXT DEFAULT (datetime('now'))
 );
 
 CREATE TABLE IF NOT EXISTS diagnoses (
   id TEXT PRIMARY KEY,
-  birthdate TEXT NOT NULL,
+  gender TEXT NOT NULL,
+  age INTEGER NOT NULL,
+  height_cm REAL NOT NULL,
+  weight_kg REAL NOT NULL,
+  activity_level INTEGER NOT NULL,
+  target_kg REAL NOT NULL,
+  period_days INTEGER NOT NULL DEFAULT 30,
   name TEXT,
   email TEXT,
-  honmei_star INTEGER NOT NULL,
-  kin INTEGER NOT NULL,
+  bmr REAL NOT NULL,
+  tdee REAL NOT NULL,
+  target_calories REAL NOT NULL,
+  safety_level TEXT NOT NULL,
   paid INTEGER NOT NULL DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );

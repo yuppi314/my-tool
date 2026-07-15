@@ -3,57 +3,54 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>詳細鑑定レポート | 九星気学×マヤ暦</title>
+  <title>あなたの4週間ダイエットプラン | 1ヶ月-3kgダイエットナビ</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <div class="wrap">
     <header class="hero">
-      <h1>あなたの詳細鑑定レポート</h1>
+      <h1>あなたのダイエット診断結果</h1>
       <p id="status-line"></p>
     </header>
 
     <div class="card">
       <div class="result-grid">
-        <div class="stat-box"><div class="label">本命星</div><div class="value" id="r-star"></div></div>
-        <div class="stat-box"><div class="label">マヤ暦 KIN</div><div class="value" id="r-kin"></div></div>
-        <div class="stat-box"><div class="label">太陽の紋章</div><div class="value" id="r-seal"></div></div>
-        <div class="stat-box"><div class="label">銀河の音</div><div class="value" id="r-tone"></div></div>
+        <div class="stat-box"><div class="label">基礎代謝(BMR)</div><div class="value" id="r-bmr"></div></div>
+        <div class="stat-box"><div class="label">消費カロリー(TDEE)</div><div class="value" id="r-tdee"></div></div>
+        <div class="stat-box"><div class="label">1日の目標摂取カロリー</div><div class="value" id="r-target"></div></div>
+        <div class="stat-box"><div class="label">安全度</div><div class="value" id="r-safety"></div></div>
       </div>
       <div class="summary-text" id="r-summary"></div>
+      <div class="result-grid">
+        <div class="stat-box"><div class="label">タンパク質</div><div class="value" id="r-protein"></div></div>
+        <div class="stat-box"><div class="label">脂質</div><div class="value" id="r-fat"></div></div>
+        <div class="stat-box"><div class="label">炭水化物</div><div class="value" id="r-carb"></div></div>
+      </div>
     </div>
 
     <div class="card" id="full-card">
-      <div class="section-title">パーソナリティ詳細</div>
-      <p id="f-personality"></p>
-      <div class="section-title">今年の運気サイクル</div>
-      <p id="f-yearly"></p>
-      <div class="section-title">今月の運勢</div>
-      <p id="f-monthly"></p>
+      <div class="section-title">週別カロリー・PFCプラン</div>
+      <table class="stats-table" id="week-table"></table>
+      <div class="section-title">運動プラン</div>
+      <p id="f-exercise"></p>
+      <div class="section-title">停滞期対策</div>
+      <p id="f-plateau"></p>
       <div class="section-title">アドバイス</div>
       <p id="f-advice"></p>
     </div>
 
     <div class="card" id="locked-card" style="display:none;">
-      <p>この先の詳細鑑定は購入者限定です。</p>
-      <button class="primary" id="unlock-btn">詳細レポートを購入する(¥980)</button>
-    </div>
-
-    <div class="card" id="compat-card" style="display:none;">
-      <div class="section-title">相性診断(購入者限定特典)</div>
-      <label for="partner-birthdate">お相手の生年月日</label>
-      <input type="date" id="partner-birthdate" />
-      <button class="secondary" id="compat-btn">相性を見る</button>
-      <div id="compat-result" style="margin-top:16px;"></div>
+      <p>週別プラン・運動アドバイス・停滞期対策は購入者限定です。</p>
+      <button class="primary" id="unlock-btn">4週間プログラムを購入する(¥980)</button>
     </div>
 
     <div class="ad-slot">[広告枠プレースホルダー: アフィリエイト/純広告を掲載可能]</div>
 
     <footer class="legal">
-      本診断は九星気学・マヤ暦の一般的な考え方に基づく娯楽コンテンツです。医療・法律・投資等の専門的助言に代わるものではありません。<br />
-      <a href="/tokushoho.html" style="color:#c9c0e8;">特定商取引法に基づく表記</a> ・
-      <a href="/terms.html" style="color:#c9c0e8;">利用規約</a> ・
-      <a href="/privacy.html" style="color:#c9c0e8;">プライバシーポリシー</a>
+      本ツールは一般的な栄養学の計算式に基づく参考情報を提供するものであり、医師・管理栄養士による診断・指導に代わるものではありません。持病がある方・体調に不安がある方は医師にご相談のうえご利用ください。<br />
+      <a href="/tokushoho.html" style="color:#b7ddc9;">特定商取引法に基づく表記</a> ・
+      <a href="/terms.html" style="color:#b7ddc9;">利用規約</a> ・
+      <a href="/privacy.html" style="color:#b7ddc9;">プライバシーポリシー</a>
     </footer>
   </div>
 

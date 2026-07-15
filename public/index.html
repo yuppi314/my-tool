@@ -3,20 +3,45 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>九星気学×マヤ暦 無料診断</title>
+  <title>1ヶ月-3kgダイエットナビ | 無料カロリー診断</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <div class="wrap">
     <header class="hero">
-      <h1>九星気学 × マヤ暦 診断</h1>
-      <p>生年月日を入力するだけで、あなたの「本命星」と「マヤ暦KIN」がわかる無料診断</p>
+      <h1>1ヶ月-3kgダイエットナビ</h1>
+      <p>身長・体重などを入力するだけで、1ヶ月で健康的に-3kgを目指すための「1日の目標カロリー」がわかる無料診断</p>
     </header>
 
     <div class="card">
       <form id="diagnosis-form">
-        <label for="birthdate">生年月日</label>
-        <input type="date" id="birthdate" name="birthdate" required />
+        <label for="gender">性別</label>
+        <select id="gender" name="gender" required>
+          <option value="female">女性</option>
+          <option value="male">男性</option>
+          <option value="other">その他・回答しない</option>
+        </select>
+
+        <label for="age">年齢</label>
+        <input type="number" id="age" name="age" min="10" max="100" required placeholder="例: 30" />
+
+        <label for="heightCm">身長(cm)</label>
+        <input type="number" id="heightCm" name="heightCm" min="100" max="250" step="0.1" required placeholder="例: 160" />
+
+        <label for="weightKg">現在の体重(kg)</label>
+        <input type="number" id="weightKg" name="weightKg" min="30" max="300" step="0.1" required placeholder="例: 60" />
+
+        <label for="activityLevel">普段の運動量</label>
+        <select id="activityLevel" name="activityLevel" required>
+          <option value="1">ほとんど運動しない(デスクワーク中心)</option>
+          <option value="2">軽い運動を週1〜2回する</option>
+          <option value="3" selected>中程度の運動を週3〜5回する</option>
+          <option value="4">激しい運動を週6〜7回する</option>
+          <option value="5">非常に激しい運動・肉体労働が多い</option>
+        </select>
+
+        <label for="targetKg">1ヶ月で減らしたい体重(kg)</label>
+        <input type="number" id="targetKg" name="targetKg" min="0.5" max="10" step="0.5" value="3" required />
 
         <label for="name">お名前(任意)</label>
         <input type="text" id="name" name="name" placeholder="例: 山田 花子" />
@@ -24,7 +49,7 @@
         <label for="email">メールアドレス(結果をお届け・任意)</label>
         <input type="email" id="email" name="email" placeholder="example@mail.com" />
 
-        <button type="submit" class="primary">無料で診断する</button>
+        <button type="submit" class="primary">無料でカロリー診断する</button>
         <p class="error-text" id="form-error"></p>
       </form>
     </div>
@@ -32,39 +57,54 @@
     <div class="card" id="result-card" style="display:none;">
       <div class="result-grid">
         <div class="stat-box">
-          <div class="label">本命星</div>
-          <div class="value" id="r-star"></div>
+          <div class="label">基礎代謝(BMR)</div>
+          <div class="value" id="r-bmr"></div>
         </div>
         <div class="stat-box">
-          <div class="label">マヤ暦 KIN</div>
-          <div class="value" id="r-kin"></div>
+          <div class="label">消費カロリー(TDEE)</div>
+          <div class="value" id="r-tdee"></div>
         </div>
         <div class="stat-box">
-          <div class="label">太陽の紋章</div>
-          <div class="value" id="r-seal"></div>
+          <div class="label">1日の目標摂取カロリー</div>
+          <div class="value" id="r-target"></div>
         </div>
         <div class="stat-box">
-          <div class="label">銀河の音</div>
-          <div class="value" id="r-tone"></div>
+          <div class="label">安全度</div>
+          <div class="value" id="r-safety"></div>
         </div>
       </div>
 
       <div class="summary-text" id="r-summary"></div>
 
+      <div class="result-grid">
+        <div class="stat-box">
+          <div class="label">タンパク質</div>
+          <div class="value" id="r-protein"></div>
+        </div>
+        <div class="stat-box">
+          <div class="label">脂質</div>
+          <div class="value" id="r-fat"></div>
+        </div>
+        <div class="stat-box">
+          <div class="label">炭水化物</div>
+          <div class="value" id="r-carb"></div>
+        </div>
+      </div>
+
       <div class="cta-box">
         <div class="price" id="price-label">¥980</div>
-        <p>今年の運気サイクル・月間運勢・相性診断まで見られる<br>「詳細鑑定レポート」をアンロック</p>
-        <button class="primary" id="checkout-btn">詳細レポートを見る</button>
+        <p>週ごとのカロリー配分・運動プラン・停滞期対策までわかる<br>「4週間ダイエットプログラム」をアンロック</p>
+        <button class="primary" id="checkout-btn">詳細プランを見る</button>
       </div>
 
       <div class="ad-slot">[広告枠プレースホルダー: アフィリエイト/純広告を掲載可能]</div>
     </div>
 
     <footer class="legal">
-      本診断は九星気学・マヤ暦の一般的な考え方に基づく娯楽コンテンツです。医療・法律・investment等の専門的助言に代わるものではありません。<br />
-      <a href="/tokushoho.html" style="color:#c9c0e8;">特定商取引法に基づく表記</a> ・
-      <a href="/terms.html" style="color:#c9c0e8;">利用規約</a> ・
-      <a href="/privacy.html" style="color:#c9c0e8;">プライバシーポリシー</a>
+      本ツールは一般的な栄養学の計算式(ミフリン・セントジョール式等)に基づく参考情報を提供するものであり、医師・管理栄養士による診断・指導に代わるものではありません。持病がある方・体調に不安がある方は医師にご相談のうえご利用ください。<br />
+      <a href="/tokushoho.html" style="color:#b7ddc9;">特定商取引法に基づく表記</a> ・
+      <a href="/terms.html" style="color:#b7ddc9;">利用規約</a> ・
+      <a href="/privacy.html" style="color:#b7ddc9;">プライバシーポリシー</a>
     </footer>
   </div>
 

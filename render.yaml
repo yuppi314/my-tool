@@ -3,7 +3,7 @@
 # 本格運用する際は runtime を docker に変え、有料プラン+ディスク(このファイルの過去バージョン参照)に切り替えてください。
 services:
   - type: web
-    name: kyusei-mayan-fortune
+    name: diet-1month-3kg
     runtime: node
     plan: free
     buildCommand: npm install
@@ -13,7 +13,7 @@ services:
         value: 3000
       - key: BASE_URL
         sync: false
-      - key: REPORT_PRICE_JPY
+      - key: PLAN_PRICE_JPY
         value: 980
       - key: ADMIN_TOKEN
         sync: false

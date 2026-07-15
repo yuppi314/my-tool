@@ -5,7 +5,6 @@ const cors = require('cors');
 
 const diagnosisRoutes = require('./routes/diagnosis');
 const { router: paymentRoutes, stripeWebhookHandler } = require('./routes/payment');
-const compatibilityRoutes = require('./routes/compatibility');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
@@ -21,13 +20,12 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use('/api', diagnosisRoutes);
 app.use('/api', paymentRoutes);
-app.use('/api', compatibilityRoutes);
 app.use('/api', adminRoutes);
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 
 app.listen(PORT, () => {
-  console.log(`九星気学×マヤ暦 診断ツール起動: http://localhost:${PORT}`);
+  console.log(`1ヶ月-3kgダイエットナビ 起動: http://localhost:${PORT}`);
   if (!process.env.STRIPE_SECRET_KEY) {
     console.log('※ STRIPE_SECRET_KEY 未設定のため、決済は開発用モックモードで動作します。');
   }
