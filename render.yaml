@@ -17,3 +17,5 @@ services:
         value: 980
       - key: ADMIN_TOKEN
         sync: false
+      - key: KAIGYO_TOKEN
+        sync: false
