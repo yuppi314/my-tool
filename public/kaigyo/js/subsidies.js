@@ -19,6 +19,24 @@ document.getElementById('keyword-preset').addEventListener('change', (e) => {
   document.getElementById('keyword').focus();
 });
 
+document.getElementById('local-search-btn').addEventListener('click', () => {
+  const prefecture = document.getElementById('prefecture').value.trim();
+  const municipality = document.getElementById('municipality').value.trim();
+  const keyword = document.getElementById('keyword').value.trim();
+
+  if (!prefecture && !municipality) {
+    document.getElementById('search-error').textContent = '都道府県か市区町村を、どちらか入力してください。';
+    return;
+  }
+  document.getElementById('search-error').textContent = '';
+
+  const parts = [prefecture, municipality, '補助金'];
+  if (keyword) parts.push(keyword);
+  const query = parts.filter(Boolean).join(' ');
+  const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+  window.open(url, '_blank', 'noopener');
+});
+
 async function prefillFromProfile() {
   const { ok, data } = await kaigyoFetch('/api/kaigyo/profile');
   if (ok && data.profile) {

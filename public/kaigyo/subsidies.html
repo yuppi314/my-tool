@@ -55,6 +55,24 @@
     </div>
 
     <div class="card">
+      <h2>都道府県・市区町村の補助金をさがす</h2>
+      <p class="muted small">
+        都道府県や市区町村だけの補助金・助成金は、国のjGrantsのようにまとめて検索できる公式の仕組みがありません。
+        そのため、ここでは検索エンジンで自治体のホームページを探すお手伝いをします。
+      </p>
+
+      <label for="municipality">市区町村(任意)
+        <span class="hint">上の「都道府県」欄とあわせて使います。例: 渋谷区、横浜市</span>
+      </label>
+      <input type="text" id="municipality" placeholder="例: 渋谷区" />
+
+      <button type="button" id="local-search-btn" class="btn btn-secondary">検索エンジンで探す(新しいタブで開きます)</button>
+      <p class="muted small" style="margin-top:8px;">
+        見つかったページが本物の自治体ホームページかどうか、URL(例: <code>city.〇〇.lg.jp</code> など)を確認してから進んでください。
+      </p>
+    </div>
+
+    <div class="card">
       <h2>検討リスト</h2>
       <div id="bookmark-list"><p class="muted">読み込み中...</p></div>
     </div>
