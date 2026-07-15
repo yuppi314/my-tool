@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>やることリスト - 個人事業主 開業サポート</title>
+  <link rel="stylesheet" href="/kaigyo/css/kaigyo.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <h1>やることリスト</h1>
+      <p>ひとつずつチェックしていきましょう。</p>
+    </header>
+    <nav class="tabs" id="kaigyo-nav"></nav>
+
+    <div class="card">
+      <div class="progress-bar"><div id="progress-fill" style="width:0%;"></div></div>
+      <p class="muted" id="progress-text"></p>
+    </div>
+
+    <div class="filter-row">
+      <select id="filter-category">
+        <option value="">すべてのジャンル</option>
+      </select>
+      <select id="filter-status">
+        <option value="">すべての状態</option>
+        <option value="todo">まだやっていない</option>
+        <option value="in_progress">やっている途中</option>
+        <option value="done">終わった</option>
+      </select>
+    </div>
+
+    <div id="task-list"><p class="muted">読み込み中...</p></div>
+  </div>
+
+  <script src="/kaigyo/js/common.js"></script>
+  <script src="/kaigyo/js/tasks.js"></script>
+</body>
+</html>

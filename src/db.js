@@ -37,6 +37,57 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (diagnosis_id) REFERENCES diagnoses(id)
 );
+
+-- 個人事業主 開業支援ツール(自分専用)
+CREATE TABLE IF NOT EXISTS kaigyo_profile (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  full_name TEXT,
+  address TEXT,
+  business_name TEXT,
+  business_type TEXT,
+  industry_keyword TEXT,
+  prefecture TEXT,
+  start_date TEXT,
+  resign_date TEXT,
+  previous_status TEXT,
+  wants_blue_tax_return INTEGER NOT NULL DEFAULT 0,
+  has_family_employee INTEGER NOT NULL DEFAULT 0,
+  has_employee INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS kaigyo_tasks (
+  id TEXT PRIMARY KEY,
+  template_key TEXT NOT NULL,
+  category TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  where_to_submit TEXT,
+  due_date TEXT,
+  status TEXT NOT NULL DEFAULT 'todo',
+  memo TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS kaigyo_documents (
+  doc_type TEXT PRIMARY KEY,
+  form_data TEXT NOT NULL DEFAULT '{}',
+  updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS subsidy_bookmarks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  subsidy_id TEXT NOT NULL UNIQUE,
+  title TEXT,
+  deadline TEXT,
+  status TEXT NOT NULL DEFAULT 'considering',
+  memo TEXT,
+  cached_data TEXT,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
+);
 `);
 
 module.exports = db;

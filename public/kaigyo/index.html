@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ホーム - 個人事業主 開業サポート</title>
+  <link rel="stylesheet" href="/kaigyo/css/kaigyo.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <h1>個人事業主 開業サポート</h1>
+      <p>開業に必要な手続きを、ひとつずつ終わらせていきましょう。</p>
+    </header>
+    <nav class="tabs" id="kaigyo-nav"></nav>
+
+    <div id="no-profile" class="card" style="display:none;">
+      <h2>まずは設定をしましょう</h2>
+      <p>開業日などを入力すると、あなたに必要な「やることリスト」を自動で作ります。</p>
+      <a href="/kaigyo/setup.html" class="btn btn-primary">設定をする</a>
+    </div>
+
+    <div id="dashboard" style="display:none;">
+      <div class="card">
+        <h2>進み具合</h2>
+        <div class="progress-bar"><div id="progress-fill" style="width:0%;"></div></div>
+        <p class="muted" id="progress-text"></p>
+      </div>
+
+      <div class="card">
+        <h2>締め切りが近い、やること</h2>
+        <div id="soon-list"><p class="muted">読み込み中...</p></div>
+        <a href="/kaigyo/tasks.html" class="btn btn-secondary" style="margin-top:8px;">やることリストを全部見る</a>
+      </div>
+
+      <div class="card">
+        <h2>次にできること</h2>
+        <p>まだ手をつけていない書類は、「書類を作る」からやさしい説明を見ながら入力できます。</p>
+        <a href="/kaigyo/documents.html" class="btn btn-secondary">書類を作る</a>
+        <a href="/kaigyo/subsidies.html" class="btn btn-secondary" style="margin-left:8px;">補助金・助成金をさがす</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/kaigyo/js/common.js"></script>
+  <script src="/kaigyo/js/dashboard.js"></script>
+</body>
+</html>

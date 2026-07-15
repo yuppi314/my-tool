@@ -1,4 +1,13 @@
-# 九星気学 × マヤ暦 診断ツール
+# 九星気学 × マヤ暦 診断ツール / 個人事業主 開業サポートツール
+
+このリポジトリには2つの独立したツールが入っています。
+
+1. 九星気学×マヤ暦 診断ツール(下記、公開・マネタイズ向け)
+2. [個人事業主 開業サポートツール](#個人事業主-開業サポートツール自分専用)(自分専用、ページ末尾を参照)
+
+---
+
+## 九星気学 × マヤ暦 診断ツール
 
 生年月日から「九星気学の本命星」と「マヤ暦(ドリームスペル方式)のKIN・太陽の紋章・銀河の音」を算出し、
 無料の簡易診断 → 有料の詳細鑑定レポートへ誘導するフリーミアム型のマネタイズツールです。
@@ -108,3 +117,43 @@ Renderの場合は `render.yaml` の `runtime` を `docker` に、`plan` を `st
 docker build -t kyusei-mayan-fortune .
 docker run -p 3000:3000 -v $(pwd)/data:/app/data --env-file .env kyusei-mayan-fortune
 ```
+
+---
+
+## 個人事業主 開業サポートツール(自分専用)
+
+会社員などから個人事業主として開業する人が、必要な手続きをやさしい言葉で確認しながら進められるツールです。
+詳しい仕様は [`docs/kojin-jigyounushi-requirements.md`](docs/kojin-jigyounushi-requirements.md) を参照してください。
+
+### 使い方
+
+```bash
+npm install
+cp .env.example .env
+# .env の KAIGYO_TOKEN を好きな合言葉に変更してください(初期値は changeme)
+npm start
+```
+
+`http://localhost:3000/kaigyo/login.html` にアクセスし、`.env` の `KAIGYO_TOKEN` と同じ合言葉でログインします。
+
+### 主な画面
+
+| URL | 内容 |
+|---|---|
+| `/kaigyo/login.html` | ログイン(合言葉を入力) |
+| `/kaigyo/setup.html` | 開業日や状況などの初期設定 |
+| `/kaigyo/index.html` | ダッシュボード(進み具合・締め切りが近いタスク) |
+| `/kaigyo/tasks.html` | やることリスト(状態・メモの管理) |
+| `/kaigyo/documents.html` / `document.html` | 開業届・青色申告承認申請書などの下書き作成・印刷 |
+| `/kaigyo/subsidies.html` | 補助金・助成金の検索(jGrants API)・検討リスト |
+
+### 補助金・助成金機能について
+
+経済産業省の公開API「[jGrants](https://www.jgrants-portal.go.jp/)」を `src/lib/jgrants.js` からサーバー経由で呼び出しています。
+このAPIの認証方式・レート制限・レスポンス項目は変更される可能性があるため、本番投入前に最新の仕様を確認してください
+(このリポジトリの開発環境ではネットワークポリシー上、当該APIへの疎通確認ができていません)。
+API呼び出しは10分間キャッシュしており、失敗してもアプリ本体は使い続けられます。
+
+### データの保存場所
+
+九星気学ツールと同じSQLiteファイル(`data/app.db`)に、`kaigyo_profile` / `kaigyo_tasks` / `kaigyo_documents` / `subsidy_bookmarks` の各テーブルとして保存されます。

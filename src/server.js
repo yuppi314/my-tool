@@ -7,6 +7,9 @@ const diagnosisRoutes = require('./routes/diagnosis');
 const { router: paymentRoutes, stripeWebhookHandler } = require('./routes/payment');
 const compatibilityRoutes = require('./routes/compatibility');
 const adminRoutes = require('./routes/admin');
+const kaigyoRoutes = require('./routes/kaigyo');
+const kaigyoDocumentsRoutes = require('./routes/kaigyoDocuments');
+const subsidiesRoutes = require('./routes/subsidies');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +26,9 @@ app.use('/api', diagnosisRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', compatibilityRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', kaigyoRoutes);
+app.use('/api', kaigyoDocumentsRoutes);
+app.use('/api', subsidiesRoutes);
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 

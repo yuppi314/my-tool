@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>設定 - 個人事業主 開業サポート</title>
+  <link rel="stylesheet" href="/kaigyo/css/kaigyo.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <h1>個人事業主 開業サポート</h1>
+      <p>あなたのことを教えてください。答えにあわせて、やることリストを作ります。</p>
+    </header>
+    <nav class="tabs" id="kaigyo-nav"></nav>
+
+    <div class="card">
+      <h2>基本の設定</h2>
+      <form id="setup-form">
+        <label for="fullName">名前</label>
+        <input type="text" id="fullName" placeholder="例: 山田 太郎" />
+
+        <label for="address">住んでいる場所の住所</label>
+        <input type="text" id="address" placeholder="例: 東京都〇〇区〇〇1-2-3" />
+
+        <label for="businessName">屋号(お店・事業の名前)
+          <span class="hint">決めていなければ空でも大丈夫です。</span>
+        </label>
+        <input type="text" id="businessName" placeholder="例: 山田デザイン事務所" />
+
+        <label for="businessType">どんな仕事をしますか?</label>
+        <input type="text" id="businessType" placeholder="例: ウェブサイトのデザイン制作" />
+
+        <label for="industryKeyword">仕事のジャンル(補助金を調べるときにも使います)
+          <span class="hint">例: デザイン、飲食、IT、農業 など</span>
+        </label>
+        <input type="text" id="industryKeyword" placeholder="例: デザイン" />
+
+        <label for="prefecture">都道府県</label>
+        <input type="text" id="prefecture" placeholder="例: 東京都" />
+
+        <label for="startDate">開業日(お仕事を始める日)</label>
+        <input type="date" id="startDate" required />
+
+        <label for="previousStatus">今までどんな立場でしたか?</label>
+        <select id="previousStatus">
+          <option value="company_employee">会社員・パート・アルバイトだった(社会保険に入っていた)</option>
+          <option value="other">学生・専業主婦(夫)・すでに個人事業主 など</option>
+        </select>
+
+        <div id="resign-date-wrap">
+          <label for="resignDate">会社などを辞める(辞めた)日
+            <span class="hint">健康保険・年金の切りかえの期限を計算するために使います。</span>
+          </label>
+          <input type="date" id="resignDate" />
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="wantsBlueTaxReturn" />
+          <div>
+            <label class="label-text" style="margin:0;">税金がお得になる「青色申告」を選びたい</label>
+            <div class="hint">帳簿(お金の記録)をきちんとつける代わりに、税金が安くなる制度です。迷ったらチェックを付けておくのがおすすめです。</div>
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="hasFamilyEmployee" />
+          <div>
+            <label class="label-text" style="margin:0;">家族に仕事を手伝ってもらい、お給料を払う予定がある</label>
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="hasEmployee" />
+          <div>
+            <label class="label-text" style="margin:0;">家族以外の人を雇う予定がある</label>
+          </div>
+        </div>
+
+        <p class="error-text" id="setup-error"></p>
+        <p class="success-text" id="setup-success"></p>
+        <button type="submit" class="btn btn-primary btn-block">保存して、やることリストを作る</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/kaigyo/js/common.js"></script>
+  <script src="/kaigyo/js/setup.js"></script>
+</body>
+</html>
