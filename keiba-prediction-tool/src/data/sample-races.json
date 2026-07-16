@@ -14,33 +14,173 @@
     "paceNote": "先行馬が多く、ハイペースになりそうです。",
     "headcount": 8,
     "horses": [
-      { "number": 1, "waku": 1, "name": "ハルノトビラ", "sex": "牝", "age": 3, "jockey": "前田", "odds": 2.1, "oddsMove": "down", "overallMark": "◎" },
-      { "number": 2, "waku": 1, "name": "コスモバウンティ", "sex": "牡", "age": 3, "jockey": "遠藤", "odds": 9.0, "oddsMove": null, "overallMark": null },
-      { "number": 3, "waku": 2, "name": "レイニーウイング", "sex": "牝", "age": 3, "jockey": "谷口", "odds": 12.0, "oddsMove": null, "overallMark": "○" },
-      { "number": 4, "waku": 2, "name": "フウジンライズ", "sex": "牡", "age": 3, "jockey": "竹内", "odds": 6.5, "oddsMove": "up", "overallMark": "▲" },
-      { "number": 5, "waku": 3, "name": "ブラックカレント", "sex": "牡", "age": 3, "jockey": "星野", "odds": 15.0, "oddsMove": null, "overallMark": null },
-      { "number": 6, "waku": 3, "name": "ミライノハネ", "sex": "牝", "age": 3, "jockey": "宮本", "odds": 8.0, "oddsMove": null, "overallMark": "△" },
-      { "number": 7, "waku": 4, "name": "トキメキローズ", "sex": "牝", "age": 3, "jockey": "藤井", "odds": 20.0, "oddsMove": null, "overallMark": null },
-      { "number": 8, "waku": 4, "name": "ゲンブノツルギ", "sex": "牡", "age": 3, "jockey": "小池", "odds": 30.0, "oddsMove": null, "overallMark": null }
-    ],
-    "tipsterPicks": [
       {
-        "tipsterId": "databall",
-        "honmei": 1, "taikou": 4,
-        "comment": "先行力なら他を圧倒。逃げ切り濃厚です。",
-        "bets": { "tansho": "1", "fukusho": "1,4", "wakuren": "1-2", "umaren": "1-4", "wide": "1-4", "sanrenpuku": "1-4-3", "sanrentan": "1→4→3" }
+        "number": 1,
+        "waku": 1,
+        "name": "ハルノトビラ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "前田",
+        "odds": 2.1,
+        "oddsMove": "down",
+        "recentFinishes": [
+          8,
+          7,
+          5,
+          6,
+          4
+        ],
+        "jockeyWinRatePct": 13.7,
+        "speedFigure": 70.3,
+        "courseFit": 44,
+        "restDaysSinceLast": 7
       },
       {
-        "tipsterId": "ketto",
-        "honmei": 1, "taikou": 3,
-        "comment": "母系の未勝利勝率が高い血統じゃ。",
-        "bets": { "tansho": "1", "fukusho": "1,3", "wakuren": "1-2", "umaren": "1-3", "wide": "1-3", "sanrenpuku": "1-3-4", "sanrentan": "1→3→4" }
+        "number": 2,
+        "waku": 1,
+        "name": "コスモバウンティ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "遠藤",
+        "odds": 9,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          6,
+          7,
+          4,
+          5
+        ],
+        "jockeyWinRatePct": 7.8,
+        "speedFigure": 62,
+        "courseFit": 65,
+        "restDaysSinceLast": 90
       },
       {
-        "tipsterId": "kankaku",
-        "honmei": 4, "taikou": 1,
-        "comment": "4番、なんかキラッと光ってる気がする!",
-        "bets": { "tansho": "4", "fukusho": "4,1", "wakuren": "2-1", "umaren": "4-1", "wide": "4-1", "sanrenpuku": "4-1-6", "sanrentan": "4→1→6" }
+        "number": 3,
+        "waku": 2,
+        "name": "レイニーウイング",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "谷口",
+        "odds": 12,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          5,
+          7,
+          7,
+          5
+        ],
+        "jockeyWinRatePct": 8.4,
+        "speedFigure": 59.6,
+        "courseFit": 50,
+        "restDaysSinceLast": 21
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "フウジンライズ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "竹内",
+        "odds": 6.5,
+        "oddsMove": "up",
+        "recentFinishes": [
+          8,
+          5,
+          5,
+          8,
+          6
+        ],
+        "jockeyWinRatePct": 7.5,
+        "speedFigure": 66.5,
+        "courseFit": 95,
+        "restDaysSinceLast": 42
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "ブラックカレント",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "星野",
+        "odds": 15,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          7,
+          8,
+          8,
+          7
+        ],
+        "jockeyWinRatePct": 7.2,
+        "speedFigure": 59,
+        "courseFit": 37,
+        "restDaysSinceLast": 42
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "ミライノハネ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "宮本",
+        "odds": 8,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          8,
+          6,
+          6,
+          7
+        ],
+        "jockeyWinRatePct": 10.5,
+        "speedFigure": 68.6,
+        "courseFit": 93,
+        "restDaysSinceLast": 21
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "トキメキローズ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "藤井",
+        "odds": 20,
+        "oddsMove": null,
+        "recentFinishes": [
+          7,
+          8,
+          8,
+          8,
+          8
+        ],
+        "jockeyWinRatePct": 6.4,
+        "speedFigure": 64.4,
+        "courseFit": 88,
+        "restDaysSinceLast": 28
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "ゲンブノツルギ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "小池",
+        "odds": 30,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          5,
+          8,
+          7,
+          7
+        ],
+        "jockeyWinRatePct": 7.5,
+        "speedFigure": 62.5,
+        "courseFit": 89,
+        "restDaysSinceLast": 90
       }
     ]
   },
@@ -59,33 +199,173 @@
     "paceNote": "逃げ馬が1頭のみで、スローの前残り想定です。",
     "headcount": 8,
     "horses": [
-      { "number": 1, "waku": 1, "name": "セイカイフウ", "sex": "牡", "age": 5, "jockey": "遠藤", "odds": 3.5, "oddsMove": "down", "overallMark": "◎" },
-      { "number": 2, "waku": 1, "name": "ノヴァシグナル", "sex": "牡", "age": 4, "jockey": "谷口", "odds": 12.0, "oddsMove": null, "overallMark": null },
-      { "number": 3, "waku": 2, "name": "ハナミズキオー", "sex": "牝", "age": 4, "jockey": "竹内", "odds": 8.0, "oddsMove": null, "overallMark": "○" },
-      { "number": 4, "waku": 2, "name": "キセキノホシ", "sex": "牡", "age": 6, "jockey": "星野", "odds": 15.0, "oddsMove": null, "overallMark": null },
-      { "number": 5, "waku": 3, "name": "ツユクサライン", "sex": "牝", "age": 5, "jockey": "宮本", "odds": 20.0, "oddsMove": null, "overallMark": "▲" },
-      { "number": 6, "waku": 3, "name": "ダンチョウノカゼ", "sex": "牡", "age": 4, "jockey": "藤井", "odds": 6.0, "oddsMove": "up", "overallMark": "△" },
-      { "number": 7, "waku": 4, "name": "モエギイロ", "sex": "牝", "age": 4, "jockey": "小池", "odds": 25.0, "oddsMove": null, "overallMark": null },
-      { "number": 8, "waku": 4, "name": "コハクノツバサ", "sex": "牡", "age": 5, "jockey": "石原", "odds": 18.0, "oddsMove": null, "overallMark": null }
-    ],
-    "tipsterPicks": [
       {
-        "tipsterId": "databall",
-        "honmei": 1, "taikou": 3,
-        "comment": "上がりの速さが他馬より頭ひとつ抜けています。",
-        "bets": { "tansho": "1", "fukusho": "1,3", "wakuren": "1-2", "umaren": "1-3", "wide": "1-3", "sanrenpuku": "1-3-6", "sanrentan": "1→3→6" }
+        "number": 1,
+        "waku": 1,
+        "name": "セイカイフウ",
+        "sex": "牡",
+        "age": 5,
+        "jockey": "遠藤",
+        "odds": 3.5,
+        "oddsMove": "down",
+        "recentFinishes": [
+          5,
+          7,
+          5,
+          5,
+          5
+        ],
+        "jockeyWinRatePct": 11.1,
+        "speedFigure": 66,
+        "courseFit": 64,
+        "restDaysSinceLast": 42
       },
       {
-        "tipsterId": "ketto",
-        "honmei": 1, "taikou": 6,
-        "comment": "父の産駒は短距離巧者ぞろいじゃ。",
-        "bets": { "tansho": "1", "fukusho": "1,6", "wakuren": "1-3", "umaren": "1-6", "wide": "1-6", "sanrenpuku": "1-6-3", "sanrentan": "1→6→3" }
+        "number": 2,
+        "waku": 1,
+        "name": "ノヴァシグナル",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "谷口",
+        "odds": 12,
+        "oddsMove": null,
+        "recentFinishes": [
+          7,
+          7,
+          7,
+          6,
+          6
+        ],
+        "jockeyWinRatePct": 9.9,
+        "speedFigure": 62.3,
+        "courseFit": 52,
+        "restDaysSinceLast": 70
       },
       {
-        "tipsterId": "kankaku",
-        "honmei": 5, "taikou": 1,
-        "comment": "5番、単走の脚さばきが良かったです。",
-        "bets": { "tansho": "5", "fukusho": "5,1", "wakuren": "3-1", "umaren": "5-1", "wide": "5-1", "sanrenpuku": "5-1-3", "sanrentan": "5→1→3" }
+        "number": 3,
+        "waku": 2,
+        "name": "ハナミズキオー",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "竹内",
+        "odds": 8,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          5,
+          4,
+          5,
+          7
+        ],
+        "jockeyWinRatePct": 9.2,
+        "speedFigure": 67.3,
+        "courseFit": 47,
+        "restDaysSinceLast": 7
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "キセキノホシ",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "星野",
+        "odds": 15,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          4,
+          7,
+          5,
+          8
+        ],
+        "jockeyWinRatePct": 7.1,
+        "speedFigure": 64.4,
+        "courseFit": 87,
+        "restDaysSinceLast": 49
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "ツユクサライン",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "宮本",
+        "odds": 20,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          7,
+          7,
+          5,
+          5
+        ],
+        "jockeyWinRatePct": 5.4,
+        "speedFigure": 60.5,
+        "courseFit": 95,
+        "restDaysSinceLast": 21
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "ダンチョウノカゼ",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "藤井",
+        "odds": 6,
+        "oddsMove": "up",
+        "recentFinishes": [
+          4,
+          7,
+          6,
+          6,
+          4
+        ],
+        "jockeyWinRatePct": 6.8,
+        "speedFigure": 60.3,
+        "courseFit": 32,
+        "restDaysSinceLast": 49
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "モエギイロ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "小池",
+        "odds": 25,
+        "oddsMove": null,
+        "recentFinishes": [
+          4,
+          5,
+          7,
+          6,
+          6
+        ],
+        "jockeyWinRatePct": 8.2,
+        "speedFigure": 56.5,
+        "courseFit": 35,
+        "restDaysSinceLast": 70
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "コハクノツバサ",
+        "sex": "牡",
+        "age": 5,
+        "jockey": "石原",
+        "odds": 18,
+        "oddsMove": null,
+        "recentFinishes": [
+          8,
+          8,
+          7,
+          8,
+          6
+        ],
+        "jockeyWinRatePct": 7.6,
+        "speedFigure": 59,
+        "courseFit": 32,
+        "restDaysSinceLast": 21
       }
     ]
   },
@@ -104,40 +384,320 @@
     "paceNote": "逃げ馬が少なく、前が残りやすい展開になりそうです。",
     "headcount": 15,
     "horses": [
-      { "number": 1, "waku": 1, "name": "マツカゼトライ", "sex": "牡", "age": 5, "jockey": "三好", "odds": 22.0, "oddsMove": null, "overallMark": null },
-      { "number": 2, "waku": 1, "name": "ヒカリコマチ", "sex": "牝", "age": 4, "jockey": "遠藤", "odds": 45.0, "oddsMove": null, "overallMark": null },
-      { "number": 3, "waku": 3, "name": "テイオーライト", "sex": "牡", "age": 4, "jockey": "前田", "odds": 4.8, "oddsMove": "up", "overallMark": "○" },
-      { "number": 4, "waku": 4, "name": "サクラノキセキ", "sex": "牝", "age": 5, "jockey": "谷口", "odds": 9.2, "oddsMove": null, "overallMark": "△" },
-      { "number": 5, "waku": 2, "name": "コウウンヒビキ", "sex": "牡", "age": 4, "jockey": "星野", "odds": 38.0, "oddsMove": null, "overallMark": null },
-      { "number": 6, "waku": 2, "name": "ソラノフレア", "sex": "牡", "age": 6, "jockey": "竹内", "odds": 60.0, "oddsMove": null, "overallMark": null },
-      { "number": 7, "waku": 6, "name": "ゴールドフレイム", "sex": "牡", "age": 3, "jockey": "西村", "odds": 3.1, "oddsMove": "down", "overallMark": "◎" },
-      { "number": 8, "waku": 5, "name": "ミズホノカゼ", "sex": "牝", "age": 4, "jockey": "宮本", "odds": 18.0, "oddsMove": null, "overallMark": null },
-      { "number": 9, "waku": 3, "name": "タイヨウノメグミ", "sex": "牡", "age": 3, "jockey": "藤井", "odds": 55.0, "oddsMove": null, "overallMark": null },
-      { "number": 10, "waku": 4, "name": "コダマイースター", "sex": "牡", "age": 5, "jockey": "長谷川", "odds": 27.0, "oddsMove": null, "overallMark": null },
-      { "number": 11, "waku": 5, "name": "ハヤブサドリーム", "sex": "牡", "age": 4, "jockey": "小池", "odds": 33.0, "oddsMove": null, "overallMark": null },
-      { "number": 12, "waku": 8, "name": "キリノハヤテ", "sex": "牡", "age": 6, "jockey": "村田", "odds": 14.0, "oddsMove": null, "overallMark": "▲" },
-      { "number": 13, "waku": 6, "name": "ツキカゲミライ", "sex": "牝", "age": 5, "jockey": "石原", "odds": 70.0, "oddsMove": null, "overallMark": null },
-      { "number": 14, "waku": 7, "name": "オオゾラウィン", "sex": "牡", "age": 6, "jockey": "森田", "odds": 48.0, "oddsMove": null, "overallMark": null },
-      { "number": 15, "waku": 7, "name": "ライジンノツバサ", "sex": "牡", "age": 4, "jockey": "桑原", "odds": 90.0, "oddsMove": null, "overallMark": null }
-    ],
-    "tipsterPicks": [
       {
-        "tipsterId": "databall",
-        "honmei": 7, "taikou": 3,
-        "comment": "過去5走の上がり3Fが最速。展開も向きます。",
-        "bets": { "tansho": "7", "fukusho": "7,3", "wakuren": "6-3", "umaren": "7-3", "wide": "7-3", "sanrenpuku": "7-3-12", "sanrentan": "7→3→12" }
+        "number": 1,
+        "waku": 1,
+        "name": "マツカゼトライ",
+        "sex": "牡",
+        "age": 5,
+        "jockey": "三好",
+        "odds": 22,
+        "oddsMove": null,
+        "recentFinishes": [
+          8,
+          9,
+          7,
+          7,
+          10
+        ],
+        "jockeyWinRatePct": 8,
+        "speedFigure": 62.1,
+        "courseFit": 78,
+        "restDaysSinceLast": 21
       },
       {
-        "tipsterId": "ketto",
-        "honmei": 7, "taikou": 12,
-        "comment": "父の産駒はこの馬場が得意。仕上がりも上々じゃ。",
-        "bets": { "tansho": "7", "fukusho": "7,12", "wakuren": "6-8", "umaren": "7-12", "wide": "7-12", "sanrenpuku": "7-12-3", "sanrentan": "7→12→3" }
+        "number": 2,
+        "waku": 1,
+        "name": "ヒカリコマチ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "遠藤",
+        "odds": 45,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          6,
+          7,
+          6,
+          6
+        ],
+        "jockeyWinRatePct": 5.7,
+        "speedFigure": 57,
+        "courseFit": 98,
+        "restDaysSinceLast": 14
       },
       {
-        "tipsterId": "kankaku",
-        "honmei": 4, "taikou": 7,
-        "comment": "人気薄だけど左回り初挑戦が化けそうな予感!",
-        "bets": { "tansho": "4", "fukusho": "4,7", "wakuren": "4-6", "umaren": "4-7", "wide": "4-7", "sanrenpuku": "4-7-3", "sanrentan": "4→7→3" }
+        "number": 3,
+        "waku": 3,
+        "name": "テイオーライト",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "前田",
+        "odds": 4.8,
+        "oddsMove": "up",
+        "recentFinishes": [
+          6,
+          4,
+          7,
+          3,
+          3
+        ],
+        "jockeyWinRatePct": 7,
+        "speedFigure": 69.5,
+        "courseFit": 56,
+        "restDaysSinceLast": 90
+      },
+      {
+        "number": 4,
+        "waku": 4,
+        "name": "サクラノキセキ",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "谷口",
+        "odds": 9.2,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          8,
+          9,
+          6,
+          6
+        ],
+        "jockeyWinRatePct": 5.7,
+        "speedFigure": 65.7,
+        "courseFit": 88,
+        "restDaysSinceLast": 90
+      },
+      {
+        "number": 5,
+        "waku": 2,
+        "name": "コウウンヒビキ",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "星野",
+        "odds": 38,
+        "oddsMove": null,
+        "recentFinishes": [
+          8,
+          7,
+          6,
+          6,
+          6
+        ],
+        "jockeyWinRatePct": 3.7,
+        "speedFigure": 60.3,
+        "courseFit": 38,
+        "restDaysSinceLast": 14
+      },
+      {
+        "number": 6,
+        "waku": 2,
+        "name": "ソラノフレア",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "竹内",
+        "odds": 60,
+        "oddsMove": null,
+        "recentFinishes": [
+          7,
+          6,
+          6,
+          8,
+          7
+        ],
+        "jockeyWinRatePct": 6.3,
+        "speedFigure": 58,
+        "courseFit": 50,
+        "restDaysSinceLast": 120
+      },
+      {
+        "number": 7,
+        "waku": 6,
+        "name": "ゴールドフレイム",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "西村",
+        "odds": 3.1,
+        "oddsMove": "down",
+        "recentFinishes": [
+          5,
+          5,
+          5,
+          4,
+          6
+        ],
+        "jockeyWinRatePct": 8.1,
+        "speedFigure": 64.5,
+        "courseFit": 97,
+        "restDaysSinceLast": 21
+      },
+      {
+        "number": 8,
+        "waku": 5,
+        "name": "ミズホノカゼ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "宮本",
+        "odds": 18,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          4,
+          8,
+          5,
+          6
+        ],
+        "jockeyWinRatePct": 7.2,
+        "speedFigure": 58.9,
+        "courseFit": 90,
+        "restDaysSinceLast": 21
+      },
+      {
+        "number": 9,
+        "waku": 3,
+        "name": "タイヨウノメグミ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "藤井",
+        "odds": 55,
+        "oddsMove": null,
+        "recentFinishes": [
+          7,
+          5,
+          4,
+          8,
+          4
+        ],
+        "jockeyWinRatePct": 7,
+        "speedFigure": 62.1,
+        "courseFit": 49,
+        "restDaysSinceLast": 49
+      },
+      {
+        "number": 10,
+        "waku": 4,
+        "name": "コダマイースター",
+        "sex": "牡",
+        "age": 5,
+        "jockey": "長谷川",
+        "odds": 27,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          6,
+          6,
+          7,
+          7
+        ],
+        "jockeyWinRatePct": 6.2,
+        "speedFigure": 64,
+        "courseFit": 82,
+        "restDaysSinceLast": 49
+      },
+      {
+        "number": 11,
+        "waku": 5,
+        "name": "ハヤブサドリーム",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "小池",
+        "odds": 33,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          8,
+          8,
+          8,
+          9
+        ],
+        "jockeyWinRatePct": 3.8,
+        "speedFigure": 62.6,
+        "courseFit": 96,
+        "restDaysSinceLast": 90
+      },
+      {
+        "number": 12,
+        "waku": 8,
+        "name": "キリノハヤテ",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "村田",
+        "odds": 14,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          6,
+          6,
+          8,
+          8
+        ],
+        "jockeyWinRatePct": 9.7,
+        "speedFigure": 66.4,
+        "courseFit": 88,
+        "restDaysSinceLast": 70
+      },
+      {
+        "number": 13,
+        "waku": 6,
+        "name": "ツキカゲミライ",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "石原",
+        "odds": 70,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          9,
+          6,
+          9,
+          7
+        ],
+        "jockeyWinRatePct": 4.9,
+        "speedFigure": 55.4,
+        "courseFit": 40,
+        "restDaysSinceLast": 28
+      },
+      {
+        "number": 14,
+        "waku": 7,
+        "name": "オオゾラウィン",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "森田",
+        "odds": 48,
+        "oddsMove": null,
+        "recentFinishes": [
+          7,
+          8,
+          9,
+          7,
+          7
+        ],
+        "jockeyWinRatePct": 5.6,
+        "speedFigure": 59.9,
+        "courseFit": 96,
+        "restDaysSinceLast": 35
+      },
+      {
+        "number": 15,
+        "waku": 7,
+        "name": "ライジンノツバサ",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "桑原",
+        "odds": 90,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          5,
+          5,
+          7,
+          8
+        ],
+        "jockeyWinRatePct": 6,
+        "speedFigure": 59.4,
+        "courseFit": 60,
+        "restDaysSinceLast": 42
       }
     ]
   },
@@ -156,33 +716,173 @@
     "paceNote": "短距離戦らしい、行った者勝ちの展開が濃厚です。",
     "headcount": 8,
     "horses": [
-      { "number": 1, "waku": 1, "name": "ブレイブコダマ", "sex": "牡", "age": 5, "jockey": "長谷川", "odds": 2.8, "oddsMove": "down", "overallMark": "◎" },
-      { "number": 2, "waku": 1, "name": "ゲッコウノツルギ", "sex": "牡", "age": 4, "jockey": "村田", "odds": 14.0, "oddsMove": null, "overallMark": null },
-      { "number": 3, "waku": 2, "name": "ヨゾラノハシリ", "sex": "牝", "age": 4, "jockey": "森田", "odds": 7.0, "oddsMove": null, "overallMark": "○" },
-      { "number": 4, "waku": 2, "name": "スイシャノオト", "sex": "牡", "age": 6, "jockey": "桑原", "odds": 20.0, "oddsMove": null, "overallMark": null },
-      { "number": 5, "waku": 3, "name": "アカツキダッシュ", "sex": "牡", "age": 3, "jockey": "三好", "odds": 9.0, "oddsMove": null, "overallMark": "▲" },
-      { "number": 6, "waku": 3, "name": "フユノホタル", "sex": "牝", "age": 5, "jockey": "遠藤", "odds": 30.0, "oddsMove": null, "overallMark": null },
-      { "number": 7, "waku": 4, "name": "バクフウリン", "sex": "牡", "age": 4, "jockey": "谷口", "odds": 12.0, "oddsMove": "up", "overallMark": "△" },
-      { "number": 8, "waku": 4, "name": "ノゾミノアシ", "sex": "牝", "age": 4, "jockey": "竹内", "odds": 25.0, "oddsMove": null, "overallMark": null }
-    ],
-    "tipsterPicks": [
       {
-        "tipsterId": "databall",
-        "honmei": 1, "taikou": 3,
-        "comment": "ダート短距離の実績はメンバー随一です。",
-        "bets": { "tansho": "1", "fukusho": "1,3", "wakuren": "1-2", "umaren": "1-3", "wide": "1-3", "sanrenpuku": "1-3-5", "sanrentan": "1→3→5" }
+        "number": 1,
+        "waku": 1,
+        "name": "ブレイブコダマ",
+        "sex": "牡",
+        "age": 5,
+        "jockey": "長谷川",
+        "odds": 2.8,
+        "oddsMove": "down",
+        "recentFinishes": [
+          2,
+          4,
+          5,
+          5,
+          3
+        ],
+        "jockeyWinRatePct": 10.5,
+        "speedFigure": 70.6,
+        "courseFit": 65,
+        "restDaysSinceLast": 7
       },
       {
-        "tipsterId": "ketto",
-        "honmei": 1, "taikou": 5,
-        "comment": "父がダート短距離の名種牡馬じゃ。",
-        "bets": { "tansho": "1", "fukusho": "1,5", "wakuren": "1-3", "umaren": "1-5", "wide": "1-5", "sanrenpuku": "1-5-3", "sanrentan": "1→5→3" }
+        "number": 2,
+        "waku": 1,
+        "name": "ゲッコウノツルギ",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "村田",
+        "odds": 14,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          6,
+          4,
+          3,
+          7
+        ],
+        "jockeyWinRatePct": 8.6,
+        "speedFigure": 59,
+        "courseFit": 69,
+        "restDaysSinceLast": 90
       },
       {
-        "tipsterId": "kankaku",
-        "honmei": 7, "taikou": 1,
-        "comment": "7番、まだ人気になってないのが不思議です。",
-        "bets": { "tansho": "7", "fukusho": "7,1", "wakuren": "4-1", "umaren": "7-1", "wide": "7-1", "sanrenpuku": "7-1-3", "sanrentan": "7→1→3" }
+        "number": 3,
+        "waku": 2,
+        "name": "ヨゾラノハシリ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "森田",
+        "odds": 7,
+        "oddsMove": null,
+        "recentFinishes": [
+          8,
+          5,
+          6,
+          6,
+          8
+        ],
+        "jockeyWinRatePct": 9.1,
+        "speedFigure": 66.8,
+        "courseFit": 34,
+        "restDaysSinceLast": 35
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "スイシャノオト",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "桑原",
+        "odds": 20,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          5,
+          5,
+          6,
+          7
+        ],
+        "jockeyWinRatePct": 5,
+        "speedFigure": 56.7,
+        "courseFit": 88,
+        "restDaysSinceLast": 42
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "アカツキダッシュ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "三好",
+        "odds": 9,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          7,
+          6,
+          8,
+          4
+        ],
+        "jockeyWinRatePct": 8.9,
+        "speedFigure": 65.3,
+        "courseFit": 67,
+        "restDaysSinceLast": 70
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "フユノホタル",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "遠藤",
+        "odds": 30,
+        "oddsMove": null,
+        "recentFinishes": [
+          4,
+          8,
+          6,
+          7,
+          4
+        ],
+        "jockeyWinRatePct": 4.8,
+        "speedFigure": 56.4,
+        "courseFit": 45,
+        "restDaysSinceLast": 90
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "バクフウリン",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "谷口",
+        "odds": 12,
+        "oddsMove": "up",
+        "recentFinishes": [
+          7,
+          5,
+          6,
+          7,
+          7
+        ],
+        "jockeyWinRatePct": 9.7,
+        "speedFigure": 67.1,
+        "courseFit": 91,
+        "restDaysSinceLast": 90
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "ノゾミノアシ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "竹内",
+        "odds": 25,
+        "oddsMove": null,
+        "recentFinishes": [
+          7,
+          6,
+          6,
+          7,
+          6
+        ],
+        "jockeyWinRatePct": 4.9,
+        "speedFigure": 61.3,
+        "courseFit": 70,
+        "restDaysSinceLast": 90
       }
     ]
   },
@@ -201,33 +901,173 @@
     "paceNote": "先行馬が拮抗しており、平均ペースになりそうです。",
     "headcount": 8,
     "horses": [
-      { "number": 1, "waku": 1, "name": "フクジュソウ", "sex": "牝", "age": 5, "jockey": "星野", "odds": 4.0, "oddsMove": "down", "overallMark": "◎" },
-      { "number": 2, "waku": 1, "name": "アカベエナミ", "sex": "牡", "age": 4, "jockey": "宮本", "odds": 16.0, "oddsMove": null, "overallMark": null },
-      { "number": 3, "waku": 2, "name": "コオリノツルギ", "sex": "牡", "age": 6, "jockey": "藤井", "odds": 9.0, "oddsMove": null, "overallMark": "○" },
-      { "number": 4, "waku": 2, "name": "ヤマブキイロ", "sex": "牝", "age": 4, "jockey": "小池", "odds": 20.0, "oddsMove": null, "overallMark": null },
-      { "number": 5, "waku": 3, "name": "シオサイノオト", "sex": "牡", "age": 5, "jockey": "石原", "odds": 6.0, "oddsMove": null, "overallMark": "▲" },
-      { "number": 6, "waku": 3, "name": "ミナモノカゼ", "sex": "牝", "age": 4, "jockey": "森田", "odds": 28.0, "oddsMove": null, "overallMark": null },
-      { "number": 7, "waku": 4, "name": "ゴウケツダマシイ", "sex": "牡", "age": 7, "jockey": "桑原", "odds": 14.0, "oddsMove": "up", "overallMark": "△" },
-      { "number": 8, "waku": 4, "name": "ハナノフブキ", "sex": "牝", "age": 4, "jockey": "三好", "odds": 33.0, "oddsMove": null, "overallMark": null }
-    ],
-    "tipsterPicks": [
       {
-        "tipsterId": "databall",
-        "honmei": 1, "taikou": 5,
-        "comment": "ダート実績が頭ひとつ抜けています。",
-        "bets": { "tansho": "1", "fukusho": "1,5", "wakuren": "1-3", "umaren": "1-5", "wide": "1-5", "sanrenpuku": "1-5-3", "sanrentan": "1→5→3" }
+        "number": 1,
+        "waku": 1,
+        "name": "フクジュソウ",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "星野",
+        "odds": 4,
+        "oddsMove": "down",
+        "recentFinishes": [
+          4,
+          6,
+          3,
+          4,
+          5
+        ],
+        "jockeyWinRatePct": 12.3,
+        "speedFigure": 61.7,
+        "courseFit": 98,
+        "restDaysSinceLast": 42
       },
       {
-        "tipsterId": "ketto",
-        "honmei": 1, "taikou": 3,
-        "comment": "この馬場は代々得意にしている血統じゃ。",
-        "bets": { "tansho": "1", "fukusho": "1,3", "wakuren": "1-2", "umaren": "1-3", "wide": "1-3", "sanrenpuku": "1-3-5", "sanrentan": "1→3→5" }
+        "number": 2,
+        "waku": 1,
+        "name": "アカベエナミ",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "宮本",
+        "odds": 16,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          7,
+          8,
+          7,
+          6
+        ],
+        "jockeyWinRatePct": 9.4,
+        "speedFigure": 60.4,
+        "courseFit": 88,
+        "restDaysSinceLast": 70
       },
       {
-        "tipsterId": "kankaku",
-        "honmei": 7, "taikou": 1,
-        "comment": "重賞経験馬がひっそり出走、狙い目です!",
-        "bets": { "tansho": "7", "fukusho": "7,1", "wakuren": "4-1", "umaren": "7-1", "wide": "7-1", "sanrenpuku": "7-1-3", "sanrentan": "7→1→3" }
+        "number": 3,
+        "waku": 2,
+        "name": "コオリノツルギ",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "藤井",
+        "odds": 9,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          5,
+          6,
+          5,
+          5
+        ],
+        "jockeyWinRatePct": 6.8,
+        "speedFigure": 65,
+        "courseFit": 77,
+        "restDaysSinceLast": 35
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "ヤマブキイロ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "小池",
+        "odds": 20,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          4,
+          7,
+          6,
+          7
+        ],
+        "jockeyWinRatePct": 8.9,
+        "speedFigure": 62.5,
+        "courseFit": 98,
+        "restDaysSinceLast": 70
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "シオサイノオト",
+        "sex": "牡",
+        "age": 5,
+        "jockey": "石原",
+        "odds": 6,
+        "oddsMove": null,
+        "recentFinishes": [
+          8,
+          6,
+          6,
+          7,
+          8
+        ],
+        "jockeyWinRatePct": 10,
+        "speedFigure": 69,
+        "courseFit": 74,
+        "restDaysSinceLast": 14
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "ミナモノカゼ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "森田",
+        "odds": 28,
+        "oddsMove": null,
+        "recentFinishes": [
+          8,
+          8,
+          6,
+          8,
+          7
+        ],
+        "jockeyWinRatePct": 5.7,
+        "speedFigure": 61.1,
+        "courseFit": 77,
+        "restDaysSinceLast": 56
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "ゴウケツダマシイ",
+        "sex": "牡",
+        "age": 7,
+        "jockey": "桑原",
+        "odds": 14,
+        "oddsMove": "up",
+        "recentFinishes": [
+          8,
+          7,
+          8,
+          6,
+          6
+        ],
+        "jockeyWinRatePct": 4.8,
+        "speedFigure": 60,
+        "courseFit": 70,
+        "restDaysSinceLast": 28
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "ハナノフブキ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "三好",
+        "odds": 33,
+        "oddsMove": null,
+        "recentFinishes": [
+          7,
+          8,
+          7,
+          5,
+          8
+        ],
+        "jockeyWinRatePct": 6.6,
+        "speedFigure": 56.2,
+        "courseFit": 38,
+        "restDaysSinceLast": 70
       }
     ]
   },
@@ -246,33 +1086,173 @@
     "paceNote": "距離が長く、道中の位置取りが着順を左右しそうです。",
     "headcount": 8,
     "horses": [
-      { "number": 1, "waku": 1, "name": "ミズキノセイカ", "sex": "牡", "age": 5, "jockey": "遠藤", "odds": 5.0, "oddsMove": null, "overallMark": "◎" },
-      { "number": 2, "waku": 1, "name": "トワノヒカリ", "sex": "牝", "age": 4, "jockey": "谷口", "odds": 11.0, "oddsMove": null, "overallMark": null },
-      { "number": 3, "waku": 2, "name": "スバルノヒビキ", "sex": "牡", "age": 6, "jockey": "竹内", "odds": 8.0, "oddsMove": "down", "overallMark": "○" },
-      { "number": 4, "waku": 2, "name": "ナギサノカゼ", "sex": "牝", "age": 5, "jockey": "星野", "odds": 18.0, "oddsMove": null, "overallMark": null },
-      { "number": 5, "waku": 3, "name": "ホシフルヨル", "sex": "牡", "age": 4, "jockey": "宮本", "odds": 4.5, "oddsMove": "up", "overallMark": "▲" },
-      { "number": 6, "waku": 3, "name": "ミナトマチ", "sex": "牝", "age": 4, "jockey": "藤井", "odds": 25.0, "oddsMove": null, "overallMark": null },
-      { "number": 7, "waku": 4, "name": "オウゴンノツバサ", "sex": "牡", "age": 6, "jockey": "小池", "odds": 15.0, "oddsMove": null, "overallMark": "△" },
-      { "number": 8, "waku": 4, "name": "ハルカゼライン", "sex": "牝", "age": 5, "jockey": "石原", "odds": 22.0, "oddsMove": null, "overallMark": null }
-    ],
-    "tipsterPicks": [
       {
-        "tipsterId": "databall",
-        "honmei": 1, "taikou": 5,
-        "comment": "長距離実績と上がりの安定感がメンバー随一です。",
-        "bets": { "tansho": "1", "fukusho": "1,5", "wakuren": "1-3", "umaren": "1-5", "wide": "1-5", "sanrenpuku": "1-5-3", "sanrentan": "1→5→3" }
+        "number": 1,
+        "waku": 1,
+        "name": "ミズキノセイカ",
+        "sex": "牡",
+        "age": 5,
+        "jockey": "遠藤",
+        "odds": 5,
+        "oddsMove": null,
+        "recentFinishes": [
+          8,
+          6,
+          8,
+          5,
+          8
+        ],
+        "jockeyWinRatePct": 7.3,
+        "speedFigure": 62,
+        "courseFit": 32,
+        "restDaysSinceLast": 21
       },
       {
-        "tipsterId": "ketto",
-        "honmei": 5, "taikou": 1,
-        "comment": "父譲りのスタミナ、長距離替わりで台頭じゃ。",
-        "bets": { "tansho": "5", "fukusho": "5,1", "wakuren": "3-1", "umaren": "5-1", "wide": "5-1", "sanrenpuku": "5-1-3", "sanrentan": "5→1→3" }
+        "number": 2,
+        "waku": 1,
+        "name": "トワノヒカリ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "谷口",
+        "odds": 11,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          4,
+          7,
+          4,
+          7
+        ],
+        "jockeyWinRatePct": 9.6,
+        "speedFigure": 58.1,
+        "courseFit": 45,
+        "restDaysSinceLast": 28
       },
       {
-        "tipsterId": "kankaku",
-        "honmei": 7, "taikou": 1,
-        "comment": "7番、追い切りの手応えが抜群でした!",
-        "bets": { "tansho": "7", "fukusho": "7,1", "wakuren": "4-1", "umaren": "7-1", "wide": "7-1", "sanrenpuku": "7-1-3", "sanrentan": "7→1→3" }
+        "number": 3,
+        "waku": 2,
+        "name": "スバルノヒビキ",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "竹内",
+        "odds": 8,
+        "oddsMove": "down",
+        "recentFinishes": [
+          6,
+          8,
+          6,
+          8,
+          8
+        ],
+        "jockeyWinRatePct": 9.3,
+        "speedFigure": 66.4,
+        "courseFit": 77,
+        "restDaysSinceLast": 120
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "ナギサノカゼ",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "星野",
+        "odds": 18,
+        "oddsMove": null,
+        "recentFinishes": [
+          8,
+          7,
+          6,
+          6,
+          5
+        ],
+        "jockeyWinRatePct": 5.6,
+        "speedFigure": 63.8,
+        "courseFit": 88,
+        "restDaysSinceLast": 120
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "ホシフルヨル",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "宮本",
+        "odds": 4.5,
+        "oddsMove": "up",
+        "recentFinishes": [
+          8,
+          7,
+          8,
+          7,
+          6
+        ],
+        "jockeyWinRatePct": 11,
+        "speedFigure": 63.2,
+        "courseFit": 46,
+        "restDaysSinceLast": 14
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "ミナトマチ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "藤井",
+        "odds": 25,
+        "oddsMove": null,
+        "recentFinishes": [
+          8,
+          7,
+          6,
+          4,
+          7
+        ],
+        "jockeyWinRatePct": 4.9,
+        "speedFigure": 63,
+        "courseFit": 85,
+        "restDaysSinceLast": 28
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "オウゴンノツバサ",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "小池",
+        "odds": 15,
+        "oddsMove": null,
+        "recentFinishes": [
+          5,
+          7,
+          4,
+          5,
+          7
+        ],
+        "jockeyWinRatePct": 7.6,
+        "speedFigure": 64.6,
+        "courseFit": 73,
+        "restDaysSinceLast": 7
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "ハルカゼライン",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "石原",
+        "odds": 22,
+        "oddsMove": null,
+        "recentFinishes": [
+          6,
+          5,
+          8,
+          6,
+          7
+        ],
+        "jockeyWinRatePct": 5.8,
+        "speedFigure": 65.6,
+        "courseFit": 45,
+        "restDaysSinceLast": 70
       }
     ]
   }
