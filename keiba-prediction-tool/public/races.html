@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>レース一覧 | 予想びより</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+  <div class="app-header">
+    <a class="back-link" href="/">← 条件を選び直す</a>
+    <div class="app-title" id="page-title">レース一覧</div>
+    <div class="app-sub" id="page-sub"></div>
+    <div class="list-toolbar">
+      <div class="chip-row" id="sort-tabs">
+        <button type="button" class="chip is-active" data-sort="time">発走順</button>
+        <button type="button" class="chip" data-sort="popularity">人気順</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block" id="race-list"></div>
+
+  <nav class="footer-nav">
+    <a href="/">予想する</a>
+    <a href="/results.html">成績</a>
+  </nav>
+</div>
+
+<script src="/js/races.js"></script>
+</body>
+</html>

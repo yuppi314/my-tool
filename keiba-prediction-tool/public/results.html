@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>予想の成績 | 予想びより</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+  <div class="app-header">
+    <a class="back-link" href="/">← トップページ</a>
+    <div class="app-title">予想の成績</div>
+    <div class="app-sub">中央競馬・複勝的中率をもとに集計</div>
+    <div class="period-tabs" id="period-tabs" style="margin-top:10px;">
+      <button type="button" data-period="week">今週</button>
+      <button type="button" data-period="month" class="is-active">今月</button>
+      <button type="button" data-period="all">全期間</button>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <p class="section-title">的中率の推移(複勝)</p>
+    <div class="sparkline-head">
+      <div class="sp-value" id="sp-value">--<small>%</small></div>
+      <div class="sp-delta" id="sp-delta"></div>
+    </div>
+    <div class="sparkline"><svg viewBox="0 0 300 60" preserveAspectRatio="none" id="sparkline-svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--turf)" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="var(--turf)" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <line class="spark-grid" x1="0" y1="44" x2="300" y2="44"/>
+      <text class="spark-axis" x="2" y="41">50%</text>
+      <path class="spark-area" id="spark-area"/>
+      <path class="spark-line" id="spark-line"/>
+      <circle class="spark-dot" id="spark-dot" r="3.4"/>
+      <text class="spark-label" id="spark-label" text-anchor="end"></text>
+    </svg></div>
+    <p class="sample-note">※ デザイン確認用のサンプル数値です。実データ連携後に本物の集計に差し替えます。</p>
+  </div>
+
+  <div class="section-block">
+    <p class="section-title">買い方別 的中率</p>
+    <div id="bet-bars"></div>
+  </div>
+
+  <div class="section-block">
+    <p class="section-title">予想家別 ◎的中率</p>
+    <div id="tipster-compare"></div>
+  </div>
+
+  <div class="section-block">
+    <p class="section-title">競馬場別 的中率(複勝)</p>
+    <div id="venue-compare"></div>
+  </div>
+
+  <div class="section-block">
+    <p class="section-title">直近の答え合わせ</p>
+    <div id="history-list"></div>
+  </div>
+
+  <nav class="footer-nav">
+    <a href="/">予想する</a>
+    <a class="is-active" href="/results.html">成績</a>
+  </nav>
+</div>
+
+<script src="/js/results.js"></script>
+</body>
+</html>

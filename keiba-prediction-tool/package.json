@@ -1,0 +1,14 @@
+{
+  "name": "yosou-biyori",
+  "version": "0.1.0",
+  "description": "競馬予想ツール(中央競馬・サンプルデータ版)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
