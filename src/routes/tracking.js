@@ -46,30 +46,63 @@ router.get('/weight-logs/:diagnosisId', (req, res) => {
   res.json({ logs: rows });
 });
 
-// 食事の記録
+function isValidOptionalMacro(v) {
+  return v === undefined || v === null || v === '' || (Number.isFinite(Number(v)) && Number(v) >= 0 && Number(v) <= 500);
+}
+
+// 食事の記録: foodKeyがデータベースの食品を指す場合はグラム数から自動計算、
+// foodKeyが 'manual' の場合は食品名・カロリーを直接入力する
 router.post('/meal-logs', (req, res) => {
-  const { diagnosisId, date, foodKey, grams } = req.body || {};
+  const { diagnosisId, date, foodKey } = req.body || {};
   if (!diagnosisExists(diagnosisId)) return res.status(404).json({ error: '診断結果が見つかりません。' });
   if (!isValidDateStr(date)) return res.status(400).json({ error: 'date は YYYY-MM-DD 形式で指定してください。' });
 
-  const food = findFood(foodKey);
-  if (!food) return res.status(400).json({ error: '指定された食品が見つかりません。' });
+  if (foodKey && foodKey !== 'manual') {
+    const food = findFood(foodKey);
+    if (!food) return res.status(400).json({ error: '指定された食品が見つかりません。' });
 
-  const gramsNum = Number(grams);
-  if (!Number.isFinite(gramsNum) || gramsNum <= 0 || gramsNum > 2000) {
-    return res.status(400).json({ error: 'grams は0より大きく2000以下で指定してください。' });
+    const gramsNum = Number(req.body.grams);
+    if (!Number.isFinite(gramsNum) || gramsNum <= 0 || gramsNum > 2000) {
+      return res.status(400).json({ error: 'grams は0より大きく2000以下で指定してください。' });
+    }
+
+    const nutrition = calcNutrition(food, gramsNum);
+    const info = db
+      .prepare(
+        `INSERT INTO meal_logs (diagnosis_id, log_date, food_key, food_name, grams, calories, protein_g, fat_g, carb_g)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+      .run(diagnosisId, date, food.key, food.name, gramsNum, nutrition.calories, nutrition.proteinG, nutrition.fatG, nutrition.carbG);
+
+    return res.json({ id: info.lastInsertRowid, date, food: food.name, grams: gramsNum, ...nutrition });
   }
 
-  const nutrition = calcNutrition(food, gramsNum);
+  // 手入力モード
+  const { foodName, calories, proteinG, fatG, carbG } = req.body || {};
+  if (typeof foodName !== 'string' || !foodName.trim()) {
+    return res.status(400).json({ error: '食品名を入力してください。' });
+  }
+  const cal = Number(calories);
+  if (!Number.isFinite(cal) || cal <= 0 || cal > 5000) {
+    return res.status(400).json({ error: 'calories は0より大きく5000以下で指定してください。' });
+  }
+  if (![proteinG, fatG, carbG].every(isValidOptionalMacro)) {
+    return res.status(400).json({ error: 'proteinG/fatG/carbG は0〜500の範囲で指定してください。' });
+  }
+
+  const p = proteinG ? Math.round(Number(proteinG) * 10) / 10 : 0;
+  const f = fatG ? Math.round(Number(fatG) * 10) / 10 : 0;
+  const c = carbG ? Math.round(Number(carbG) * 10) / 10 : 0;
+  const roundedCal = Math.round(cal);
 
   const info = db
     .prepare(
       `INSERT INTO meal_logs (diagnosis_id, log_date, food_key, food_name, grams, calories, protein_g, fat_g, carb_g)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, 'manual', ?, NULL, ?, ?, ?, ?)`
     )
-    .run(diagnosisId, date, food.key, food.name, gramsNum, nutrition.calories, nutrition.proteinG, nutrition.fatG, nutrition.carbG);
+    .run(diagnosisId, date, foodName.trim(), roundedCal, p, f, c);
 
-  res.json({ id: info.lastInsertRowid, date, food: food.name, grams: gramsNum, ...nutrition });
+  res.json({ id: info.lastInsertRowid, date, food: foodName.trim(), grams: null, calories: roundedCal, proteinG: p, fatG: f, carbG: c });
 });
 
 // 指定日の食事記録一覧+合計(dateクエリ省略時は全期間)

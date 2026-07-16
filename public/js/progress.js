@@ -38,12 +38,20 @@ async function loadFoods() {
   const res = await fetch('/api/foods');
   const data = await res.json();
   const select = document.getElementById('m-food');
-  select.innerHTML = data.foods
-    .map((f) => `<option value="${f.key}" data-grams="${f.defaultGrams}">${f.name}(${f.kcal100}kcal/100g)</option>`)
-    .join('');
+  const manualOption = '<option value="manual">その他(手入力)</option>';
+  select.innerHTML =
+    manualOption +
+    data.foods.map((f) => `<option value="${f.key}" data-grams="${f.defaultGrams}">${f.name}(${f.kcal100}kcal/100g)</option>`).join('');
+
   select.addEventListener('change', () => {
     const opt = select.options[select.selectedIndex];
-    document.getElementById('m-grams').value = opt.dataset.grams;
+    const isManual = select.value === 'manual';
+    document.getElementById('grams-field').style.display = isManual ? 'none' : 'block';
+    document.getElementById('manual-fields').style.display = isManual ? 'block' : 'none';
+    document.getElementById('m-grams').required = !isManual;
+    if (!isManual) {
+      document.getElementById('m-grams').value = opt.dataset.grams;
+    }
   });
   select.dispatchEvent(new Event('change'));
 }
@@ -138,17 +146,49 @@ document.getElementById('meal-form').addEventListener('submit', async (e) => {
   errorEl.textContent = '';
   const date = document.getElementById('m-date').value;
   const foodKey = document.getElementById('m-food').value;
-  const grams = Number(document.getElementById('m-grams').value);
+
+  let payload;
+  if (foodKey === 'manual') {
+    const foodName = document.getElementById('m-manual-name').value.trim();
+    const calories = Number(document.getElementById('m-manual-cal').value);
+    if (!foodName) {
+      errorEl.textContent = '食品名を入力してください。';
+      return;
+    }
+    if (!Number.isFinite(calories) || calories <= 0) {
+      errorEl.textContent = 'カロリーを入力してください。';
+      return;
+    }
+    payload = {
+      diagnosisId,
+      date,
+      foodKey: 'manual',
+      foodName,
+      calories,
+      proteinG: document.getElementById('m-manual-p').value || undefined,
+      fatG: document.getElementById('m-manual-f').value || undefined,
+      carbG: document.getElementById('m-manual-c').value || undefined,
+    };
+  } else {
+    payload = { diagnosisId, date, foodKey, grams: Number(document.getElementById('m-grams').value) };
+  }
 
   const res = await fetch('/api/meal-logs', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ diagnosisId, date, foodKey, grams }),
+    body: JSON.stringify(payload),
   });
   const data = await res.json();
   if (!res.ok) {
     errorEl.textContent = data.error || '記録に失敗しました。';
     return;
+  }
+  if (foodKey === 'manual') {
+    document.getElementById('m-manual-name').value = '';
+    document.getElementById('m-manual-cal').value = '';
+    document.getElementById('m-manual-p').value = '';
+    document.getElementById('m-manual-f').value = '';
+    document.getElementById('m-manual-c').value = '';
   }
   await loadMealLogs(date);
 });
@@ -170,7 +210,7 @@ async function loadMealLogs(date) {
     data.logs
       .map(
         (l) =>
-          `<tr><td>${l.foodName}</td><td>${l.grams}g</td><td>${l.calories}kcal</td><td>${l.proteinG}/${l.fatG}/${l.carbG}g</td><td style="white-space:nowrap;"><a href="#" data-id="${l.id}" class="delete-meal" style="color:var(--danger);">削除</a></td></tr>`
+          `<tr><td>${l.foodName}</td><td>${l.grams != null ? l.grams + 'g' : '-'}</td><td>${l.calories}kcal</td><td>${l.proteinG}/${l.fatG}/${l.carbG}g</td><td style="white-space:nowrap;"><a href="#" data-id="${l.id}" class="delete-meal" style="color:var(--danger);">削除</a></td></tr>`
       )
       .join('');
 

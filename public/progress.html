@@ -33,8 +33,24 @@
         <input type="date" id="m-date" required />
         <label for="m-food">食品</label>
         <select id="m-food" required></select>
-        <label for="m-grams">量(g)</label>
-        <input type="number" id="m-grams" min="1" max="2000" step="1" required />
+        <div id="grams-field">
+          <label for="m-grams">量(g)</label>
+          <input type="number" id="m-grams" min="1" max="2000" step="1" />
+        </div>
+
+        <div id="manual-fields" style="display:none;">
+          <label for="m-manual-name">食品名</label>
+          <input type="text" id="m-manual-name" maxlength="50" placeholder="例: 手作りサラダ" />
+          <label for="m-manual-cal">カロリー(kcal)</label>
+          <input type="number" id="m-manual-cal" min="1" max="5000" step="1" placeholder="例: 300" />
+          <label>タンパク質 / 脂質 / 炭水化物(g・任意)</label>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <input type="number" id="m-manual-p" min="0" max="500" step="0.1" placeholder="P" style="width:auto;flex:1;margin-bottom:0;" />
+            <input type="number" id="m-manual-f" min="0" max="500" step="0.1" placeholder="F" style="width:auto;flex:1;margin-bottom:0;" />
+            <input type="number" id="m-manual-c" min="0" max="500" step="0.1" placeholder="C" style="width:auto;flex:1;margin-bottom:0;" />
+          </div>
+        </div>
+
         <button type="submit" class="secondary">食事を記録する</button>
         <p class="error-text" id="meal-error"></p>
       </form>

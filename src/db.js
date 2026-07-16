@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS meal_logs (
   log_date TEXT NOT NULL,
   food_key TEXT NOT NULL,
   food_name TEXT NOT NULL,
-  grams REAL NOT NULL,
+  grams REAL,
   calories REAL NOT NULL,
   protein_g REAL NOT NULL,
   fat_g REAL NOT NULL,
