@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>体重・食事の記録 | 1ヶ月-3kgダイエットナビ</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>体重・食事の記録</h1>
+      <p id="status-line">毎日の体重と食事を記録して、目標までの進み具合を確認しましょう</p>
+    </header>
+
+    <div class="card">
+      <div class="section-title">体重の記録</div>
+      <form id="weight-form">
+        <label for="w-date">日付</label>
+        <input type="date" id="w-date" required />
+        <label for="w-value">体重(kg)</label>
+        <input type="number" id="w-value" min="20" max="300" step="0.1" required placeholder="例: 59.5" />
+        <button type="submit" class="primary">体重を記録する</button>
+        <p class="error-text" id="weight-error"></p>
+      </form>
+      <div id="chart-wrap" style="margin-top:20px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">今日の食事(<span id="meal-date-label"></span>)</div>
+      <form id="meal-form">
+        <label for="m-date">日付</label>
+        <input type="date" id="m-date" required />
+        <label for="m-food">食品</label>
+        <select id="m-food" required></select>
+        <div id="grams-field">
+          <label for="m-grams">量(g)</label>
+          <input type="number" id="m-grams" min="1" max="2000" step="1" />
+        </div>
+
+        <div id="manual-fields" style="display:none;">
+          <label for="m-manual-name">食品名</label>
+          <input type="text" id="m-manual-name" maxlength="50" placeholder="例: 手作りサラダ" />
+          <label for="m-manual-cal">カロリー(kcal)</label>
+          <input type="number" id="m-manual-cal" min="1" max="5000" step="1" placeholder="例: 300" />
+          <label>タンパク質 / 脂質 / 炭水化物(g・任意)</label>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <input type="number" id="m-manual-p" min="0" max="500" step="0.1" placeholder="P" style="width:auto;flex:1;margin-bottom:0;" />
+            <input type="number" id="m-manual-f" min="0" max="500" step="0.1" placeholder="F" style="width:auto;flex:1;margin-bottom:0;" />
+            <input type="number" id="m-manual-c" min="0" max="500" step="0.1" placeholder="C" style="width:auto;flex:1;margin-bottom:0;" />
+          </div>
+        </div>
+
+        <button type="submit" class="secondary">食事を記録する</button>
+        <p class="error-text" id="meal-error"></p>
+      </form>
+
+      <div class="result-grid" style="margin-top:16px;">
+        <div class="stat-box"><div class="label">摂取カロリー</div><div class="value" id="m-total-cal"></div></div>
+        <div class="stat-box"><div class="label">目標カロリー</div><div class="value" id="m-target-cal"></div></div>
+      </div>
+      <table class="stats-table" id="meal-table" style="margin-top:12px;"></table>
+    </div>
+
+    <p style="text-align:center;"><a href="#" id="back-link" style="color:#4ecb8f;">診断結果に戻る</a></p>
+  </div>
+
+  <script src="/js/progress.js"></script>
+</body>
+</html>

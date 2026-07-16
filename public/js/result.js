@@ -3,7 +3,8 @@ const diagnosisId = params.get('id');
 const statusLine = document.getElementById('status-line');
 const fullCard = document.getElementById('full-card');
 const lockedCard = document.getElementById('locked-card');
-const compatCard = document.getElementById('compat-card');
+
+const SAFETY_LABEL = { safe: '安全', caution: 'やや意欲的', unsafe: '急ぎすぎ注意' };
 
 if (!diagnosisId) {
   statusLine.textContent = '診断IDが見つかりません。トップページから診断をやり直してください。';
@@ -19,18 +20,21 @@ async function init() {
     return;
   }
 
-  document.getElementById('r-star').textContent = data.star.name;
-  document.getElementById('r-kin').textContent = `KIN ${data.kin}`;
-  document.getElementById('r-seal').textContent = data.seal.name;
-  document.getElementById('r-tone').textContent = data.tone.name;
-  document.getElementById('r-summary').textContent = data.summary;
+  document.getElementById('r-bmr').textContent = `${data.bmr} kcal`;
+  document.getElementById('r-tdee').textContent = `${data.tdee} kcal`;
+  document.getElementById('r-target').textContent = `${data.targetCalories} kcal`;
+  document.getElementById('r-safety').textContent = SAFETY_LABEL[data.safetyLevel] || data.safetyLevel;
+  document.getElementById('r-summary').textContent = `${data.summary} ${data.safetyMessage}`;
+  document.getElementById('r-protein').textContent = `${data.macros.proteinG} g`;
+  document.getElementById('r-fat').textContent = `${data.macros.fatG} g`;
+  document.getElementById('r-carb').textContent = `${data.macros.carbG} g`;
+  document.getElementById('progress-link').href = `/progress.html?id=${diagnosisId}`;
 
   if (data.paid) {
     statusLine.innerHTML = 'ご購入ありがとうございます <span class="badge">unlocked</span>';
     await loadFull();
-    compatCard.style.display = 'block';
   } else {
-    statusLine.textContent = '無料診断の結果です。詳細レポートで運勢・相性まで見られます。';
+    statusLine.textContent = '無料診断の結果です。4週間プログラムで週別プラン・運動アドバイスまで見られます。';
     fullCard.style.display = 'none';
     lockedCard.style.display = 'block';
   }
@@ -40,9 +44,19 @@ async function loadFull() {
   const res = await fetch(`/api/diagnosis/${diagnosisId}/full`);
   const data = await res.json();
   if (!res.ok) return;
-  document.getElementById('f-personality').textContent = data.personality;
-  document.getElementById('f-yearly').textContent = data.yearlyFortune;
-  document.getElementById('f-monthly').textContent = data.monthlyFortune;
+
+  const table = document.getElementById('week-table');
+  table.innerHTML =
+    '<tr><th>週</th><th>目標カロリー</th><th>P/F/C</th><th>ポイント</th></tr>' +
+    data.weeklyPlan
+      .map(
+        (w) =>
+          `<tr><td>第${w.week}週</td><td>${w.calories} kcal</td><td>${w.macros.proteinG}/${w.macros.fatG}/${w.macros.carbG} g</td><td>${w.note}</td></tr>`
+      )
+      .join('');
+
+  document.getElementById('f-exercise').textContent = data.exercise;
+  document.getElementById('f-plateau').textContent = data.plateauTips;
   document.getElementById('f-advice').textContent = data.advice;
 }
 
@@ -55,30 +69,4 @@ document.getElementById('unlock-btn').addEventListener('click', async () => {
   const data = await res.json();
   if (!res.ok) return;
   window.location.href = data.mock ? data.redirect : data.url;
-});
-
-document.getElementById('compat-btn').addEventListener('click', async () => {
-  const partnerBirthdate = document.getElementById('partner-birthdate').value;
-  const resultEl = document.getElementById('compat-result');
-  if (!partnerBirthdate) {
-    resultEl.innerHTML = '<p class="error-text">お相手の生年月日を入力してください。</p>';
-    return;
-  }
-  const res = await fetch('/api/compatibility', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ diagnosisId, partnerBirthdate }),
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    resultEl.innerHTML = `<p class="error-text">${data.error || '相性診断に失敗しました。'}</p>`;
-    return;
-  }
-  resultEl.innerHTML = `
-    <div class="stat-box" style="margin-bottom:12px;">
-      <div class="label">相性スコア</div>
-      <div class="value">${data.compatibility.score} / 100</div>
-    </div>
-    <p>${data.compatibility.text}</p>
-  `;
 });

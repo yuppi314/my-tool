@@ -3,7 +3,7 @@ const db = require('../db');
 
 const router = express.Router();
 
-const REPORT_PRICE_JPY = Number(process.env.REPORT_PRICE_JPY || 980);
+const PLAN_PRICE_JPY = Number(process.env.PLAN_PRICE_JPY || 980);
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 function getStripe() {
@@ -12,7 +12,7 @@ function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
-// 詳細レポートの決済セッションを作成
+// 4週間ダイエットプランの決済セッションを作成
 router.post('/checkout', async (req, res) => {
   const { diagnosisId } = req.body || {};
   const diagnosis = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(diagnosisId);
@@ -25,7 +25,7 @@ router.post('/checkout', async (req, res) => {
     db.prepare('UPDATE diagnoses SET paid = 1 WHERE id = ?').run(diagnosisId);
     db.prepare(
       `INSERT INTO orders (diagnosis_id, stripe_session_id, amount, status) VALUES (?, NULL, ?, 'paid_mock')`
-    ).run(diagnosisId, REPORT_PRICE_JPY);
+    ).run(diagnosisId, PLAN_PRICE_JPY);
     return res.json({
       mock: true,
       redirect: `/result.html?id=${diagnosisId}&mock=1`,
@@ -39,8 +39,8 @@ router.post('/checkout', async (req, res) => {
         {
           price_data: {
             currency: 'jpy',
-            product_data: { name: '九星気学×マヤ暦 詳細鑑定レポート' },
-            unit_amount: REPORT_PRICE_JPY,
+            product_data: { name: '1ヶ月-3kgダイエット 4週間プログラム' },
+            unit_amount: PLAN_PRICE_JPY,
           },
           quantity: 1,
         },
@@ -52,7 +52,7 @@ router.post('/checkout', async (req, res) => {
 
     db.prepare(
       `INSERT INTO orders (diagnosis_id, stripe_session_id, amount, status) VALUES (?, ?, ?, 'pending')`
-    ).run(diagnosisId, session.id, REPORT_PRICE_JPY);
+    ).run(diagnosisId, session.id, PLAN_PRICE_JPY);
 
     res.json({ mock: false, url: session.url });
   } catch (err) {

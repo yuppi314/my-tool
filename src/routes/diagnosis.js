@@ -1,34 +1,83 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
-const content = require('../lib/content');
+const { ACTIVITY_LEVELS, evaluatePlan } = require('../lib/calorie');
+const plan = require('../lib/plan');
 
 const router = express.Router();
 
-function isValidDateStr(s) {
-  return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(new Date(s).getTime());
+const GENDERS = ['male', 'female', 'other'];
+
+function validateInput(body) {
+  const { gender, age, heightCm, weightKg, activityLevel, targetKg } = body || {};
+
+  if (!GENDERS.includes(gender)) return 'gender は male / female / other のいずれかで指定してください。';
+  if (!Number.isFinite(age) || age < 10 || age > 100) return 'age は10〜100の範囲で指定してください。';
+  if (!Number.isFinite(heightCm) || heightCm < 100 || heightCm > 250) return 'heightCm は100〜250の範囲で指定してください。';
+  if (!Number.isFinite(weightKg) || weightKg < 30 || weightKg > 300) return 'weightKg は30〜300の範囲で指定してください。';
+  if (!ACTIVITY_LEVELS[activityLevel]) return 'activityLevel は1〜5のいずれかで指定してください。';
+  if (!Number.isFinite(targetKg) || targetKg <= 0 || targetKg > 10) return 'targetKg は0より大きく10以下で指定してください。';
+  return null;
 }
 
-// 無料診断: 生年月日から本命星・KIN・紋章を算出し保存(リード獲得)
-router.post('/diagnosis', (req, res) => {
-  const { birthdate, name, email } = req.body || {};
-  if (!isValidDateStr(birthdate)) {
-    return res.status(400).json({ error: 'birthdate は YYYY-MM-DD 形式で指定してください。' });
-  }
+function toInput(body) {
+  return {
+    gender: body.gender,
+    age: Number(body.age),
+    heightCm: Number(body.heightCm),
+    weightKg: Number(body.weightKg),
+    activityLevel: Number(body.activityLevel),
+    targetKg: Number(body.targetKg),
+  };
+}
 
-  const profile = content.computeProfile(birthdate);
+function rowToInput(row) {
+  return {
+    gender: row.gender,
+    age: row.age,
+    heightCm: row.height_cm,
+    weightKg: row.weight_kg,
+    activityLevel: row.activity_level,
+    targetKg: row.target_kg,
+  };
+}
+
+// 無料診断: 身体データから目標カロリー・PFCバランスを算出し保存(リード獲得)
+router.post('/diagnosis', (req, res) => {
+  const body = { ...req.body, age: Number(req.body?.age), heightCm: Number(req.body?.heightCm), weightKg: Number(req.body?.weightKg), activityLevel: Number(req.body?.activityLevel), targetKg: Number(req.body?.targetKg) };
+  const error = validateInput(body);
+  if (error) return res.status(400).json({ error });
+
+  const input = toInput(body);
+  const { name, email } = req.body || {};
+  const calc = evaluatePlan({ ...input, periodDays: 30 });
   const id = uuidv4();
 
   db.prepare(
-    `INSERT INTO diagnoses (id, birthdate, name, email, honmei_star, kin, paid)
-     VALUES (?, ?, ?, ?, ?, ?, 0)`
-  ).run(id, birthdate, name || null, email || null, profile.honmeiId, profile.kin);
+    `INSERT INTO diagnoses
+      (id, gender, age, height_cm, weight_kg, activity_level, target_kg, period_days, name, email, bmr, tdee, target_calories, safety_level, paid)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 30, ?, ?, ?, ?, ?, ?, 0)`
+  ).run(
+    id,
+    input.gender,
+    input.age,
+    input.heightCm,
+    input.weightKg,
+    input.activityLevel,
+    input.targetKg,
+    name || null,
+    email || null,
+    calc.bmr,
+    calc.tdee,
+    calc.targetCalories,
+    calc.safetyLevel
+  );
 
   if (email) {
-    db.prepare(`INSERT INTO leads (email, name, birthdate) VALUES (?, ?, ?)`).run(email, name || null, birthdate);
+    db.prepare(`INSERT INTO leads (email, name) VALUES (?, ?)`).run(email, name || null);
   }
 
-  const freeResult = content.buildFreeResult(profile);
+  const freeResult = plan.buildFreeResult(input, calc);
   res.json({ id, ...freeResult });
 });
 
@@ -37,20 +86,29 @@ router.get('/diagnosis/:id', (req, res) => {
   const row = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(req.params.id);
   if (!row) return res.status(404).json({ error: '診断結果が見つかりません。' });
 
-  const profile = content.computeProfile(row.birthdate);
-  const freeResult = content.buildFreeResult(profile);
-  res.json({ id: row.id, paid: !!row.paid, ...freeResult });
+  const input = rowToInput(row);
+  const calc = evaluatePlan({ ...input, periodDays: row.period_days });
+  const freeResult = plan.buildFreeResult(input, calc);
+  res.json({
+    id: row.id,
+    paid: !!row.paid,
+    weightKg: row.weight_kg,
+    targetKg: row.target_kg,
+    createdAt: row.created_at,
+    ...freeResult,
+  });
 });
 
-// 詳細レポート(有料コンテンツ)
+// 4週間の詳細プラン(有料コンテンツ)
 router.get('/diagnosis/:id/full', (req, res) => {
   const row = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(req.params.id);
   if (!row) return res.status(404).json({ error: '診断結果が見つかりません。' });
   if (!row.paid) {
-    return res.status(402).json({ error: 'この詳細レポートは有料です。決済後にご覧いただけます。', diagnosisId: row.id });
+    return res.status(402).json({ error: 'この詳細プランは有料です。決済後にご覧いただけます。', diagnosisId: row.id });
   }
-  const profile = content.computeProfile(row.birthdate);
-  const fullResult = content.buildFullResult(profile);
+  const input = rowToInput(row);
+  const calc = evaluatePlan({ ...input, periodDays: row.period_days });
+  const fullResult = plan.buildFullResult(input, calc);
   res.json({ id: row.id, ...fullResult });
 });
 
