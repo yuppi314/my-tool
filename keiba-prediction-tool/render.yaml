@@ -1,0 +1,12 @@
+# 無料プランで最短公開するための設定(カード登録不要)。
+# サンプルデータ(JSON)のみで動作するため、永続ディスクは不要です。
+services:
+  - type: web
+    name: yosou-biyori
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000

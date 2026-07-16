@@ -43,3 +43,35 @@ public/
 
 「データ丸」「血統じい」「直感マキ」はすべてオリジナルの創作キャラクターです。
 実在の解説者やタレントをモデルにしたものではありません。
+
+## マネタイズについて
+
+決済機能は作らず、**完全無料+広告枠(プレースホルダー)**で公開する方針です。
+理由は要件書10-1を参照してください。`public/races.html`・`race.html`・`results.html` に
+`.ad-slot` を用意しているので、実際に広告を出すタイミングでタグを差し込んでください。
+
+## デプロイ
+
+サンプルデータ(JSON)のみで動作するため、永続ディスクなしでもそのまま公開できます。
+
+### 無料で最短公開する(カード登録不要)
+
+このリポジトリには既存の別ツール(ルート直下)も同居しているため、Renderの
+「Blueprint」機能(render.yamlの自動検出)はリポジトリ直下のrender.yamlしか
+見てくれません。このツールを公開する場合は、手動で以下のように設定してください。
+
+1. [Render.com](https://render.com) にGitHubアカウントで無料サインアップ
+2. ダッシュボードで「New +」→「Web Service」を選び、このリポジトリを選択
+3. 以下を設定します(`keiba-prediction-tool/render.yaml` の内容と同じです)
+   - **Root Directory**: `keiba-prediction-tool`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Plan**: Free
+4. 数分待つとURLが発行されます
+
+### Docker で動かす場合
+
+```bash
+docker build -t yosou-biyori .
+docker run -p 3000:3000 yosou-biyori
+```

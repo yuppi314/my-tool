@@ -241,6 +241,11 @@ table.tipster-bets td.agree { color: var(--turf); font-weight: 700; }
 .badge.hit { background: color-mix(in srgb, var(--turf) 22%, var(--surface)); color: var(--turf); }
 .badge.miss { background: color-mix(in srgb, var(--danger) 16%, var(--surface)); color: var(--danger); }
 
+.ad-slot {
+  margin: 14px 18px 0; padding: 14px; text-align: center; font-size: 11px;
+  color: var(--text-faint); border: 1px dashed var(--border-strong); border-radius: var(--radius-md);
+}
+
 .footer-nav {
   display: flex; border-top: 1px solid var(--border-strong); background: var(--surface);
   position: sticky; bottom: 0;
