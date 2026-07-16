@@ -1255,5 +1255,930 @@
         "restDaysSinceLast": 70
       }
     ]
+  },
+  {
+    "id": "2026-07-18-kokura-4",
+    "date": "2026-07-18",
+    "category": "central",
+    "venue": "小倉",
+    "raceNumber": 4,
+    "name": "3歳未勝利",
+    "surface": "芝",
+    "distanceM": 1200,
+    "postTime": "11:40",
+    "weather": "晴",
+    "trackCondition": "良",
+    "paceNote": "外枠の先行馬が有利な流れになりそうです。",
+    "headcount": 8,
+    "horses": [
+      {
+        "number": 1,
+        "waku": 1,
+        "name": "カザグルマヒメ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "三好",
+        "odds": 3.2,
+        "oddsMove": "down",
+        "jockeyWinRatePct": 11.2,
+        "speedFigure": 70,
+        "courseFit": 98,
+        "restDaysSinceLast": 14,
+        "recentFinishes": [
+          3,
+          5,
+          5,
+          4,
+          5
+        ]
+      },
+      {
+        "number": 2,
+        "waku": 1,
+        "name": "ノビシロタイヨウ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "遠藤",
+        "odds": 15,
+        "oddsMove": null,
+        "jockeyWinRatePct": 7.7,
+        "speedFigure": 62,
+        "courseFit": 49,
+        "restDaysSinceLast": 49,
+        "recentFinishes": [
+          8,
+          6,
+          8,
+          7,
+          8
+        ]
+      },
+      {
+        "number": 3,
+        "waku": 2,
+        "name": "ミナモノユメ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "谷口",
+        "odds": 7,
+        "oddsMove": null,
+        "jockeyWinRatePct": 7.1,
+        "speedFigure": 61.1,
+        "courseFit": 79,
+        "restDaysSinceLast": 120,
+        "recentFinishes": [
+          7,
+          4,
+          6,
+          7,
+          6
+        ]
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "セイウンハヤテ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "竹内",
+        "odds": 20,
+        "oddsMove": "up",
+        "jockeyWinRatePct": 10.1,
+        "speedFigure": 56.9,
+        "courseFit": 91,
+        "restDaysSinceLast": 120,
+        "recentFinishes": [
+          4,
+          4,
+          8,
+          7,
+          5
+        ]
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "コトブキヒカリ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "星野",
+        "odds": 9,
+        "oddsMove": null,
+        "jockeyWinRatePct": 8.9,
+        "speedFigure": 59.6,
+        "courseFit": 54,
+        "restDaysSinceLast": 90,
+        "recentFinishes": [
+          6,
+          7,
+          5,
+          5,
+          4
+        ]
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "タカラノカゼ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "宮本",
+        "odds": 25,
+        "oddsMove": null,
+        "jockeyWinRatePct": 8.5,
+        "speedFigure": 56.1,
+        "courseFit": 51,
+        "restDaysSinceLast": 70,
+        "recentFinishes": [
+          8,
+          5,
+          6,
+          8,
+          8
+        ]
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "フユノトモシビ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "藤井",
+        "odds": 12,
+        "oddsMove": null,
+        "jockeyWinRatePct": 10.1,
+        "speedFigure": 67,
+        "courseFit": 93,
+        "restDaysSinceLast": 21,
+        "recentFinishes": [
+          8,
+          8,
+          8,
+          5,
+          7
+        ]
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "ゴウリキマル",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "小池",
+        "odds": 33,
+        "oddsMove": null,
+        "jockeyWinRatePct": 7,
+        "speedFigure": 63.1,
+        "courseFit": 85,
+        "restDaysSinceLast": 56,
+        "recentFinishes": [
+          8,
+          8,
+          6,
+          7,
+          7
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2026-07-18-kokura-9",
+    "date": "2026-07-18",
+    "category": "central",
+    "venue": "小倉",
+    "raceNumber": 9,
+    "name": "4歳上2勝クラス",
+    "surface": "ダート",
+    "distanceM": 1700,
+    "postTime": "14:20",
+    "weather": "晴",
+    "trackCondition": "稍重",
+    "paceNote": "実力上位の馬が多く、混戦模様です。",
+    "headcount": 8,
+    "horses": [
+      {
+        "number": 1,
+        "waku": 1,
+        "name": "コハルビヨリ",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "長谷川",
+        "odds": 2.9,
+        "oddsMove": "down",
+        "jockeyWinRatePct": 11.7,
+        "speedFigure": 68,
+        "courseFit": 96,
+        "restDaysSinceLast": 35,
+        "recentFinishes": [
+          8,
+          6,
+          8,
+          8,
+          7
+        ]
+      },
+      {
+        "number": 2,
+        "waku": 1,
+        "name": "ダイモンジザン",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "村田",
+        "odds": 12,
+        "oddsMove": null,
+        "jockeyWinRatePct": 6,
+        "speedFigure": 61.1,
+        "courseFit": 62,
+        "restDaysSinceLast": 28,
+        "recentFinishes": [
+          6,
+          5,
+          6,
+          4,
+          4
+        ]
+      },
+      {
+        "number": 3,
+        "waku": 2,
+        "name": "ハローウインド",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "森田",
+        "odds": 8,
+        "oddsMove": null,
+        "jockeyWinRatePct": 9.9,
+        "speedFigure": 60.6,
+        "courseFit": 45,
+        "restDaysSinceLast": 56,
+        "recentFinishes": [
+          8,
+          7,
+          7,
+          5,
+          7
+        ]
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "サンサンマーチ",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "桑原",
+        "odds": 18,
+        "oddsMove": null,
+        "jockeyWinRatePct": 7.7,
+        "speedFigure": 58.8,
+        "courseFit": 43,
+        "restDaysSinceLast": 28,
+        "recentFinishes": [
+          8,
+          7,
+          7,
+          8,
+          8
+        ]
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "テンリュウノホシ",
+        "sex": "牡",
+        "age": 7,
+        "jockey": "三好",
+        "odds": 6,
+        "oddsMove": null,
+        "jockeyWinRatePct": 11.8,
+        "speedFigure": 62.6,
+        "courseFit": 47,
+        "restDaysSinceLast": 42,
+        "recentFinishes": [
+          7,
+          8,
+          8,
+          6,
+          8
+        ]
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "ウララカゼ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "遠藤",
+        "odds": 22,
+        "oddsMove": null,
+        "jockeyWinRatePct": 5.7,
+        "speedFigure": 58.7,
+        "courseFit": 50,
+        "restDaysSinceLast": 7,
+        "recentFinishes": [
+          8,
+          5,
+          8,
+          8,
+          7
+        ]
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "ゴウケツライデン",
+        "sex": "牡",
+        "age": 5,
+        "jockey": "谷口",
+        "odds": 14,
+        "oddsMove": "up",
+        "jockeyWinRatePct": 7.1,
+        "speedFigure": 61.2,
+        "courseFit": 83,
+        "restDaysSinceLast": 28,
+        "recentFinishes": [
+          7,
+          8,
+          8,
+          6,
+          8
+        ]
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "ミサキノアサ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "竹内",
+        "odds": 28,
+        "oddsMove": null,
+        "jockeyWinRatePct": 3.9,
+        "speedFigure": 58.7,
+        "courseFit": 37,
+        "restDaysSinceLast": 14,
+        "recentFinishes": [
+          8,
+          8,
+          8,
+          7,
+          6
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2026-07-18-fukushima-3",
+    "date": "2026-07-18",
+    "category": "central",
+    "venue": "福島",
+    "raceNumber": 3,
+    "name": "3歳未勝利",
+    "surface": "ダート",
+    "distanceM": 1150,
+    "postTime": "11:05",
+    "weather": "曇",
+    "trackCondition": "良",
+    "paceNote": "逃げ馬同士が牽制しあう展開になりそうです。",
+    "headcount": 8,
+    "horses": [
+      {
+        "number": 1,
+        "waku": 1,
+        "name": "ヒナタボッコ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "星野",
+        "odds": 4.1,
+        "oddsMove": null,
+        "jockeyWinRatePct": 9.6,
+        "speedFigure": 69.8,
+        "courseFit": 67,
+        "restDaysSinceLast": 90,
+        "recentFinishes": [
+          4,
+          4,
+          4,
+          4,
+          7
+        ]
+      },
+      {
+        "number": 2,
+        "waku": 1,
+        "name": "カゼトツバサ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "宮本",
+        "odds": 11,
+        "oddsMove": null,
+        "jockeyWinRatePct": 8.3,
+        "speedFigure": 62.6,
+        "courseFit": 78,
+        "restDaysSinceLast": 90,
+        "recentFinishes": [
+          7,
+          6,
+          6,
+          7,
+          5
+        ]
+      },
+      {
+        "number": 3,
+        "waku": 2,
+        "name": "サユリノハナ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "藤井",
+        "odds": 7,
+        "oddsMove": "down",
+        "jockeyWinRatePct": 9.8,
+        "speedFigure": 60.6,
+        "courseFit": 90,
+        "restDaysSinceLast": 28,
+        "recentFinishes": [
+          5,
+          5,
+          8,
+          7,
+          5
+        ]
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "トウリュウモン",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "小池",
+        "odds": 19,
+        "oddsMove": null,
+        "jockeyWinRatePct": 4.5,
+        "speedFigure": 58.1,
+        "courseFit": 86,
+        "restDaysSinceLast": 21,
+        "recentFinishes": [
+          6,
+          8,
+          8,
+          7,
+          8
+        ]
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "アサツユビジン",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "石原",
+        "odds": 9,
+        "oddsMove": null,
+        "jockeyWinRatePct": 8.7,
+        "speedFigure": 63.5,
+        "courseFit": 76,
+        "restDaysSinceLast": 28,
+        "recentFinishes": [
+          7,
+          8,
+          8,
+          6,
+          7
+        ]
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "ゲンカイナダ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "森田",
+        "odds": 24,
+        "oddsMove": null,
+        "jockeyWinRatePct": 7.6,
+        "speedFigure": 63.7,
+        "courseFit": 77,
+        "restDaysSinceLast": 28,
+        "recentFinishes": [
+          5,
+          6,
+          4,
+          5,
+          5
+        ]
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "コダマノヒビキ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "桑原",
+        "odds": 13,
+        "oddsMove": "up",
+        "jockeyWinRatePct": 7.4,
+        "speedFigure": 58.1,
+        "courseFit": 49,
+        "restDaysSinceLast": 35,
+        "recentFinishes": [
+          4,
+          7,
+          6,
+          6,
+          7
+        ]
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "ミライエノトビラ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "三好",
+        "odds": 30,
+        "oddsMove": null,
+        "jockeyWinRatePct": 9.4,
+        "speedFigure": 57,
+        "courseFit": 35,
+        "restDaysSinceLast": 56,
+        "recentFinishes": [
+          6,
+          8,
+          7,
+          5,
+          5
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2026-07-19-niigata-3",
+    "date": "2026-07-19",
+    "category": "central",
+    "venue": "新潟",
+    "raceNumber": 3,
+    "name": "3歳未勝利",
+    "surface": "芝",
+    "distanceM": 1400,
+    "postTime": "11:05",
+    "weather": "晴",
+    "trackCondition": "良",
+    "paceNote": "直線が長いコースなので、末脚勝負になりそうです。",
+    "headcount": 8,
+    "horses": [
+      {
+        "number": 1,
+        "waku": 1,
+        "name": "ハツハルカゼ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "遠藤",
+        "odds": 3.6,
+        "oddsMove": "down",
+        "jockeyWinRatePct": 10,
+        "speedFigure": 67.1,
+        "courseFit": 54,
+        "restDaysSinceLast": 35,
+        "recentFinishes": [
+          4,
+          3,
+          5,
+          4,
+          5
+        ]
+      },
+      {
+        "number": 2,
+        "waku": 1,
+        "name": "リュウセイノヒカリ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "谷口",
+        "odds": 13,
+        "oddsMove": null,
+        "jockeyWinRatePct": 9.6,
+        "speedFigure": 59.5,
+        "courseFit": 86,
+        "restDaysSinceLast": 14,
+        "recentFinishes": [
+          7,
+          8,
+          8,
+          7,
+          8
+        ]
+      },
+      {
+        "number": 3,
+        "waku": 2,
+        "name": "コガネノナミ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "竹内",
+        "odds": 8,
+        "oddsMove": null,
+        "jockeyWinRatePct": 5.8,
+        "speedFigure": 67.1,
+        "courseFit": 60,
+        "restDaysSinceLast": 56,
+        "recentFinishes": [
+          8,
+          8,
+          7,
+          7,
+          5
+        ]
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "タイガーステップ",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "星野",
+        "odds": 20,
+        "oddsMove": null,
+        "jockeyWinRatePct": 6.8,
+        "speedFigure": 58.8,
+        "courseFit": 41,
+        "restDaysSinceLast": 7,
+        "recentFinishes": [
+          6,
+          8,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "サザナミドリーム",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "宮本",
+        "odds": 10,
+        "oddsMove": null,
+        "jockeyWinRatePct": 10.2,
+        "speedFigure": 59.4,
+        "courseFit": 65,
+        "restDaysSinceLast": 56,
+        "recentFinishes": [
+          5,
+          7,
+          5,
+          5,
+          6
+        ]
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "ブリリアントアーク",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "藤井",
+        "odds": 26,
+        "oddsMove": null,
+        "jockeyWinRatePct": 5.2,
+        "speedFigure": 61.5,
+        "courseFit": 82,
+        "restDaysSinceLast": 42,
+        "recentFinishes": [
+          4,
+          4,
+          5,
+          6,
+          6
+        ]
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "ヒスイノカゼ",
+        "sex": "牝",
+        "age": 3,
+        "jockey": "小池",
+        "odds": 15,
+        "oddsMove": "up",
+        "jockeyWinRatePct": 9.2,
+        "speedFigure": 57.9,
+        "courseFit": 81,
+        "restDaysSinceLast": 28,
+        "recentFinishes": [
+          6,
+          5,
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "ゴールデンリバー",
+        "sex": "牡",
+        "age": 3,
+        "jockey": "石原",
+        "odds": 32,
+        "oddsMove": null,
+        "jockeyWinRatePct": 6.7,
+        "speedFigure": 58.4,
+        "courseFit": 48,
+        "restDaysSinceLast": 21,
+        "recentFinishes": [
+          4,
+          6,
+          6,
+          6,
+          6
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2026-07-19-niigata-8",
+    "date": "2026-07-19",
+    "category": "central",
+    "venue": "新潟",
+    "raceNumber": 8,
+    "name": "4歳上1勝クラス",
+    "surface": "ダート",
+    "distanceM": 1200,
+    "postTime": "14:15",
+    "weather": "晴",
+    "trackCondition": "良",
+    "paceNote": "短距離戦らしく、先行争いが激しくなりそうです。",
+    "headcount": 8,
+    "horses": [
+      {
+        "number": 1,
+        "waku": 1,
+        "name": "マドロミノホシ",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "森田",
+        "odds": 3.3,
+        "oddsMove": null,
+        "jockeyWinRatePct": 8.4,
+        "speedFigure": 71.8,
+        "courseFit": 38,
+        "restDaysSinceLast": 56,
+        "recentFinishes": [
+          5,
+          5,
+          5,
+          7,
+          6
+        ]
+      },
+      {
+        "number": 2,
+        "waku": 1,
+        "name": "カツテキヒロシ",
+        "sex": "牡",
+        "age": 6,
+        "jockey": "桑原",
+        "odds": 14,
+        "oddsMove": null,
+        "jockeyWinRatePct": 4.7,
+        "speedFigure": 65.9,
+        "courseFit": 68,
+        "restDaysSinceLast": 7,
+        "recentFinishes": [
+          8,
+          6,
+          6,
+          6,
+          8
+        ]
+      },
+      {
+        "number": 3,
+        "waku": 2,
+        "name": "ノゾミノハタ",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "三好",
+        "odds": 9,
+        "oddsMove": "down",
+        "jockeyWinRatePct": 5.2,
+        "speedFigure": 59.7,
+        "courseFit": 89,
+        "restDaysSinceLast": 49,
+        "recentFinishes": [
+          5,
+          5,
+          4,
+          7,
+          4
+        ]
+      },
+      {
+        "number": 4,
+        "waku": 2,
+        "name": "スズランノカオリ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "遠藤",
+        "odds": 21,
+        "oddsMove": null,
+        "jockeyWinRatePct": 9,
+        "speedFigure": 58,
+        "courseFit": 32,
+        "restDaysSinceLast": 120,
+        "recentFinishes": [
+          7,
+          8,
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "number": 5,
+        "waku": 3,
+        "name": "テッセンノハナ",
+        "sex": "牝",
+        "age": 5,
+        "jockey": "谷口",
+        "odds": 11,
+        "oddsMove": null,
+        "jockeyWinRatePct": 5.3,
+        "speedFigure": 66.5,
+        "courseFit": 76,
+        "restDaysSinceLast": 56,
+        "recentFinishes": [
+          7,
+          8,
+          6,
+          8,
+          7
+        ]
+      },
+      {
+        "number": 6,
+        "waku": 3,
+        "name": "バンリュウ",
+        "sex": "牡",
+        "age": 7,
+        "jockey": "竹内",
+        "odds": 27,
+        "oddsMove": null,
+        "jockeyWinRatePct": 4.7,
+        "speedFigure": 65.7,
+        "courseFit": 45,
+        "restDaysSinceLast": 35,
+        "recentFinishes": [
+          8,
+          6,
+          7,
+          7,
+          5
+        ]
+      },
+      {
+        "number": 7,
+        "waku": 4,
+        "name": "アオイソラマメ",
+        "sex": "牡",
+        "age": 4,
+        "jockey": "星野",
+        "odds": 16,
+        "oddsMove": "up",
+        "jockeyWinRatePct": 4.5,
+        "speedFigure": 66.8,
+        "courseFit": 39,
+        "restDaysSinceLast": 49,
+        "recentFinishes": [
+          5,
+          7,
+          4,
+          6,
+          5
+        ]
+      },
+      {
+        "number": 8,
+        "waku": 4,
+        "name": "ヒカリノミチシルベ",
+        "sex": "牝",
+        "age": 4,
+        "jockey": "宮本",
+        "odds": 34,
+        "oddsMove": null,
+        "jockeyWinRatePct": 5.8,
+        "speedFigure": 60.1,
+        "courseFit": 33,
+        "restDaysSinceLast": 21,
+        "recentFinishes": [
+          7,
+          6,
+          7,
+          8,
+          6
+        ]
+      }
+    ]
   }
 ]
