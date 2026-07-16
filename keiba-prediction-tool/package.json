@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "import-data": "node scripts/import-csv.js"
+    "import-data": "node scripts/import-csv.js",
+    "test": "node --test \"test/**/*.test.js\""
   },
   "license": "UNLICENSED",
   "dependencies": {
