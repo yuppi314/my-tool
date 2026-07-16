@@ -37,7 +37,31 @@ public/
   results.html        予想の成績ページ(買い方別・予想家別・競馬場別の的中率など)
   js/                 各ページのフロントエンドロジック(素のJavaScript)
   css/style.css        共通スタイル
+scripts/
+  import-csv.js       実データ取り込み用のCSV→JSON変換スクリプト
+data-import/
+  races.example.csv    レース基本情報CSVのお手本
+  horses.example.csv   出走馬データCSVのお手本
 ```
+
+## 実データを取り込む(JRA-VAN Data Lab.が使えるようになったら)
+
+要件書5-2の通り、JRA-VAN Data Lab.はWindows専用の仕組み(JV-Link)なので、
+今のサーバー(Node.js/Linux)から直接は使えません。そのため、
+
+1. Windows環境(自分のPC、またはクラウドのWindows仮想マシン)でJV-Linkからデータを取得
+2. `data-import/races.example.csv`・`horses.example.csv` と同じ形式のCSVに変換
+   (`date,venue,raceNumber` の組み合わせで、レース情報と出走馬情報を紐付けます)
+3. `data-import/races.csv`・`data-import/horses.csv` として保存し、
+   ```bash
+   npm run import-data
+   ```
+   を実行すると、`src/data/sample-races.json` が実データで上書きされます
+
+という2段構成にしています。CSVの列の意味は `data-import/*.example.csv` の
+ヘッダー行と `scripts/import-csv.js` のコメントを参照してください。
+JV-LinkからこのCSV形式へ変換する部分(手順2)は、Windows環境が用意できてから
+別途作成します。
 
 ## 予想家キャラクターについて
 

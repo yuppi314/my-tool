@@ -182,6 +182,10 @@
   別途Windows環境(自分のPC、またはクラウドのWindows仮想マシン)でJV-Linkを動かして
   データをCSVなどに書き出し、それをサーバー側に取り込む、という2段構成にします。
 - この契約・Windows環境の準備は、画面や予想ロジックの確認が一段落してから着手します。
+- サーバー側の「取り込み口」は先に用意済みです。`scripts/import-csv.js` が、決まった形式の
+  CSV(`data-import/races.csv`・`horses.csv`)を読み込んで `src/data/sample-races.json` を
+  書き出します。Windows側でJV-Linkから取得したデータをこのCSV形式に変換する部分だけ、
+  Windows環境が整ってから作れば実データに切り替えられます(README参照)。
 
 ### 5-3. オッズの更新頻度について
 

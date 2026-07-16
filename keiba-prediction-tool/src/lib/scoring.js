@@ -117,19 +117,25 @@ function wakuOf(race, number) {
   return horse ? horse.waku : number;
 }
 
+// レースの出走頭数が少ない(3頭未満)場合でも安全に動くよう、
+// taikou・anaanaが無ければその買い方は省略する。
 function buildBets(race, honmei, taikou, anaana) {
-  return {
-    tansho: String(honmei),
-    fukusho: `${honmei},${taikou}`,
-    wakuren: [wakuOf(race, honmei), wakuOf(race, taikou)].sort((a, b) => a - b).join('-'),
-    umaren: `${honmei}-${taikou}`,
-    wide: `${honmei}-${taikou}`,
-    sanrenpuku: [honmei, taikou, anaana].sort((a, b) => a - b).join('-'),
-    sanrentan: `${honmei}→${taikou}→${anaana}`
-  };
+  const bets = { tansho: String(honmei) };
+  if (taikou != null) {
+    bets.fukusho = `${honmei},${taikou}`;
+    bets.wakuren = [wakuOf(race, honmei), wakuOf(race, taikou)].sort((a, b) => a - b).join('-');
+    bets.umaren = `${honmei}-${taikou}`;
+    bets.wide = `${honmei}-${taikou}`;
+  }
+  if (anaana != null) {
+    bets.sanrenpuku = [honmei, taikou, anaana].sort((a, b) => a - b).join('-');
+    bets.sanrentan = `${honmei}→${taikou}→${anaana}`;
+  }
+  return bets;
 }
 
 function computeTipsterPicks(race) {
+  if (!race.horses || race.horses.length === 0) return [];
   const factors = buildFactors(race.horses);
   return Object.entries(TIPSTER_PROFILES).map(([tipsterId, profile]) => {
     const ranked = scoreForProfile(factors, profile.weights);
@@ -138,9 +144,9 @@ function computeTipsterPicks(race) {
     return {
       tipsterId,
       honmei: honmei.horse.number,
-      taikou: taikou.horse.number,
+      taikou: taikou ? taikou.horse.number : null,
       comment: commentFn(honmei.horse, race),
-      bets: buildBets(race, honmei.horse.number, taikou.horse.number, anaana.horse.number)
+      bets: buildBets(race, honmei.horse.number, taikou ? taikou.horse.number : null, anaana ? anaana.horse.number : null)
     };
   });
 }
