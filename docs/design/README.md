@@ -2,7 +2,7 @@
 
 要件定義の確定版は [`../requirements.md`](../requirements.md) を参照してください。本フォルダはPhase 2(詳細設計)の成果物です。設計変更が発生した場合は、該当ファイルを直接更新し、各ファイル冒頭の「変更履歴」に追記してください。
 
-> ⚠️ **レビューをお願いしたい重要な決定事項** は [`01-architecture.md`](./01-architecture.md) と [`03-directory-structure.md`](./03-directory-structure.md) の冒頭に記載しています(モノレポ構成の確認)。
+> 本プロジェクトは販売する独立製品のため、既存の `yuppi314/my-tool`(九星気学×マヤ暦 診断ツール)とは別の**MITSU専用リポジトリ**として管理します。詳細は [`01-architecture.md`](./01-architecture.md) と [`03-directory-structure.md`](./03-directory-structure.md) を参照してください。
 
 ## 目次
 
