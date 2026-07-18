@@ -3,3 +3,6 @@ node_modules/
 data/*.db
 data/*.db-journal
 npm-debug.log
+note-generator/data/articles/*
+!note-generator/data/articles/.gitkeep
+note-generator/data/index.json

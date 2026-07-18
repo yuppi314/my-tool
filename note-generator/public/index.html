@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>note.com有料記事 自動生成ツール</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+    line-height: 1.8;
+    color: #222;
+    background: #fafaf7;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  p.desc { color: #666; margin-top: 0; }
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+  fieldset { border: 1px solid #ddd; border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+  legend { font-weight: bold; padding: 0 6px; }
+  label { display: block; font-size: 13px; color: #555; margin: 12px 0 4px; }
+  input[type=text], input[type=number], select, textarea {
+    width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
+    font-family: inherit;
+  }
+  textarea { min-height: 80px; resize: vertical; }
+  button {
+    background: #2f5d50; color: #fff; border: none; border-radius: 4px;
+    padding: 10px 20px; font-size: 15px; cursor: pointer; margin-top: 16px;
+  }
+  button:disabled { background: #999; cursor: not-allowed; }
+  button.secondary { background: #eee; color: #333; padding: 4px 10px; font-size: 12px; margin: 0; }
+  #status { margin-top: 10px; font-size: 13px; color: #a33; }
+  #result { border: 1px solid #ddd; border-radius: 6px; padding: 16px; background: #fff; min-height: 200px; }
+  #result pre { white-space: pre-wrap; word-break: break-word; font-size: 13px; }
+  .history-item {
+    border-bottom: 1px solid #eee; padding: 8px 0; font-size: 13px; cursor: pointer;
+  }
+  .history-item:hover { background: #f2f2ee; }
+  .history-item .theme { font-weight: bold; }
+  .history-item .meta { color: #888; font-size: 12px; }
+  .titles-list { padding-left: 20px; }
+</style>
+</head>
+<body>
+  <h1>note.com有料記事 自動生成ツール</h1>
+  <p class="desc">テーマを入力すると、note.comで販売する有料記事の下書き(タイトル案・見出し構成・本文)を自動生成します。</p>
+
+  <div class="layout">
+    <div>
+      <form id="generate-form">
+        <fieldset>
+          <legend>記事の条件</legend>
+
+          <label for="theme">テーマ・キーワード(必須)</label>
+          <input type="text" id="theme" name="theme" required placeholder="例: 副業で月5万円を継続して稼ぐ習慣化のコツ">
+
+          <label for="targetReader">ターゲット読者(任意)</label>
+          <input type="text" id="targetReader" name="targetReader" placeholder="例: 副業を始めたばかりの会社員">
+
+          <label for="tone">記事のトーン</label>
+          <select id="tone" name="tone">
+            <option value="howto">ノウハウ系(具体的な手順・実践方法)</option>
+            <option value="essay">エッセイ系(体験談・考え)</option>
+            <option value="explainer">解説系(概念やテーマの深掘り)</option>
+          </select>
+
+          <label for="length">想定文字数</label>
+          <input type="number" id="length" name="length" value="3000" min="500" step="100">
+
+          <label for="reference">参考にしたい既存記事・資料(任意)</label>
+          <textarea id="reference" name="reference" placeholder="参考にしたい文章やメモを貼り付け"></textarea>
+        </fieldset>
+
+        <button type="submit" id="submit-btn">下書きを生成する</button>
+        <div id="status"></div>
+      </form>
+    </div>
+
+    <div>
+      <h2 style="font-size:16px;">生成結果</h2>
+      <div id="result">まだ生成していません。</div>
+    </div>
+  </div>
+
+  <h2 style="font-size:16px; margin-top:40px;">生成履歴</h2>
+  <div id="history"></div>
+
+<script>
+const form = document.getElementById("generate-form");
+const statusEl = document.getElementById("status");
+const resultEl = document.getElementById("result");
+const submitBtn = document.getElementById("submit-btn");
+const historyEl = document.getElementById("history");
+
+function renderResult(entry) {
+  resultEl.innerHTML = `
+    <p><strong>テーマ:</strong> ${escapeHtml(entry.theme)}</p>
+    <p><strong>タイトル案:</strong></p>
+    <ul class="titles-list">${entry.titles.map(t => `<li>${escapeHtml(t)}</li>`).join("")}</ul>
+    <button class="secondary" id="copy-btn">Markdownをコピー</button>
+    <pre>${escapeHtml(entry.markdown)}</pre>
+  `;
+  document.getElementById("copy-btn").addEventListener("click", () => {
+    navigator.clipboard.writeText(entry.markdown);
+    statusEl.textContent = "コピーしました。";
+    statusEl.style.color = "#2f5d50";
+  });
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+async function loadHistory() {
+  const res = await fetch("/api/history");
+  const items = await res.json();
+  if (items.length === 0) {
+    historyEl.textContent = "まだ生成履歴はありません。";
+    return;
+  }
+  historyEl.innerHTML = items.map(item => `
+    <div class="history-item" data-id="${item.id}">
+      <div class="theme">${escapeHtml(item.theme)}</div>
+      <div class="meta">${new Date(item.createdAt).toLocaleString("ja-JP")}</div>
+    </div>
+  `).join("");
+
+  historyEl.querySelectorAll(".history-item").forEach(el => {
+    el.addEventListener("click", async () => {
+      const res = await fetch(`/api/history/${el.dataset.id}`);
+      const entry = await res.json();
+      renderResult(entry);
+    });
+  });
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  statusEl.style.color = "#a33";
+  statusEl.textContent = "";
+  submitBtn.disabled = true;
+  submitBtn.textContent = "生成中...(数分かかる場合があります)";
+  resultEl.textContent = "生成中です。しばらくお待ちください...";
+
+  const payload = {
+    theme: document.getElementById("theme").value,
+    targetReader: document.getElementById("targetReader").value,
+    tone: document.getElementById("tone").value,
+    length: document.getElementById("length").value,
+    reference: document.getElementById("reference").value,
+  };
+
+  try {
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "生成に失敗しました。");
+
+    renderResult(data);
+    loadHistory();
+  } catch (err) {
+    statusEl.textContent = err.message;
+    resultEl.textContent = "生成に失敗しました。";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "下書きを生成する";
+  }
+});
+
+loadHistory();
+</script>
+</body>
+</html>
