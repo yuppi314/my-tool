@@ -17,4 +17,17 @@ async function complete({ system, prompt, maxTokens = 4096 }) {
     .join("\n");
 }
 
-module.exports = { complete };
+async function completeJson({ system, prompt, schema, maxTokens = 4096 }) {
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: maxTokens,
+    system,
+    messages: [{ role: "user", content: prompt }],
+    output_config: { format: { type: "json_schema", schema } },
+  });
+
+  const textBlock = response.content.find((block) => block.type === "text");
+  return JSON.parse(textBlock.text);
+}
+
+module.exports = { complete, completeJson };

@@ -1,9 +1,38 @@
-const { complete } = require("./claude");
+const { completeJson } = require("./claude");
 
 const TONE_LABELS = {
   howto: "ノウハウ系(具体的な手順・実践方法を教える記事)",
   essay: "エッセイ系(体験談・考えを語る記事)",
   explainer: "解説系(概念やテーマを深く解説する記事)",
+};
+
+const ARTICLE_SCHEMA = {
+  type: "object",
+  properties: {
+    titles: {
+      type: "array",
+      items: { type: "string" },
+      description: "note.com記事のタイトル案。必ず3件にすること。",
+    },
+    leadHook: {
+      type: "string",
+      description: "無料公開部分の文章(Markdown)",
+    },
+    sections: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          heading: { type: "string" },
+          body: { type: "string", description: "本文(Markdown)" },
+        },
+        required: ["heading", "body"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["titles", "leadHook", "sections"],
+  additionalProperties: false,
 };
 
 function buildPrompt({ theme, targetReader, tone, length, reference }) {
@@ -23,25 +52,10 @@ function buildPrompt({ theme, targetReader, tone, length, reference }) {
     `- 読者が「お金を払ってでも続きが読みたい」と思える構成にすること`,
     `- 冒頭は誰でも読める無料部分(フック)とし、読者の悩みへの共感や結論の一部を示して続きへの期待を作ること`,
     `- 無料部分の後に、見出しごとの本文からなる有料部分を続けること`,
-    `- 出力は必ず下記のJSON形式のみとし、前後に説明文やコードフェンスを付けないこと`,
-    ``,
-    `{`,
-    `  "titles": ["タイトル案1", "タイトル案2", "タイトル案3"],`,
-    `  "leadHook": "無料公開部分の文章(Markdown)",`,
-    `  "sections": [`,
-    `    { "heading": "見出し1", "body": "本文(Markdown)" }`,
-    `  ]`,
-    `}`,
+    `- 文中で引用・強調のためのカギ括弧には「」を使い、ダブルクォート(")は使わないこと`,
   ].filter(Boolean);
 
   return lines.join("\n");
-}
-
-function parseJsonResponse(raw) {
-  const text = raw.trim();
-  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  const jsonText = fenced ? fenced[1].trim() : text;
-  return JSON.parse(jsonText);
 }
 
 function assembleMarkdown({ theme, titles, leadHook, sections }) {
@@ -69,13 +83,13 @@ function assembleMarkdown({ theme, titles, leadHook, sections }) {
 
 async function generateArticle({ theme, targetReader, tone, length, reference }) {
   const prompt = buildPrompt({ theme, targetReader, tone, length, reference });
-  const raw = await complete({
+  const parsed = await completeJson({
     prompt,
     system: "あなたはnote.comで月間5万円以上を売り上げる有料記事を専門に書くプロのライター兼編集者です。",
+    schema: ARTICLE_SCHEMA,
     maxTokens: 8192,
   });
 
-  const parsed = parseJsonResponse(raw);
   const markdown = assembleMarkdown({ theme, ...parsed });
 
   return { ...parsed, markdown };
