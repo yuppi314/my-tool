@@ -24,4 +24,4 @@ export function getKyoHoi(board: Board, honmei: Star): Palace[] {
   return getKyoHoiImpl(board, honmei);
 }
 
-export type { Star, Palace, SolarDate, KigakuProfile, Board } from './types';
+export type { Star, Palace, KeishaPalace, SolarDate, KigakuProfile, Board } from './types';
