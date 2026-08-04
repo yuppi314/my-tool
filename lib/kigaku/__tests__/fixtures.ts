@@ -8,8 +8,7 @@
  *    テストが落ちた場合は実装側を直す。
  */
 
-/** 1=一白水星 … 9=九紫火星 */
-export type Star = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+import type { Star } from '../types';
 
 export interface ProfileFixture {
   /** 生年月日（グレゴリオ暦） */
