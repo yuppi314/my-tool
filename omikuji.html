@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>おみくじアプリ</title>
+<style>
+  :root {
+    --daikichi: #e63946;
+    --kichi: #f4a261;
+    --chukichi: #e9c46a;
+    --shokichi: #2a9d8f;
+    --suekichi: #457b9d;
+    --kyo: #6c757d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: "Hiragino Kaku Gothic ProN", "Meiryo", "Yu Gothic", sans-serif;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    padding: 20px;
+    text-align: center;
+  }
+  h1 {
+    color: #6b3e26;
+    font-size: 2.2rem;
+    margin-bottom: 0.2em;
+    text-shadow: 1px 1px 0 #fff;
+  }
+  p.sub {
+    color: #7a5c46;
+    margin-top: 0;
+    margin-bottom: 2em;
+    font-size: 1rem;
+  }
+  #omikuji-btn {
+    font-size: 1.8rem;
+    font-weight: bold;
+    padding: 1.2em 2em;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5253);
+    color: #fff;
+    box-shadow: 0 8px 0 #b33939, 0 12px 20px rgba(0,0,0,0.25);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #omikuji-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0 #b33939, 0 4px 10px rgba(0,0,0,0.25);
+  }
+  #result-card {
+    margin-top: 2.5em;
+    min-height: 220px;
+    width: 100%;
+    max-width: 420px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fffdf8;
+    border-radius: 24px;
+    padding: 2em 1.5em;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border: 6px solid #d4af37;
+    animation: pop 0.4s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  #fortune-text {
+    font-size: 3.2rem;
+    font-weight: 900;
+    margin: 0 0 0.3em 0;
+    letter-spacing: 0.05em;
+  }
+  #message-text {
+    font-size: 1.3rem;
+    color: #444;
+    margin: 0;
+    line-height: 1.6;
+  }
+  #hint {
+    margin-top: 2em;
+    color: #7a5c46;
+    font-size: 0.9rem;
+  }
+  footer {
+    margin-top: 3em;
+    font-size: 0.8rem;
+    color: #a3876f;
+  }
+</style>
+</head>
+<body>
+
+  <h1>🎋 今日のおみくじ 🎋</h1>
+  <p class="sub">ボタンを押して、今日の運勢を占ってみよう！</p>
+
+  <button id="omikuji-btn">おみくじを引く</button>
+
+  <div id="result-card">
+    <div id="fortune-text"></div>
+    <p id="message-text"></p>
+  </div>
+
+  <p id="hint">※ 音が鳴りますので、パソコンやスマホの音量を確認してください</p>
+
+  <footer>おみくじアプリ &mdash; 何度でも引き直せます</footer>
+
+<script>
+  // 運勢の一覧（出やすさに差をつけてあります）
+  const fortunes = [
+    { name: "大吉", weight: 10, color: "#e63946" },
+    { name: "吉",   weight: 20, color: "#f4a261" },
+    { name: "中吉", weight: 20, color: "#e9c46a" },
+    { name: "小吉", weight: 20, color: "#2a9d8f" },
+    { name: "末吉", weight: 20, color: "#457b9d" },
+    { name: "凶",   weight: 10, color: "#6c757d" }
+  ];
+
+  // 運勢ごとの元気になる一言メッセージ
+  const messages = {
+    "大吉": [
+      "最高の一日になりそう！思い切って挑戦しよう！",
+      "何をやってもうまくいく日。自信を持って進もう！",
+      "幸運が舞い込む予感。笑顔を忘れずに！"
+    ],
+    "吉": [
+      "良いことがたくさん起こりそう。前向きに過ごそう！",
+      "調子は上向き。小さな幸せを見つけよう！",
+      "今日はきっと良い日。自分を信じて！"
+    ],
+    "中吉": [
+      "コツコツ頑張れば結果がついてくる日！",
+      "焦らずマイペースに進めば大丈夫！",
+      "小さな一歩が大きな成果につながるよ！"
+    ],
+    "小吉": [
+      "ゆっくりでも着実に前進できる日！",
+      "無理せず自分のペースで大丈夫！",
+      "小さな幸せに気づける一日になりそう！"
+    ],
+    "末吉": [
+      "これから運気は上向き！焦らず待とう！",
+      "今日の頑張りが後で花開くよ！",
+      "地道な努力が実を結ぶ日！"
+    ],
+    "凶": [
+      "今日は無理せずゆっくり過ごそう。明日はきっと良い日！",
+      "慎重に行動すれば大丈夫。休息も大切に！",
+      "ピンチはチャンス！乗り越えれば成長できる！"
+    ]
+  };
+
+  const btn = document.getElementById("omikuji-btn");
+  const card = document.getElementById("result-card");
+  const fortuneText = document.getElementById("fortune-text");
+  const messageText = document.getElementById("message-text");
+
+  function pickFortune() {
+    const total = fortunes.reduce((sum, f) => sum + f.weight, 0);
+    let r = Math.random() * total;
+    for (const f of fortunes) {
+      if (r < f.weight) return f;
+      r -= f.weight;
+    }
+    return fortunes[0];
+  }
+
+  function pickMessage(name) {
+    const list = messages[name];
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  function speak(text) {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "ja-JP";
+    utter.rate = 1.0;
+    utter.pitch = 1.1;
+    window.speechSynthesis.speak(utter);
+  }
+
+  btn.addEventListener("click", () => {
+    const fortune = pickFortune();
+    const message = pickMessage(fortune.name);
+
+    fortuneText.textContent = fortune.name;
+    fortuneText.style.color = fortune.color;
+    messageText.textContent = message;
+
+    card.style.display = "none";
+    // 再アニメーションのため一度リフローさせる
+    void card.offsetWidth;
+    card.style.display = "flex";
+
+    speak(fortune.name + "。" + message);
+  });
+</script>
+
+</body>
+</html>
