@@ -1,8 +1,5 @@
 const form = document.getElementById('itinerary-form');
 const resultEl = document.getElementById('result');
-const lodgingSection = document.getElementById('lodging-section');
-const lodgingResultsEl = document.getElementById('lodging-results');
-const lodgingBtn = document.getElementById('lodging-search-btn');
 
 const TYPE_LABEL = { transport: '移動', gourmet: 'グルメ', free: '自由時間' };
 
@@ -36,13 +33,9 @@ function buildArrivalPayload(prefix) {
   return { type, airport: place, datetime: datetime || null };
 }
 
-let currentDestination = '';
-
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   resultEl.innerHTML = '';
-  lodgingSection.hidden = true;
-  lodgingResultsEl.innerHTML = '';
 
   const destination = document.getElementById('destination').value.trim();
   const days = document.getElementById('days').value;
@@ -60,16 +53,12 @@ form.addEventListener('submit', async (e) => {
     if (!res.ok) {
       throw new Error(data.error || '日程表の作成に失敗しました');
     }
-    currentDestination = destination;
     renderItinerary(data, destination);
-    lodgingSection.hidden = false;
   } catch (err) {
     const errorEl = el('p', 'error', err.message);
     resultEl.appendChild(errorEl);
   }
 });
-
-lodgingBtn.addEventListener('click', () => searchLodging(currentDestination));
 
 function renderItinerary(data, destination) {
   resultEl.innerHTML = '';
@@ -194,41 +183,5 @@ async function searchSpots(area, mode, body, btn, itemEl) {
   } finally {
     btn.disabled = false;
     btn.textContent = originalLabel;
-  }
-}
-
-async function searchLodging(area) {
-  if (!area) return;
-  lodgingBtn.disabled = true;
-  lodgingBtn.textContent = '検索中...';
-  lodgingResultsEl.innerHTML = '';
-  try {
-    const params = new URLSearchParams({ area });
-    const res = await fetch(`/api/lodging?${params.toString()}`);
-    const data = await res.json();
-
-    const container = el('div', 'gourmet-results');
-    (data.results || []).forEach((hotel) => {
-      const opt = el('div', 'gourmet-option');
-      opt.appendChild(buildThumbnail(placesPhotoUrl(hotel.photoRef)));
-      const info = el('div', 'option-info');
-      const ratingText = hotel.rating ? `評価 ${hotel.rating}(${hotel.ratingsTotal}件)` : '評価情報なし';
-      info.appendChild(el('div', null, hotel.name));
-      info.appendChild(el('div', 'item-note', ratingText));
-      if (hotel.address) info.appendChild(el('div', 'item-note', hotel.address));
-      opt.appendChild(info);
-      container.appendChild(opt);
-    });
-
-    if (data.mock) {
-      container.appendChild(el('div', 'gourmet-mock-note', data.error || 'サンプルデータを表示しています(GOOGLE_PLACES_API_KEY未設定)'));
-    }
-
-    lodgingResultsEl.appendChild(container);
-  } catch (err) {
-    lodgingResultsEl.appendChild(el('div', 'error', '宿泊先検索に失敗しました'));
-  } finally {
-    lodgingBtn.disabled = false;
-    lodgingBtn.textContent = '宿泊先の候補を探す';
   }
 }

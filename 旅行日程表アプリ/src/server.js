@@ -5,7 +5,6 @@ const express = require('express');
 const itineraryRoutes = require('./routes/itinerary');
 const gourmetRoutes = require('./routes/gourmet');
 const spotsRoutes = require('./routes/spots');
-const lodgingRoutes = require('./routes/lodging');
 const photoRoutes = require('./routes/photo');
 
 const app = express();
@@ -17,7 +16,6 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/api/itinerary', itineraryRoutes);
 app.use('/api/gourmet', gourmetRoutes);
 app.use('/api/spots', spotsRoutes);
-app.use('/api/lodging', lodgingRoutes);
 app.use('/api/photo', photoRoutes);
 
 app.listen(PORT, () => {

@@ -10,7 +10,6 @@
 - グルメ欄の「お店を探す」ボタンから、行き先周辺のお店をジャンル指定つきで検索・選択可能
 - 自由時間欄の「定番観光地を探す」「穴場スポットを探す」ボタンから、観光地の候補を検索・選択可能
 - グルメ・観光地の検索結果には写真つき(取得できる場合)
-- 「おすすめの宿」欄から、行き先周辺の宿泊施設候補を検索可能
 
 ## セットアップ
 
@@ -50,14 +49,9 @@ GOOGLE_PLACES_API_KEY=xxxxxxxxxxxxxxxx
 ### 写真について
 
 グルメ(ホットペッパーグルメAPI)の写真はAPIが返すURLをそのまま表示します。
-観光地・宿泊施設(Google Places API)の写真は、APIキーをブラウザに露出させないため、
+観光地(Google Places API)の写真は、APIキーをブラウザに露出させないため、
 サーバー側の `/api/photo` エンドポイントで一度取得してから配信しています。
 `GOOGLE_PLACES_API_KEY` が未設定の場合は「写真準備中」のプレースホルダーが表示されます。
-
-### 宿泊先の検索について
-
-`GOOGLE_PLACES_API_KEY` を設定すると、行き先周辺の宿泊施設(ホテル・旅館)を評価順に検索できます。
-未設定の場合はサンプルデータで動作します。日程全体で1回、行き先全体から検索する仕様です(宿泊日ごとの検索ではありません)。
 
 ## ディレクトリ構成
 
@@ -73,7 +67,6 @@ src/
     itinerary.js      日程表生成API
     gourmet.js         グルメ検索API(ホットペッパーグルメAPI連携)
     spots.js           観光地検索API(Google Places API連携、定番/穴場)
-    lodging.js         宿泊施設検索API(Google Places API連携)
     photo.js            Google Places写真プロキシAPI(APIキーを隠すため)
 public/
   index.html / css / js  フロントエンド(素のHTML/CSS/JS)

@@ -222,24 +222,6 @@ button:hover {
   margin-top: 4px;
 }
 
-.lodging-section {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 24px;
-}
-
-.lodging-section h2 {
-  margin-top: 0;
-  color: var(--primary-dark);
-  font-size: 1.2rem;
-}
-
-#lodging-results {
-  margin-top: 8px;
-}
-
 .error {
   color: #c53030;
   margin-top: 12px;
