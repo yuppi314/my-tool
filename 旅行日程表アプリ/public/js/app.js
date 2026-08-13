@@ -67,6 +67,17 @@ function renderItinerary(data, destination) {
         body.appendChild(btn);
       }
 
+      if (item.type === 'free') {
+        const btnGroup = el('div', 'spot-btn-group');
+        const popularBtn = el('button', 'gourmet-search-btn', '定番観光地を探す');
+        popularBtn.addEventListener('click', () => searchSpots(destination, 'popular', body, popularBtn, itemEl));
+        const hiddenBtn = el('button', 'gourmet-search-btn', '穴場スポットを探す');
+        hiddenBtn.addEventListener('click', () => searchSpots(destination, 'hidden', body, hiddenBtn, itemEl));
+        btnGroup.appendChild(popularBtn);
+        btnGroup.appendChild(hiddenBtn);
+        body.appendChild(btnGroup);
+      }
+
       itemEl.appendChild(body);
       card.appendChild(itemEl);
     });
@@ -109,5 +120,47 @@ async function searchGourmet(area, genre, body, btn, itemEl) {
   } finally {
     btn.disabled = false;
     btn.textContent = 'お店を探す';
+  }
+}
+
+const SPOT_MODE_LABEL = { popular: '定番観光地', hidden: '穴場スポット' };
+
+async function searchSpots(area, mode, body, btn, itemEl) {
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '検索中...';
+  try {
+    const params = new URLSearchParams({ area, mode });
+    const res = await fetch(`/api/spots?${params.toString()}`);
+    const data = await res.json();
+
+    const existing = body.querySelector(`.spot-results-${mode}`);
+    if (existing) existing.remove();
+
+    const container = el('div', `gourmet-results spot-results-${mode}`);
+    container.appendChild(el('div', 'spot-results-heading', `${SPOT_MODE_LABEL[mode]}候補`));
+    (data.results || []).forEach((spot) => {
+      const opt = el('div', 'gourmet-option');
+      const ratingText = spot.rating ? `評価 ${spot.rating}(${spot.ratingsTotal}件)` : '評価情報なし';
+      opt.appendChild(el('div', null, spot.name));
+      opt.appendChild(el('div', 'item-note', ratingText));
+      if (spot.address) opt.appendChild(el('div', 'item-note', spot.address));
+      opt.addEventListener('click', () => {
+        const titleEl = itemEl.querySelector('.item-title');
+        titleEl.textContent = `[自由時間] ${spot.name}`;
+      });
+      container.appendChild(opt);
+    });
+
+    if (data.mock) {
+      container.appendChild(el('div', 'gourmet-mock-note', data.error || 'サンプルデータを表示しています(GOOGLE_PLACES_API_KEY未設定)'));
+    }
+
+    body.appendChild(container);
+  } catch (err) {
+    body.appendChild(el('div', 'error', '観光地検索に失敗しました'));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
   }
 }

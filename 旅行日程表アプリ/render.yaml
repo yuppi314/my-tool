@@ -12,3 +12,5 @@ services:
         value: 3000
       - key: HOTPEPPER_API_KEY
         sync: false
+      - key: GOOGLE_PLACES_API_KEY
+        sync: false

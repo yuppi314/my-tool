@@ -156,6 +156,19 @@ button:hover {
   width: auto;
 }
 
+.spot-btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.spot-results-heading {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
 .gourmet-results {
   margin-top: 8px;
   display: flex;
