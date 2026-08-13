@@ -177,6 +177,9 @@ button:hover {
 }
 
 .gourmet-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 8px;
@@ -189,10 +192,52 @@ button:hover {
   background: #f0f7f7;
 }
 
+.option-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.option-thumb {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #edf2f2;
+}
+
+.option-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--muted);
+  padding: 4px;
+}
+
 .gourmet-mock-note {
   font-size: 0.75rem;
   color: var(--muted);
   margin-top: 4px;
+}
+
+.lodging-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 24px;
+}
+
+.lodging-section h2 {
+  margin-top: 0;
+  color: var(--primary-dark);
+  font-size: 1.2rem;
+}
+
+#lodging-results {
+  margin-top: 8px;
 }
 
 .error {

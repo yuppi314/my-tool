@@ -1,4 +1,5 @@
 const express = require('express');
+const { photoRefFromPlace } = require('../lib/places');
 
 const router = express.Router();
 
@@ -77,6 +78,7 @@ router.get('/', async (req, res) => {
       rating: p.rating || null,
       ratingsTotal: p.user_ratings_total || 0,
       address: p.formatted_address,
+      photoRef: photoRefFromPlace(p),
       note: null
     }));
 

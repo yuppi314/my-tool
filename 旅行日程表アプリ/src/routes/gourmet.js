@@ -57,7 +57,8 @@ router.get('/', async (req, res) => {
       genre: shop.genre && shop.genre.name,
       access: shop.access,
       budget: shop.budget && shop.budget.name,
-      url: shop.urls && shop.urls.pc
+      url: shop.urls && shop.urls.pc,
+      photoUrl: shop.photo && shop.photo.pc && shop.photo.pc.l
     }));
     return res.json({ mock: false, results });
   } catch (err) {
