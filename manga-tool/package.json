@@ -1,0 +1,21 @@
+{
+  "name": "ai-manga-creator",
+  "version": "0.1.0",
+  "description": "AI漫画作成ツール — シナリオ生成と漫画(コマ割り・画像・PDF)生成を分離したパイプライン",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pdfkit": "^0.15.0",
+    "svg-to-pdfkit": "^0.1.8",
+    "uuid": "^9.0.1"
+  }
+}

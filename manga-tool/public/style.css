@@ -1,0 +1,98 @@
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  background: #f4f4f6;
+  color: #222;
+  margin: 0;
+  padding: 0 0 60px;
+}
+header {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 24px 20px;
+}
+header h1 { margin: 0 0 4px; font-size: 22px; }
+header .sub { margin: 0; opacity: 0.8; font-size: 13px; }
+
+main {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.card.hidden { display: none; }
+.card h2 { margin-top: 0; font-size: 17px; }
+
+label { display: block; font-size: 13px; color: #555; margin-bottom: 12px; }
+label input, label textarea {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.row { display: flex; gap: 16px; }
+.row > label { flex: 1; }
+
+button, .button {
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
+}
+button:disabled { opacity: 0.5; cursor: default; }
+
+.status { font-size: 13px; color: #666; min-height: 18px; }
+.hint { font-size: 13px; color: #777; }
+
+.page-block {
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  padding: 14px;
+  margin: 14px 0;
+}
+.page-block h3 { margin: 0 0 8px; font-size: 14px; }
+.panel-block {
+  border-left: 3px solid #1a1a2e;
+  padding: 8px 12px;
+  margin: 8px 0;
+  background: #fafafa;
+  border-radius: 4px;
+}
+.panel-block textarea { min-height: 50px; }
+.panel-block .dialogue-line { display: flex; gap: 6px; margin-bottom: 6px; }
+.panel-block .dialogue-line input { flex: 1; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+
+.pages-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.pages-preview img {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+}
+.pages-preview .page-caption { font-size: 12px; color: #666; text-align: center; margin-top: 4px; }
+
+details { margin-top: 12px; font-size: 13px; }
+details ol { padding-left: 20px; }

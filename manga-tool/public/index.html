@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI漫画作成ツール</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>AI漫画作成ツール</h1>
+    <p class="sub">1. シナリオ生成 → 2. 編集 → 3. 漫画生成 → 4. PDF書き出し(KDP入稿用)</p>
+  </header>
+
+  <main>
+    <section id="step-generate" class="card">
+      <h2>1. シナリオを生成</h2>
+      <label>プロット・あらすじ
+        <textarea id="premise" rows="4" placeholder="例: 幼馴染の二人が高校の文化祭で対立しながらも協力していく物語"></textarea>
+      </label>
+      <div class="row">
+        <label>ページ数
+          <input id="numPages" type="number" min="1" max="20" value="4" />
+        </label>
+        <label>絵柄・トーン(任意)
+          <input id="artStyle" type="text" placeholder="例: 少年漫画風、線が太い、白黒" />
+        </label>
+      </div>
+      <button id="btnGenerateScenario">シナリオを生成</button>
+      <p id="scenarioStatus" class="status"></p>
+    </section>
+
+    <section id="step-edit" class="card hidden">
+      <h2>2. シナリオを編集</h2>
+      <label>タイトル
+        <input id="editTitle" type="text" />
+      </label>
+      <div id="pagesEditor"></div>
+      <button id="btnSaveScenario">変更を保存</button>
+      <p id="saveStatus" class="status"></p>
+    </section>
+
+    <section id="step-images" class="card hidden">
+      <h2>3. 漫画を生成(コマ絵・吹き出し)</h2>
+      <p class="hint">画像生成プロバイダ未設定の場合は、レイアウト確認用のプレースホルダー(色付きパネル)で生成されます。</p>
+      <button id="btnGenerateImages">画像を生成</button>
+      <p id="imagesStatus" class="status"></p>
+      <div id="pagesPreview" class="pages-preview"></div>
+    </section>
+
+    <section id="step-export" class="card hidden">
+      <h2>4. PDFを書き出す</h2>
+      <p class="hint">KDPペーパーバック向けの判型(デフォルト6×9インチ)でPDFを生成します。Kindle電子書籍化の手順は下記を参照してください。</p>
+      <a id="btnDownloadPdf" class="button" href="#" target="_blank">PDFをダウンロード</a>
+      <details>
+        <summary>Kindle出版までの流れ</summary>
+        <ol>
+          <li><strong>ペーパーバック(紙の本)</strong>: このPDFをそのまま KDP の「原稿」としてアップロードできます(表紙は別途 KDP のカバー作成ツールか自作のPDF/画像を用意してください)。</li>
+          <li><strong>Kindle電子書籍(固定レイアウト)</strong>: 漫画のKindle化には Amazon の Kindle Comic Creator / Kindle Create などの専用ツールでのパッケージングが必要です。本ツールが生成する各ページのSVG/PDFを画像化してそれらのツールに読み込ませてください。</li>
+          <li>解像度や余白の要件は KDP のガイドラインに従って `.env` の PDF_TRIM_WIDTH_IN / PDF_TRIM_HEIGHT_IN を調整してください。</li>
+        </ol>
+      </details>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
