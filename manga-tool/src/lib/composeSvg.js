@@ -84,7 +84,7 @@ function pageToSvg(page, panelImages, { width = 900, height = 1350 } = {}) {
         const capLines = wrapText(panel.caption, Math.max(10, Math.floor(pw / 12)));
         const capHeight = 14 + capLines.length * 16;
         captionSvg = `
-          <rect x="${px}" y="${py}" width="${pw}" height="${capHeight}" fill="#fff" fill-opacity="0.88" />
+          <rect x="${px}" y="${py}" width="${pw}" height="${capHeight}" fill="#ffffff" />
           ${textLinesSvg(
             capLines,
             px + 6,
