@@ -1,0 +1,14 @@
+# 無料プランで最短公開するための設定(カード登録不要)。
+services:
+  - type: web
+    name: travel-itinerary-planner
+    runtime: node
+    plan: free
+    rootDir: 旅行日程表アプリ
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: HOTPEPPER_API_KEY
+        sync: false

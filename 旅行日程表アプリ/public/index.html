@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>旅行日程表アプリ</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<header>
+  <h1>旅行日程表アプリ</h1>
+  <p>行き先・日数・交通手段を入力するだけで、日程表のたたき台を自動で作成します。</p>
+</header>
+
+<main>
+  <form id="itinerary-form">
+    <div class="form-row">
+      <label for="destination">行き先</label>
+      <input type="text" id="destination" name="destination" placeholder="例: 京都" required />
+    </div>
+
+    <div class="form-row">
+      <label for="days">日数</label>
+      <input type="number" id="days" name="days" min="1" max="30" value="2" required />
+    </div>
+
+    <fieldset>
+      <legend>行き(到着)の交通手段</legend>
+      <div class="form-row">
+        <label for="arrival-type">手段</label>
+        <select id="arrival-type" name="arrival-type">
+          <option value="none">指定しない</option>
+          <option value="flight">飛行機</option>
+          <option value="shinkansen">新幹線</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="arrival-place">到着空港/駅名</label>
+        <input type="text" id="arrival-place" name="arrival-place" placeholder="例: 羽田空港" />
+      </div>
+      <div class="form-row">
+        <label for="arrival-datetime">到着日時</label>
+        <input type="datetime-local" id="arrival-datetime" name="arrival-datetime" />
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>帰り(出発)の交通手段</legend>
+      <div class="form-row">
+        <label for="departure-type">手段</label>
+        <select id="departure-type" name="departure-type">
+          <option value="none">指定しない</option>
+          <option value="flight">飛行機</option>
+          <option value="shinkansen">新幹線</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="departure-place">出発空港/駅名</label>
+        <input type="text" id="departure-place" name="departure-place" placeholder="例: 羽田空港" />
+      </div>
+      <div class="form-row">
+        <label for="departure-datetime">出発日時</label>
+        <input type="datetime-local" id="departure-datetime" name="departure-datetime" />
+      </div>
+    </fieldset>
+
+    <div class="form-row">
+      <label for="gourmet-genre">グルメの希望ジャンル</label>
+      <select id="gourmet-genre" name="gourmet-genre">
+        <option value="">指定なし</option>
+        <option value="和食">和食</option>
+        <option value="ラーメン">ラーメン</option>
+        <option value="寿司">寿司</option>
+        <option value="焼肉">焼肉</option>
+        <option value="イタリアン">イタリアン</option>
+        <option value="中華">中華</option>
+        <option value="カフェ">カフェ</option>
+        <option value="居酒屋">居酒屋</option>
+      </select>
+    </div>
+
+    <button type="submit">日程表を作成</button>
+  </form>
+
+  <section id="result"></section>
+</main>
+
+<script src="js/app.js"></script>
+</body>
+</html>
