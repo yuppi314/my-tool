@@ -103,13 +103,26 @@ function pageToSvg(page, panelImages, { width = 900, height = 1350 } = {}) {
         const bubbleTop = py + ph - bubbleAreaHeight - 6;
         let cursorY = bubbleTop;
         dialogueSvg = (panel.dialogue || [])
-          .map((line) => {
+          .map((line, lineIdx) => {
             const lines = wrapText(`${line.speaker}: ${line.text}`, Math.max(12, Math.floor(pw / 11)));
             const bubbleHeight = 12 + lines.length * 15;
             const bubbleY = cursorY;
             cursorY += bubbleHeight + 6;
             const bubbleW = pw - 12;
+            const bubbleBottom = bubbleY + bubbleHeight;
+
+            // 話者ごとに左右交互に「しっぽ」を出し、キャラクターを指しているように見せる
+            const fromLeft = lineIdx % 2 === 0;
+            const tailBaseCenter = px + 6 + (fromLeft ? bubbleW * 0.22 : bubbleW * 0.78);
+            const tailTipX = tailBaseCenter + (fromLeft ? -14 : 14);
+            const tailTipY = Math.min(py + ph - 4, bubbleBottom + 18);
+            const tailSvg = `<path d="M ${tailBaseCenter - 9} ${bubbleBottom - 1}
+                L ${tailTipX} ${tailTipY}
+                L ${tailBaseCenter + 9} ${bubbleBottom - 1} Z"
+              fill="#fff" stroke="#111" stroke-width="1.5" stroke-linejoin="round" />`;
+
             return `
+              ${tailSvg}
               <rect x="${px + 6}" y="${bubbleY}" width="${bubbleW}" height="${bubbleHeight}" rx="10" ry="10"
                 fill="#fff" stroke="#111" stroke-width="1.5" />
               ${textLinesSvg(
