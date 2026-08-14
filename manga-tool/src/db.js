@@ -10,6 +10,7 @@ db.exec(`
     title TEXT NOT NULL,
     premise TEXT NOT NULL,
     art_style TEXT NOT NULL DEFAULT '',
+    reading_direction TEXT NOT NULL DEFAULT 'rtl',
     data_json TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -26,5 +27,11 @@ db.exec(`
     PRIMARY KEY (scenario_id, page_number, panel_number)
   );
 `);
+
+// 既存DBへの後方互換マイグレーション(reading_direction列を追加する前に作られたDB向け)
+const scenarioColumns = db.prepare("PRAGMA table_info(scenarios)").all().map((c) => c.name);
+if (!scenarioColumns.includes("reading_direction")) {
+  db.exec("ALTER TABLE scenarios ADD COLUMN reading_direction TEXT NOT NULL DEFAULT 'rtl'");
+}
 
 module.exports = db;

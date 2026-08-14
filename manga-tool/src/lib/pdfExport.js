@@ -35,7 +35,7 @@ function buildPdf({ scenario, panelImagesByPage }, res) {
   for (const page of scenario.pages) {
     doc.addPage({ size: [width, height], margin: 0 });
     const panelImages = panelImagesByPage.get(page.page_number) || new Map();
-    const svg = pageToSvg(page, panelImages, { width, height });
+    const svg = pageToSvg(page, panelImages, { width, height, readingDirection: scenario.reading_direction });
     SVGtoPDF(doc, svg, 0, 0, { width, height, preserveAspectRatio: "none" });
   }
 

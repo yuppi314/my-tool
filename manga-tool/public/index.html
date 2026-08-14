@@ -25,6 +25,12 @@
         <label>絵柄・トーン(任意)
           <input id="artStyle" type="text" placeholder="例: 少年漫画風、線が太い、白黒" />
         </label>
+        <label>コマ送りの向き
+          <select id="readingDirection">
+            <option value="rtl" selected>日本式(右→左)</option>
+            <option value="ltr">西欧式(左→右)</option>
+          </select>
+        </label>
       </div>
       <button id="btnGenerateScenario">シナリオを生成</button>
       <p id="scenarioStatus" class="status"></p>

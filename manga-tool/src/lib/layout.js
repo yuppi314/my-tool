@@ -1,19 +1,34 @@
 /**
  * コマ数に応じたページレイアウト(各コマの矩形)を計算する。
- * 西欧式(左上から右下へ)の読み順を採用。座標・サイズは0〜1の相対値。
+ * direction:
+ *   "rtl" (デフォルト) — 日本式。各行内は右から左へ読む順にコマを配置する
+ *   "ltr" — 西欧式。各行内は左から右へ
+ * panel_number の並び(1,2,3...)がそのまま読み順になるよう、
+ * rtl では各行の最初のセルを右端に置き、以降左へ詰める。
+ * 座標・サイズは0〜1の相対値。
  */
-function computeLayout(panelCount) {
+function computeLayout(panelCount, direction = "rtl") {
   const gap = 0.02;
+  const rtl = direction === "rtl";
 
   const rows = (splits) => {
     const rects = [];
     let y = 0;
     for (const row of splits) {
       const rowHeight = row.height;
-      let x = 0;
-      for (const cellWidth of row.cells) {
-        rects.push({ x: x + gap / 2, y: y + gap / 2, width: cellWidth - gap, height: rowHeight - gap });
-        x += cellWidth;
+      if (rtl) {
+        let xRight = 1;
+        for (const cellWidth of row.cells) {
+          const xLeft = xRight - cellWidth;
+          rects.push({ x: xLeft + gap / 2, y: y + gap / 2, width: cellWidth - gap, height: rowHeight - gap });
+          xRight = xLeft;
+        }
+      } else {
+        let x = 0;
+        for (const cellWidth of row.cells) {
+          rects.push({ x: x + gap / 2, y: y + gap / 2, width: cellWidth - gap, height: rowHeight - gap });
+          x += cellWidth;
+        }
       }
       y += rowHeight;
     }
@@ -62,8 +77,9 @@ function computeLayout(panelCount) {
         const cellsInRow = Math.min(cols, remaining);
         const cellWidth = 1 / cellsInRow;
         for (let c = 0; c < cellsInRow; c++) {
+          const col = rtl ? cellsInRow - 1 - c : c;
           layout.push({
-            x: c * cellWidth + gap / 2,
+            x: col * cellWidth + gap / 2,
             y: (r / rowsCount) + gap / 2,
             width: cellWidth - gap,
             height: 1 / rowsCount - gap,

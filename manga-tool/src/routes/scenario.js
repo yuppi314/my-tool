@@ -5,9 +5,15 @@ const { generateScenario } = require("../lib/scenario");
 
 const router = express.Router();
 
+function normalizeDirection(value) {
+  return value === "ltr" ? "ltr" : "rtl";
+}
+
 router.get("/", (req, res) => {
   const rows = db
-    .prepare("SELECT id, title, premise, art_style, created_at, updated_at FROM scenarios ORDER BY created_at DESC")
+    .prepare(
+      "SELECT id, title, premise, art_style, reading_direction, created_at, updated_at FROM scenarios ORDER BY created_at DESC"
+    )
     .all();
   res.json(rows);
 });
@@ -20,15 +26,17 @@ router.get("/:id", (req, res) => {
     title: row.title,
     premise: row.premise,
     art_style: row.art_style,
+    reading_direction: row.reading_direction,
     ...JSON.parse(row.data_json),
   });
 });
 
 router.post("/generate", async (req, res) => {
-  const { premise, numPages, artStyle } = req.body || {};
+  const { premise, numPages, artStyle, readingDirection } = req.body || {};
   if (!premise || typeof premise !== "string") {
     return res.status(400).json({ error: "premise は必須です" });
   }
+  const direction = normalizeDirection(readingDirection);
   try {
     const scenario = await generateScenario({
       premise,
@@ -38,10 +46,10 @@ router.post("/generate", async (req, res) => {
 
     const id = uuidv4();
     db.prepare(
-      "INSERT INTO scenarios (id, title, premise, art_style, data_json) VALUES (?, ?, ?, ?, ?)"
-    ).run(id, scenario.title, premise, artStyle || "", JSON.stringify(scenario));
+      "INSERT INTO scenarios (id, title, premise, art_style, reading_direction, data_json) VALUES (?, ?, ?, ?, ?, ?)"
+    ).run(id, scenario.title, premise, artStyle || "", direction, JSON.stringify(scenario));
 
-    res.json({ id, ...scenario });
+    res.json({ id, reading_direction: direction, ...scenario });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message || "シナリオ生成に失敗しました" });
@@ -58,9 +66,15 @@ router.put("/:id", (req, res) => {
     return res.status(400).json({ error: "不正なシナリオデータです" });
   }
 
-  db.prepare(
-    "UPDATE scenarios SET title = ?, data_json = ?, updated_at = datetime('now') WHERE id = ?"
-  ).run(scenario.title, JSON.stringify(scenario), id);
+  if (scenario.reading_direction) {
+    db.prepare(
+      "UPDATE scenarios SET title = ?, data_json = ?, reading_direction = ?, updated_at = datetime('now') WHERE id = ?"
+    ).run(scenario.title, JSON.stringify(scenario), normalizeDirection(scenario.reading_direction), id);
+  } else {
+    db.prepare(
+      "UPDATE scenarios SET title = ?, data_json = ?, updated_at = datetime('now') WHERE id = ?"
+    ).run(scenario.title, JSON.stringify(scenario), id);
+  }
 
   res.json({ ok: true });
 });

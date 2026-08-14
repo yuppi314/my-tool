@@ -9,7 +9,8 @@ const router = express.Router();
 function loadScenario(id) {
   const row = db.prepare("SELECT * FROM scenarios WHERE id = ?").get(id);
   if (!row) return null;
-  return JSON.parse(row.data_json);
+  // reading_direction は専用カラムが正、data_json 内の値より優先する
+  return { ...JSON.parse(row.data_json), reading_direction: row.reading_direction || "rtl" };
 }
 
 function loadPanelImage(scenarioId, pageNumber, panelNumber) {
@@ -82,7 +83,11 @@ router.get("/:id/page/:pageNumber.svg", (req, res) => {
     if (img) panelImages.set(panel.panel_number, img);
   }
 
-  const svg = pageToSvg(page, panelImages, { width: 700, height: 1050 });
+  const svg = pageToSvg(page, panelImages, {
+    width: 700,
+    height: 1050,
+    readingDirection: scenario.reading_direction,
+  });
   res.set("Content-Type", "image/svg+xml");
   res.send(svg);
 });

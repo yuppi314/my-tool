@@ -23,6 +23,7 @@ $("#btnGenerateScenario").addEventListener("click", async () => {
   const premise = $("#premise").value.trim();
   const numPages = $("#numPages").value;
   const artStyle = $("#artStyle").value.trim();
+  const readingDirection = $("#readingDirection").value;
   if (!premise) {
     $("#scenarioStatus").textContent = "プロットを入力してください。";
     return;
@@ -35,7 +36,7 @@ $("#btnGenerateScenario").addEventListener("click", async () => {
   try {
     const scenario = await api("/api/scenario/generate", {
       method: "POST",
-      body: JSON.stringify({ premise, numPages, artStyle }),
+      body: JSON.stringify({ premise, numPages, artStyle, readingDirection }),
     });
     currentScenarioId = scenario.id;
     currentScenario = scenario;

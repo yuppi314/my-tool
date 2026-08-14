@@ -38,8 +38,8 @@ function textLinesSvg(lines, x, y, lineHeight, extraAttrs = "") {
  * 1ページ分のSVGマークアップを生成する。
  * panelImages: Map<panel_number, { buffer, mimeType, isPlaceholder, placeholder }>
  */
-function pageToSvg(page, panelImages, { width = 900, height = 1350 } = {}) {
-  const rects = computeLayout(page.panels.length);
+function pageToSvg(page, panelImages, { width = 900, height = 1350, readingDirection = "rtl" } = {}) {
+  const rects = computeLayout(page.panels.length, readingDirection);
 
   const panelsSvg = page.panels
     .map((panel, idx) => {
