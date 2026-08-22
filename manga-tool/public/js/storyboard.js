@@ -169,7 +169,7 @@ const Storyboard = (() => {
         <div class="resize-handle"></div>
       `;
       attachDragResize(box, canvas, panel);
-      box.addEventListener('mousedown', () => {
+      box.addEventListener('pointerdown', () => {
         selectedPanelId = panel.id;
         qsa('.panel-box', canvas).forEach((b) => b.classList.toggle('selected', b === box));
         renderPanelForm(panel);
@@ -181,11 +181,12 @@ const Storyboard = (() => {
   }
 
   function attachDragResize(box, canvas, panel) {
+    // Pointer Events unify mouse・touch・ペン操作なので、スマホでもコマの移動/リサイズができる。
     const handle = box.querySelector('.resize-handle');
     let mode = null;
     let startX, startY, startRect;
 
-    function onMouseMove(e) {
+    function onPointerMove(e) {
       const rect = canvas.getBoundingClientRect();
       const dxPct = ((e.clientX - startX) / rect.width) * 100;
       const dyPct = ((e.clientY - startY) / rect.height) * 100;
@@ -203,9 +204,10 @@ const Storyboard = (() => {
         panel._pending = { x: startRect.x, y: startRect.y, w, h: hh };
       }
     }
-    async function onMouseUp() {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+    async function onPointerUp() {
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('pointercancel', onPointerUp);
       if (panel._pending) {
         Object.assign(panel, panel._pending);
         await Api.put(`/api/panels/${panel.id}`, panel._pending);
@@ -214,21 +216,25 @@ const Storyboard = (() => {
       }
       mode = null;
     }
-    box.addEventListener('mousedown', (e) => {
+    box.addEventListener('pointerdown', (e) => {
       if (e.target === handle) return;
+      e.preventDefault();
       mode = 'move';
       startX = e.clientX; startY = e.clientY;
       startRect = { x: panel.x, y: panel.y, w: panel.w, h: panel.h };
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('pointermove', onPointerMove);
+      document.addEventListener('pointerup', onPointerUp);
+      document.addEventListener('pointercancel', onPointerUp);
     });
-    handle.addEventListener('mousedown', (e) => {
+    handle.addEventListener('pointerdown', (e) => {
       e.stopPropagation();
+      e.preventDefault();
       mode = 'resize';
       startX = e.clientX; startY = e.clientY;
       startRect = { x: panel.x, y: panel.y, w: panel.w, h: panel.h };
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('pointermove', onPointerMove);
+      document.addEventListener('pointerup', onPointerUp);
+      document.addEventListener('pointercancel', onPointerUp);
     });
   }
 
