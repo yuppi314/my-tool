@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作品ワークスペース - Kindle漫画 制作ツール</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar no-print">
+  <div class="brand">
+    <a class="back" href="index.html">← 作品一覧</a>
+    <h1 id="project-title-header">読み込み中...</h1>
+  </div>
+  <div>
+    <button id="save-status" class="ghost" disabled>保存済み</button>
+  </div>
+</header>
+
+<nav class="tabs no-print">
+  <button class="tab-btn active" data-tab="info">基本情報 / KDP</button>
+  <button class="tab-btn" data-tab="characters">キャラクター</button>
+  <button class="tab-btn" data-tab="chapters">章立て・シナリオ</button>
+  <button class="tab-btn" data-tab="storyboard">コマ割り</button>
+  <button class="tab-btn" data-tab="frontmatter">はじめに・おわりに</button>
+  <button class="tab-btn" data-tab="export">目次・書き出し</button>
+</nav>
+
+<main class="container wide">
+
+  <section class="tab-panel active" id="tab-info">
+    <div class="card">
+      <h2 style="margin-top:0">作品の基本情報</h2>
+      <div class="two-col">
+        <div>
+          <label>タイトル</label>
+          <input type="text" id="info-title">
+          <label>サブタイトル(巻数など)</label>
+          <input type="text" id="info-subtitle">
+          <label>シリーズ名</label>
+          <input type="text" id="info-series">
+          <label>著者名</label>
+          <input type="text" id="info-author">
+        </div>
+        <div>
+          <label>ジャンル</label>
+          <input type="text" id="info-genre">
+          <label>判型(トリムサイズの目安)</label>
+          <select id="info-trim">
+            <option>B6(コミック標準)</option>
+            <option>A5</option>
+            <option>文庫サイズ</option>
+            <option>Kindle固定レイアウト(タブレット想定)</option>
+          </select>
+          <label>作品紹介文(KDP説明文の下書き)</label>
+          <textarea id="info-description"></textarea>
+        </div>
+      </div>
+      <label>KDPカテゴリ(候補をカンマ区切りで)</label>
+      <input type="text" id="info-kdp-categories" placeholder="例: コミック・ラノベ > 少女漫画, ホラー">
+      <label>KDP検索キーワード(カンマ区切り、最大7個目安)</label>
+      <input type="text" id="info-kdp-keywords" placeholder="例: 幽霊, 喫茶店, 日常ミステリー">
+      <div class="toolbar" style="margin-top:16px">
+        <button class="primary" id="info-save">保存する</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab-panel" id="tab-characters"></section>
+
+  <section class="tab-panel" id="tab-chapters"></section>
+
+  <section class="tab-panel" id="tab-storyboard"></section>
+
+  <section class="tab-panel" id="tab-frontmatter"></section>
+
+  <section class="tab-panel" id="tab-export"></section>
+
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/characters.js"></script>
+<script src="js/chapters.js"></script>
+<script src="js/storyboard.js"></script>
+<script src="js/frontmatter.js"></script>
+<script src="js/export.js"></script>
+<script src="js/project.js"></script>
+</body>
+</html>

@@ -17,3 +17,16 @@ services:
         value: 980
       - key: ADMIN_TOKEN
         sync: false
+
+  # Kindle漫画 制作ツール(manga-tool/)。スマホのブラウザからも使えるように公開する。
+  - type: web
+    name: kindle-manga-tool
+    runtime: node
+    rootDir: manga-tool
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 3100

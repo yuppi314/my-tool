@@ -1,0 +1,17 @@
+{
+  "name": "kindle-manga-production-tool",
+  "version": "1.0.0",
+  "description": "Kindleで漫画を出版するための制作管理ツール(シナリオ・キャラ設定・章立て・コマ割り・目次・はじめに/おわりに)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
