@@ -163,3 +163,20 @@ test('KDP登録シートとチェックリストが生成される', () => {
   assert.match(check, /Kindle Previewer 3/);
   assert.strictEqual(JSON.parse(fs.readFileSync(files.jsonFile, 'utf8')).pageCount, 4);
 });
+
+test('プリフライト: 9:16の縦長ページは解像度警告を出さない', () => {
+  // 幅1440pxは推奨1600pxを下回るが、長辺2560pxで解像度は足りている。
+  const dir = makeBook({}, 0);
+  fs.writeFileSync(path.join(dir, 'pages', '001.png'), makePng(1440, 2560));
+  const book = project.load(dir);
+  const result = validate.run(book, pagesLib.collect(book.pagesPath));
+  const messages = result.issues.map((i) => i.message).join('\n');
+  assert.doesNotMatch(messages, /1440x2560px/);
+
+  // 幅も長辺も足りない場合は従来どおり警告する。
+  const small = makeBook({}, 0);
+  fs.writeFileSync(path.join(small, 'pages', '001.png'), makePng(1300, 1900));
+  const sb = project.load(small);
+  const sr = validate.run(sb, pagesLib.collect(sb.pagesPath));
+  assert.match(sr.issues.map((i) => i.message).join('\n'), /1300x1900px/);
+});

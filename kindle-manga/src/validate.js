@@ -13,6 +13,7 @@ const LIMITS = {
   coverMaxBytes: 50 * 1024 * 1024,
   pageMinWidth: 1200,
   pageRecommendedWidth: 1600,
+  pageRecommendedLongSide: 2400,
   pageMaxBytes: 5 * 1024 * 1024,
   pageMaxPixels: 10 * 1000 * 1000,
   totalMaxBytes: 650 * 1024 * 1024,
@@ -117,9 +118,15 @@ function checkPages(book, pages, issues) {
       issues.push(
         issue('error', `${p.name}: 幅${p.width}px。`, `固定レイアウト漫画の最低幅は${LIMITS.pageMinWidth}pxです。`)
       );
-    } else if (p.width < LIMITS.pageRecommendedWidth) {
+    } else if (p.width < LIMITS.pageRecommendedWidth && Math.max(p.width, p.height) < LIMITS.pageRecommendedLongSide) {
+      // 幅だけで判定すると、9:16のような縦長ページ(1440x2560)が不当に警告される。
+      // 長辺が足りていれば解像度は十分なので見逃す。
       issues.push(
-        issue('warn', `${p.name}: 幅${p.width}px。`, `推奨幅は${LIMITS.pageRecommendedWidth}px以上です。`)
+        issue(
+          'warn',
+          `${p.name}: ${p.width}x${p.height}px。`,
+          `推奨は幅${LIMITS.pageRecommendedWidth}px以上、または長辺${LIMITS.pageRecommendedLongSide}px以上です。`
+        )
       );
     }
     if (p.bytes > LIMITS.pageMaxBytes) {
