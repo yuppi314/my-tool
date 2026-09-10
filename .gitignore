@@ -3,5 +3,6 @@ node_modules/
 data/*.db
 data/*.db-journal
 npm-debug.log
-kindle-manga/works/kodomo-nisa/kodomo-nisa-prompts.zip
+# 配布用ZIPは pages/ と paste/ から再生成できる派生物
+kindle-manga/works/*/*.zip
 kindle-manga/works/kodomo-nisa/paste/char_*.png
