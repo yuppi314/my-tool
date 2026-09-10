@@ -85,7 +85,7 @@ kindle-manga normalize ./作品/xxx --preset b6
 kindle-manga normalize ./作品/xxx --split-spreads --grayscale
 ```
 
-プリセット: `hd` (1600x2560) / `b6` (1488x2266) / `standard` (1200x1920)
+プリセット: `hd` (1600x2560) / `b6` (1488x2266) / `standard` (1200x1920) / `tall` (1440x2560, 9:16スマホ縦読み)
 
 整形後は `book.json` の `pagesDir` を出力先(既定 `pages-normalized`)に変えてから `build` してください。
 
