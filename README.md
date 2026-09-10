@@ -108,3 +108,7 @@ Renderの場合は `render.yaml` の `runtime` を `docker` に、`plan` を `st
 docker build -t kyusei-mayan-fortune .
 docker run -p 3000:3000 -v $(pwd)/data:/app/data --env-file .env kyusei-mayan-fortune
 ```
+
+## 同梱ツール
+
+- [`kindle-manga/`](kindle-manga/README.md) — 漫画のページ画像をKindle(KDP)出版可能な固定レイアウトEPUB(右開き)まで自動で仕上げるCLI。入稿前チェックとKDP登録シート生成付き。

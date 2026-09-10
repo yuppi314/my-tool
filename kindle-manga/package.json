@@ -1,0 +1,18 @@
+{
+  "name": "kindle-manga",
+  "version": "1.0.0",
+  "description": "漫画画像をKindle(KDP)出版可能な固定レイアウトEPUBまで自動で仕上げるツール",
+  "bin": {
+    "kindle-manga": "bin/kindle-manga.js"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "optionalDependencies": {},
+  "license": "UNLICENSED"
+}
