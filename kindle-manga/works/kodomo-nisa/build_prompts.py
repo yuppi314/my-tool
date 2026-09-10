@@ -741,6 +741,34 @@ CHECK = """# 章4. 検品チェックリスト
 """
 
 
+def write_paste_files(here):
+    """1ページ1ファイルに切り出す。prompts.md から該当ページを探して貼るより、
+    ファイルを開いて全選択コピーする方が貼り間違いが起きない。"""
+    d = os.path.join(here, "paste")
+    os.makedirs(d, exist_ok=True)
+    index = ["漫画でわかるこどもNISA — 貼るだけプロンプト 1ページ1ファイル",
+             "",
+             "使い方",
+             "  1. ページごとに ChatGPT で新しいチャットを開く",
+             "  2. 下表の画像を添付する（キャラシートは毎回添付し直す）",
+             "  3. pNN.txt を開いて全選択コピーし、そのまま貼る",
+             "  4. 出来た画像を pages/ に 001.png 002.png … と連番で保存する",
+             "",
+             "禁句（言うと絵が崩れます）",
+             "  「さっきのキャラで」「前のページと同じタッチで」「この画像の顔を直して」",
+             "",
+             "ページ / 貼るファイル / 添付する画像",
+             ""]
+    for pg in PAGES:
+        body = render_page(pg).split("```")[1].strip("\n")
+        name = f"p{pg['n']:02d}.txt"
+        io.open(os.path.join(d, name), "w", encoding="utf-8").write(body + "\n")
+        files = " + ".join(f"char_{c}.png" for c in pg["ch"])
+        index.append(f"  P{pg['n']:>2}  {name}  {files}")
+    io.open(os.path.join(d, "README.txt"), "w", encoding="utf-8").write("\n".join(index) + "\n")
+    return d, len(PAGES)
+
+
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
     md = os.path.join(here, "prompts.md")
@@ -754,6 +782,8 @@ def main():
     print(f"ページ数: {len(PAGES)}")
     print(f"総コマ数: {sum(len(pg['panels']) for pg in PAGES)}")
     print(f"prompts.md: {os.path.getsize(md):,} bytes")
+    d, n = write_paste_files(here)
+    print(f"paste/: {n}ファイル + README.txt")
 
 
 if __name__ == "__main__":

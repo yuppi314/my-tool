@@ -3,3 +3,5 @@ node_modules/
 data/*.db
 data/*.db-journal
 npm-debug.log
+kindle-manga/works/kodomo-nisa/kodomo-nisa-prompts.zip
+kindle-manga/works/kodomo-nisa/paste/char_*.png
