@@ -8,7 +8,7 @@
 
 ◆【出力サイズ】9:16（縦長 1080×1920）
 
-◆【作画】※ページと同一・変更禁止
+◆【作画】※本文ページと同一・変更禁止
 現代日本のTVアニメ調（2010年代以降）、クリーンなデジタルセル彩色。
 線: 均一な細めの主線。黒に近いダークブラウン。輪郭は必ず閉じる。かすれ・鉛筆質感なし。
 影: セルシェーディング（2値影）。1段影のみ。グラデーション影は使わない。
@@ -17,6 +17,7 @@
 目: 中程度の大きさ。頭身: 成人は7頭身。1歳児は3頭身。成人のデフォルメ・SD禁止。
 服: 日本の子育て世代の普段着。しわは簡潔に3〜4本程度。
 背景: 直線的でクリーン。パース正確。写真的テクスチャは使わない。
+背景のぼかしは軽く。人物だけが浮いて見えるほど強くぼかさない。
 禁止: 厚塗り、油彩、水彩、アメコミ、3DCG、写実、劇画、モノクロ、セピア、レトロ。
 
 Modern Japanese TV anime style (2010s+), clean digital cel shading.
@@ -27,7 +28,12 @@ Medium-high saturation. 7-head proportions for adults. NO photorealism, NO monoc
 This must be a FULL COLOR illustration. Use vibrant, rich colors throughout.
 Do NOT use grayscale, black-and-white, or monochrome.
 
-◆【最重要】文字を一切描かないこと
+◆【最重要1】目を必ず開けて描くこと
+登場人物は全員、目をはっきり開けて瞳を描いてください。
+目を閉じた表情、細めて線になった目、伏し目は禁止です。
+Eyes must be OPEN with visible irises and highlights. NO closed eyes, NO squinting.
+
+◆【最重要2】文字を一切描かないこと
 This is a COVER ILLUSTRATION ONLY. Absolutely NO text, NO letters, NO numbers,
 NO logos, NO watermarks, NO speech bubbles, NO panel borders anywhere in the image.
 タイトル文字はこちらで別途入れます。画面内に文字を描かないでください。
@@ -35,15 +41,18 @@ NO logos, NO watermarks, NO speech bubbles, NO panel borders anywhere in the ima
 
 ◆【構図の制約】※必ず守る
 ・1コマの1枚絵。コマ割りも枠線もなし。吹き出しもなし。
-・人物は画面の中央からやや上に置く。頭の上には余白を少し残す。
+・顔は画面の上から3分の1あたりに置き、大きめに描く。
+　（ストアでは幅150pxまで縮む。顔が小さいと表情が消える）
+・頭の上には余白を少し残す。頭頂部を画面の端で切らない。
 ・画面の下4分の1は、このあとタイトル帯で隠れる。重要なものを置かない。
 ・左右の端ぎりぎりに顔や手を置かない（両端が少し切り取られる）。
 
 ◆【描く場面】
 明るいカフェの窓際のテーブル。手前にかな、向かいにあゆみが座っている。
 あゆみは軽く身を乗り出し、スマートフォンの画面をかなの方へ向けて見せながら、
-穏やかに話している。かなは両手でノートとペンを持ち、
-「なるほど」という顔で画面をのぞき込み、少し口を開けている。
+目を開けて穏やかに話している。
+かなは両手でノートとペンを持ち、目を大きく開けて画面をのぞき込み、
+「なるほど」という顔で少し口を開けている。二人とも瞳をはっきり描く。
 二人の間に白いテーブルと2つのコーヒーカップ。
 テーブルの端に、子育て向けの保険の冊子が1冊置かれている。
 冊子の表紙は文字なしで、家族のイラストと緑の若葉のような図版だけ。
