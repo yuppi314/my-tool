@@ -1,10 +1,21 @@
 #!/usr/bin/env python3
 """manga/ の40ページを、まとめ・図解の間へ差し込んで pages/ を組み立てる。
 
-pages/*.jpg は manga/*.jpg と同じ中身なのでGitには含めていない。
+manga/ は品質92・クロマ間引きなしの保管用。pages/ へ入れるときに
+品質85・4:2:0へ落としている。元絵が941pxからの拡大で細部を持たないため
+見た目は変わらず、容量は約4割減る。
+
+KindleはEPUBの容量に応じた配信コストを70%ロイヤリティから差し引くため、
+画質が変わらない範囲で小さくしておくと1冊あたりの手取りが増える。
+
+pages/*.jpg は manga/ から作り直せるのでGitには含めていない。
 原稿を差し替えたら manga/ 側を直してこれを実行する。
 """
-import os, shutil
+import os
+from PIL import Image
+
+QUALITY = 85
+SUBSAMPLING = 2  # 4:2:0。吹き出しの文字は黒白=輝度のみなので影響しない。
 
 # (pages/の番号, manga/のページ番号)。章ごとに まとめ+図解 が2枚ずつ挟まる。
 SLOTS = (
@@ -21,7 +32,10 @@ def main():
         src = os.path.join(here, 'manga', 'P%02d.jpg' % page)
         if not os.path.exists(src):
             raise SystemExit('原稿がありません: %s' % src)
-        shutil.copy(src, os.path.join(here, 'pages', '%03d.jpg' % slot))
+        Image.open(src).convert('RGB').save(
+            os.path.join(here, 'pages', '%03d.jpg' % slot), 'JPEG',
+            quality=QUALITY, subsampling=SUBSAMPLING,
+            progressive=False, optimize=True)
     print('%d ページを配置しました。' % len(SLOTS))
 
 if __name__ == '__main__':
