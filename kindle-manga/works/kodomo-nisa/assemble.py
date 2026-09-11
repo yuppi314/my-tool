@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""manga/ の40ページを、まとめ・図解の間へ差し込んで pages/ を組み立てる。
+"""pages/ を manga/ と figures/ から組み立てる。
 
-manga/ は品質92・クロマ間引きなしの保管用。pages/ へ入れるときに
-品質85・4:2:0へ落としている。元絵が941pxからの拡大で細部を持たないため
-見た目は変わらず、容量は約4割減る。
+pages/ は中身をすべて他所から作れるので、Gitには入れていない。
+以前は図解とまとめのPNGだけ pages/ に直接置いていたが、
+本文の前後にページを足すたびに手で番号を振り直す必要があり、
+ずれを生みやすかったので、並びの定義をこのファイル一箇所に集約した。
 
-KindleはEPUBの容量に応じた配信コストを70%ロイヤリティから差し引くため、
-画質が変わらない範囲で小さくしておくと1冊あたりの手取りが増える。
-
-pages/*.jpg は manga/ から作り直せるのでGitには含めていない。
-原稿を差し替えたら manga/ 側を直してこれを実行する。
+漫画は品質92で manga/ に保管し、pages/ へ入れるときに85・4:2:0へ落とす。
+元絵が941pxからの拡大で細部を持たないため見た目は変わらず、容量は約4割減る。
+Kindleは配信コストを容量に応じてロイヤリティから差し引くので、
+画質が変わらない範囲の削減はそのまま1冊あたりの手取りになる。
 """
 import os
 from PIL import Image
@@ -17,26 +17,45 @@ from PIL import Image
 QUALITY = 85
 SUBSAMPLING = 2  # 4:2:0。吹き出しの文字は黒白=輝度のみなので影響しない。
 
-# (pages/の番号, manga/のページ番号)。章ごとに まとめ+図解 が2枚ずつ挟まる。
-SLOTS = (
-    [(i, i)     for i in range(1, 8)]     # 001-007 = P1-P7
-    + [(i, i-2) for i in range(10, 22)]   # 010-021 = P8-P19
-    + [(i, i-4) for i in range(24, 34)]   # 024-033 = P20-P29
-    + [(i, i-6) for i in range(36, 42)]   # 036-041 = P30-P35
-    + [(i, i-8) for i in range(44, 49)]   # 044-048 = P36-P40
+# 本の並び。('manga', n) は manga/P{n}.jpg、('fig', 名前) は figures/{名前}.png。
+LAYOUT = (
+    [('manga', 1), ('text', 'hajimeni')]
+    + [('manga', n) for n in range(2, 8)]            # 第1章
+    + [('fig', 'matome01'), ('fig', 'fig01-jinbutsu')]
+    + [('manga', n) for n in range(8, 20)]           # 第2章
+    + [('fig', 'matome02'), ('fig', 'fig02-hayawakari')]
+    + [('manga', n) for n in range(20, 30)]          # 第3章
+    + [('fig', 'matome03'), ('fig', 'fig03-hikaku')]
+    + [('manga', n) for n in range(30, 36)]          # 第4章
+    + [('fig', 'matome04'), ('fig', 'fig04-timeline')]
+    + [('manga', n) for n in range(36, 41)]          # 第5章
+    + [('fig', 'matome05'), ('fig', 'fig05-checklist')]
+    + [('text', 'owarini'), ('fig', 'fig06-kanmatsu')]
 )
 
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
-    for slot, page in SLOTS:
-        src = os.path.join(here, 'manga', 'P%02d.jpg' % page)
-        if not os.path.exists(src):
-            raise SystemExit('原稿がありません: %s' % src)
-        Image.open(src).convert('RGB').save(
-            os.path.join(here, 'pages', '%03d.jpg' % slot), 'JPEG',
-            quality=QUALITY, subsampling=SUBSAMPLING,
-            progressive=False, optimize=True)
-    print('%d ページを配置しました。' % len(SLOTS))
+    out = os.path.join(here, 'pages')
+    os.makedirs(out, exist_ok=True)
+    for f in os.listdir(out):
+        os.remove(os.path.join(out, f))
+
+    for slot, (kind, key) in enumerate(LAYOUT, start=1):
+        if kind == 'manga':
+            src = os.path.join(here, 'manga', 'P%02d.jpg' % key)
+            dst = os.path.join(out, '%03d.jpg' % slot)
+            if not os.path.exists(src):
+                raise SystemExit('原稿がありません: %s' % src)
+            Image.open(src).convert('RGB').save(
+                dst, 'JPEG', quality=QUALITY, subsampling=SUBSAMPLING,
+                progressive=False, optimize=True)
+        else:
+            src = os.path.join(here, 'figures', '%s.png' % key)
+            if not os.path.exists(src):
+                raise SystemExit('図版がありません: %s' % src)
+            Image.open(src).save(os.path.join(out, '%03d.png' % slot))
+
+    print('%d ページを配置しました。' % len(LAYOUT))
 
 if __name__ == '__main__':
     main()
