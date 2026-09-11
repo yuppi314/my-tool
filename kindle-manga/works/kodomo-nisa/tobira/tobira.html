@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { width:1440px; height:2560px; overflow:hidden; }
+body { font-family:"IPAPGothic","IPAGothic",sans-serif; background:#0E2851;
+  position:relative; }
+.art { position:absolute; inset:0; }
+.art img { width:1440px; display:block; }
+/* 絵から帯へなじませる */
+.fade { position:absolute; left:0; right:0; bottom:640px; height:220px;
+  background:linear-gradient(to bottom, rgba(14,40,81,0), #0E2851); }
+.band { position:absolute; left:0; right:0; bottom:0; height:640px;
+  background:#0E2851; color:#fff; text-align:center;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:0 80px; }
+.pre { font-size:60px; letter-spacing:.18em; color:#C6D4EA; }
+.main { font-size:176px; font-weight:bold; line-height:1.02; margin:10px 0 0; }
+.rule { width:340px; height:4px; background:#E8B04B; margin:34px 0 28px; }
+.sub { font-size:52px; color:#F2E3C4; letter-spacing:.03em; }
+.author { font-size:44px; color:#93A6C6; letter-spacing:.12em; margin-top:40px; }
+</style>
+<div class="art"><img src="art.png"></div>
+<div class="fade"></div>
+<div class="band">
+  <div class="pre">漫画でわかる</div>
+  <div class="main">こどもNISA</div>
+  <div class="rule"></div>
+  <div class="sub">2027年スタート 0歳からの600万円</div>
+  <div class="author">あさひ なぎさ</div>
+</div>
