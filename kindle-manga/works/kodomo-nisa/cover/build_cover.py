@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
-"""扉ページ(P01)の絵から表紙 cover.jpg を作る。
+"""表紙 cover.jpg を組む。
 
-タイトル文字は画像生成AIに描かせず、HTMLで組んでChromiumで焼き込む。
-ストアのサムネイルは幅150px程度まで縮むため、書名を大きく取っている。
+絵(art_src.png)は表紙専用に生成したもの。文字は画像生成AIに描かせず、
+HTMLで組んでChromiumで焼き込む。書名の輪郭が保たれ、ストアの
+サムネイル幅(約150px)でも読める。
+
+赤いバッジが「10月1日 受付開始」という急ぎの理由を担当し、
+絵は「読み終えたあとの状態」を担当する、という分担にしている。
 """
 import os, subprocess
 from PIL import Image
 
 CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'
 HERE = os.path.dirname(os.path.abspath(__file__))
-BAND_TOP = 1910   # 扉の濃紺タイトル帯が始まるy座標。ここから上だけを絵として使う。
 
 def main():
-    src = Image.open(os.path.join(HERE, '..', 'manga', 'P01.jpg')).convert('RGB')
-    art = src.crop((0, 0, 1440, BAND_TOP)).resize((1600, 2122), Image.LANCZOS)
-    # 学資保険のパンフレットが下端のグラデーションに沈まない位置まで上を詰める
-    art.crop((0, 322, 1600, 2122)).save(os.path.join(HERE, 'art.png'))
+    src = Image.open(os.path.join(HERE, 'art_src.png')).convert('RGB')
+    # 幅1600に合わせて拡大し、顔が上3分の1に来る位置で1600x1800を切り出す
+    w, h = src.size
+    scaled = src.resize((1600, round(h * 1600 / w)), Image.LANCZOS)
+    scaled.crop((0, 40, 1600, 1840)).save(os.path.join(HERE, 'art.png'))
 
     subprocess.run([CHROME, '--headless', '--disable-gpu', '--no-sandbox',
                     '--hide-scrollbars', '--window-size=1600,2560',
