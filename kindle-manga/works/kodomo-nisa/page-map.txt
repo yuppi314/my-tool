@@ -1,50 +1,55 @@
-漫画ページ → pages/ に保存するファイル名
+漫画でわかるこどもNISA — 全51ページの並び
 
-  P 1  ->  pages/001.png
-  P 2  ->  pages/002.png
-  P 3  ->  pages/003.png
-  P 4  ->  pages/004.png
-  P 5  ->  pages/005.png
-  P 6  ->  pages/006.png
-  P 7  ->  pages/007.png
-  P 8  ->  pages/009.png
-  P 9  ->  pages/010.png
-  P10  ->  pages/011.png
-  P11  ->  pages/012.png
-  P12  ->  pages/013.png
-  P13  ->  pages/014.png
-  P14  ->  pages/015.png
-  P15  ->  pages/016.png
-  P16  ->  pages/017.png
-  P17  ->  pages/018.png
-  P18  ->  pages/019.png
-  P19  ->  pages/020.png
-  P20  ->  pages/022.png
-  P21  ->  pages/023.png
-  P22  ->  pages/024.png
-  P23  ->  pages/025.png
-  P24  ->  pages/026.png
-  P25  ->  pages/027.png
-  P26  ->  pages/028.png
-  P27  ->  pages/029.png
-  P28  ->  pages/030.png
-  P29  ->  pages/031.png
-  P30  ->  pages/033.png
-  P31  ->  pages/034.png
-  P32  ->  pages/035.png
-  P33  ->  pages/036.png
-  P34  ->  pages/037.png
-  P35  ->  pages/038.png
-  P36  ->  pages/040.png
-  P37  ->  pages/041.png
-  P38  ->  pages/042.png
-  P39  ->  pages/043.png
-  P40  ->  pages/044.png
+各章は 漫画 → まとめ文章 → 図解 の順。
 
-図解（配置済み）
-  fig01-jinbutsu  ->  pages/008.png
-  fig02-hayawakari  ->  pages/021.png
-  fig03-hikaku  ->  pages/032.png
-  fig04-timeline  ->  pages/039.png
-  fig05-checklist  ->  pages/045.png
-  fig06-kanmatsu  ->  pages/046.png
+  001  P 1（漫画）
+  002  P 2（漫画）
+  003  P 3（漫画）
+  004  P 4（漫画）
+  005  P 5（漫画）
+  006  P 6（漫画）
+  007  P 7（漫画）
+  008  まとめ1 決められないのはあなたのせいではない  ← 作成済み
+  009  図解1 この本に出てくる3人  ← 作成済み
+  010  P 8（漫画）
+  011  P 9（漫画）
+  012  P10（漫画）
+  013  P11（漫画）
+  014  P12（漫画）
+  015  P13（漫画）
+  016  P14（漫画）
+  017  P15（漫画）
+  018  P16（漫画）
+  019  P17（漫画）
+  020  P18（漫画）
+  021  P19（漫画）
+  022  まとめ2 NISAはもうかる制度ではない  ← 作成済み
+  023  図解2 こどもNISA早わかり  ← 作成済み
+  024  P20（漫画）
+  025  P21（漫画）
+  026  P22（漫画）
+  027  P23（漫画）
+  028  P24（漫画）
+  029  P25（漫画）
+  030  P26（漫画）
+  031  P27（漫画）
+  032  P28（漫画）
+  033  P29（漫画）
+  034  まとめ3 比べるべきは利回りではない  ← 作成済み
+  035  図解3 学資保険との比較  ← 作成済み
+  036  P30（漫画）
+  037  P31（漫画）
+  038  P32（漫画）
+  039  P33（漫画）
+  040  P34（漫画）
+  041  P35（漫画）
+  042  まとめ4 お金に使う時期の名札をつける  ← 作成済み
+  043  図解4 0歳から18歳まで  ← 作成済み
+  044  P36（漫画）
+  045  P37（漫画）
+  046  P38（漫画）
+  047  P39（漫画）
+  048  P40（漫画）
+  049  まとめ5 完璧に理解してから始めなくていい  ← 作成済み
+  050  図解5 10月1日にやること3つ  ← 作成済み
+  051  図解6 ことばの整理・巻末  ← 作成済み
