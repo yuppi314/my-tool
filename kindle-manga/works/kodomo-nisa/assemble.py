@@ -30,7 +30,7 @@ LAYOUT = (
     + [('fig', 'matome04'), ('fig', 'fig04-timeline')]
     + [('manga', n) for n in range(36, 41)]          # 第5章
     + [('fig', 'matome05'), ('fig', 'fig05-checklist')]
-    + [('text', 'owarini'), ('fig', 'fig06-kanmatsu')]
+    + [('text', 'owarini'), ('fig', 'fig06-kanmatsu'), ('tokuten', 'tokuten')]
 )
 
 def main():
@@ -50,7 +50,8 @@ def main():
                 dst, 'JPEG', quality=QUALITY, subsampling=SUBSAMPLING,
                 progressive=False, optimize=True)
         else:
-            src = os.path.join(here, 'figures', '%s.png' % key)
+            folder = 'tokuten' if kind == 'tokuten' else 'figures'
+            src = os.path.join(here, folder, '%s.png' % key)
             if not os.path.exists(src):
                 raise SystemExit('図版がありません: %s' % src)
             Image.open(src).save(os.path.join(out, '%03d.png' % slot))
