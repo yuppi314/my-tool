@@ -5,7 +5,6 @@ data/*.db-journal
 npm-debug.log
 # 配布用ZIPは pages/ と paste/ から再生成できる派生物
 kindle-manga/works/*/*.zip
-kindle-manga/works/kodomo-nisa/paste/char_*.png
 # pages/*.jpg は manga/ から assemble.py で再生成できる派生物
 kindle-manga/works/kodomo-nisa/pages/
 kindle-manga/works/*/dist/

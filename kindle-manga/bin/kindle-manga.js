@@ -9,6 +9,7 @@ const epub = require('../src/epub');
 const validate = require('../src/validate');
 const metadata = require('../src/metadata');
 const { normalize, PRESETS } = require('../src/normalize');
+const generate = require('../src/generate');
 
 const C = process.stdout.isTTY
   ? { red: '\x1b[31m', yellow: '\x1b[33m', green: '\x1b[32m', dim: '\x1b[2m', bold: '\x1b[1m', off: '\x1b[0m' }
@@ -34,6 +35,7 @@ const USAGE = `${C.bold}kindle-manga${C.off} — 漫画画像をKindle出版可�
 
 使い方:
   kindle-manga init [作品フォルダ]        作品フォルダの雛形を作る
+  kindle-manga generate [作品フォルダ]    paste/のプロンプトからページ画像を一括生成
   kindle-manga check [作品フォルダ]       KDP入稿前のプリフライト検査
   kindle-manga normalize [作品フォルダ]   画像をKindle仕様に一括整形(要 sharp)
   kindle-manga build [作品フォルダ]       固定レイアウトEPUB(右開き)を生成
@@ -49,6 +51,11 @@ const USAGE = `${C.bold}kindle-manga${C.off} — 漫画画像をKindle出版可�
   --split-spreads     横長の見開き画像を2ページに分割
   --quality <1-100>   normalize時のJPEG品質 (既定88)
   --in / --dir <path> normalizeの入力/出力フォルダ
+  --yes               generate時に実際に生成する(既定は枚数と見積りの表示だけ)
+  --only <指定>       generateするページ (例: 19  /  3-7  /  19,24)
+  --orientation <向き> generateの向き (portrait / square / landscape)
+
+generate には環境変数 OPENAI_API_KEY が必要です。画像生成は課金されます。
 
 注意: Amazon KDPには公開の出版APIがありません。最後のアップロード操作だけは
       KDPの管理画面で行う必要があります(ブラウザ自動操作は規約違反のリスクがあります)。
@@ -192,6 +199,91 @@ async function cmdNormalize(dir, flags) {
   return res;
 }
 
+async function cmdGenerate(dir, flags) {
+  const book = project.load(dir);
+  const pasteDir = path.join(book.root, 'paste');
+  const mangaDir = path.join(book.root, 'manga');
+  const prompts = generate.collectPrompts(pasteDir, { only: flags.only });
+  const references = generate.collectReferences(pasteDir);
+
+  const pending = prompts.filter(
+    (p) => flags.force || !fs.existsSync(generate.outputPath(mangaDir, p.page))
+  );
+
+  console.log(`${C.bold}ページ画像の生成:${C.off} ${book.title}`);
+  console.log('');
+  console.log(`  プロンプト   ${prompts.length}件 (${path.relative(process.cwd(), pasteDir)})`);
+  console.log(`  生成する     ${pending.length}件${pending.length ? ` — ${summarizePages(pending.map((p) => p.page))}` : ''}`);
+  console.log(`  既にある     ${prompts.length - pending.length}件${flags.force ? ' (--force で上書き)' : ' (飛ばす)'}`);
+  console.log(
+    `  キャラシート ${references.length ? references.map((r) => r.name).join(' ') : `${C.yellow}なし — 顔がページごとに変わります${C.off}`}`
+  );
+  console.log('');
+
+  if (!pending.length) {
+    console.log(`${C.green}生成するページはありません。${C.off}`);
+    return;
+  }
+  if (!process.env.OPENAI_API_KEY) {
+    console.log(`${C.red}OPENAI_API_KEY が設定されていません。${C.off}`);
+    console.log(`${C.dim}  export OPENAI_API_KEY=sk-...${C.off}`);
+    process.exitCode = 1;
+    return;
+  }
+  if (!flags.yes) {
+    console.log(`${C.yellow}画像生成には料金がかかります。${C.off} 実行するには --yes を付けてください。`);
+    console.log(`${C.dim}単価は https://openai.com/api/pricing/ を確認してください。${C.off}`);
+    return;
+  }
+
+  const started = Date.now();
+  const result = await generate.run(book, {
+    apiKey: process.env.OPENAI_API_KEY,
+    only: flags.only,
+    force: Boolean(flags.force),
+    orientation: typeof flags.orientation === 'string' ? flags.orientation : 'portrait',
+    onProgress(ev) {
+      if (ev.status === 'start') process.stdout.write(`  P${String(ev.page).padStart(2, '0')} ... `);
+      if (ev.status === 'done') console.log(`${C.green}完了${C.off} ${Math.round(ev.bytes / 1024)}KB`);
+      if (ev.status === 'failed') console.log(`${C.red}失敗${C.off} ${ev.message}`);
+    },
+  });
+
+  console.log('');
+  console.log(
+    `${C.bold}結果:${C.off} 生成 ${result.generated.length}件 / 失敗 ${result.failed.length}件 ` +
+      `(${Math.round((Date.now() - started) / 1000)}秒)`
+  );
+  if (result.failed.length) {
+    console.log('');
+    console.log(`失敗したページだけ作り直すには:`);
+    console.log(`  kindle-manga generate ${dir} --only ${result.failed.map((f) => f.page).join(',')} --yes`);
+    process.exitCode = 1;
+  }
+  return result;
+}
+
+// 1,2,3,7 を「1-3, 7」のように畳んで表示する。40ページ並べても読めるように。
+function summarizePages(pages) {
+  const out = [];
+  let start = null;
+  let prev = null;
+  for (const p of [...pages].sort((a, b) => a - b)) {
+    if (start === null) {
+      start = prev = p;
+      continue;
+    }
+    if (p === prev + 1) {
+      prev = p;
+      continue;
+    }
+    out.push(start === prev ? `${start}` : `${start}-${prev}`);
+    start = prev = p;
+  }
+  if (start !== null) out.push(start === prev ? `${start}` : `${start}-${prev}`);
+  return out.join(', ');
+}
+
 function cmdPublish(dir, flags) {
   console.log(`${C.bold}=== 1. プリフライト検査 ===${C.off}`);
   console.log('');
@@ -249,6 +341,9 @@ async function main() {
       break;
     case 'normalize':
       await cmdNormalize(dir, args.flags);
+      break;
+    case 'generate':
+      await cmdGenerate(dir, args.flags);
       break;
     case 'publish':
       cmdPublish(dir, args.flags);
