@@ -1,31 +1,34 @@
 #!/usr/bin/env python3
-"""表紙 cover.jpg を組む。
+"""表紙 cover.jpg を入稿サイズに整える。
 
-文字は画像生成AIに描かせず、HTMLで組んでChromiumで焼き込む。
-書名の輪郭が保たれ、ストアのサムネイル幅(約150px)でも読める。
-また、本文と矛盾する売り文句が混ざらないよう、文言をこちらで管理できる。
+絵と文字は chatgpt-cover.png として外から受け取る。以前はHTMLで
+文字を焼き込んでいたが、実用書らしい作り込み(切り抜き人物・筆文字の帯・
+塗りのアイコン)は生成側で作ったほうが仕上がりが良かったため、
+ここは受け取った1枚を規格に合わせる役だけにしている。
 
-cover.html は art_src.png を直接読む。切り抜きはCSSのグラデーションで
-左端を白へ溶かして代用しており、絵の差し替えは art_src.png の置換だけで済む。
+KDPの推奨は1600x2560のJPEG。受領画像は1:1.6で来ているので、
+拡大だけで比率は変わらない。
 """
-import os, subprocess
+import os
 from PIL import Image
 
-CHROME = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'
 HERE = os.path.dirname(os.path.abspath(__file__))
+TARGET = (1600, 2560)
+SRC = 'chatgpt-cover.png'
 
 def main():
-    subprocess.run([CHROME, '--headless', '--disable-gpu', '--no-sandbox',
-                    '--hide-scrollbars', '--window-size=1600,2560',
-                    '--screenshot=' + os.path.join(HERE, 'cover_raw.png'),
-                    os.path.join(HERE, 'cover.html')], check=True,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    src = Image.open(os.path.join(HERE, SRC)).convert('RGB')
+    w, h = src.size
+    ratio = h / w
+    # 1:1.6から大きく外れていたら、黙って引き伸ばさずに止める。
+    # 表紙が歪むとストア一覧で一目で分かる。
+    if abs(ratio - 1.6) > 0.02:
+        raise SystemExit('縦横比が1:%.3f です。1:1.6の画像を用意してください。' % ratio)
 
     out = os.path.join(HERE, '..', 'cover.jpg')
-    im = Image.open(os.path.join(HERE, 'cover_raw.png')).convert('RGB')
-    assert im.size == (1600, 2560), im.size
-    im.save(out, 'JPEG', quality=93, subsampling=0, progressive=False, optimize=True)
-    print('%s (%d KB)' % (out, os.path.getsize(out) // 1024))
+    src.resize(TARGET, Image.LANCZOS).save(
+        out, 'JPEG', quality=93, subsampling=0, progressive=False, optimize=True)
+    print('%s  %dx%d  %d KB' % (out, *TARGET, os.path.getsize(out) // 1024))
 
 if __name__ == '__main__':
     main()
