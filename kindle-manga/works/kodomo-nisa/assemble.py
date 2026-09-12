@@ -21,15 +21,17 @@ SUBSAMPLING = 2  # 4:2:0。吹き出しの文字は黒白=輝度のみなので�
 LAYOUT = (
     # 登場人物は本編前に置く。7ページ読んでから誰が誰かを知る形だと遅い。
     [('manga', 1), ('text', 'hajimeni'), ('fig', 'fig01-jinbutsu')]
-    + [('manga', n) for n in range(2, 8)]            # 第1章
+    # 各章は扉で始める。前の章の図解から次の章の漫画へそのまま流れると、
+    # 読者に章が変わったことが伝わらない。
+    + [('fig', 'chapter1')] + [('manga', n) for n in range(2, 8)]
     + [('fig', 'matome01')]
-    + [('manga', n) for n in range(8, 20)]           # 第2章
+    + [('fig', 'chapter2')] + [('manga', n) for n in range(8, 20)]
     + [('fig', 'matome02'), ('fig', 'fig02-hayawakari')]
-    + [('manga', n) for n in range(20, 30)]          # 第3章
+    + [('fig', 'chapter3')] + [('manga', n) for n in range(20, 30)]
     + [('fig', 'matome03'), ('fig', 'fig03-hikaku')]
-    + [('manga', n) for n in range(30, 36)]          # 第4章
+    + [('fig', 'chapter4')] + [('manga', n) for n in range(30, 36)]
     + [('fig', 'matome04'), ('fig', 'fig04-timeline')]
-    + [('manga', n) for n in range(36, 41)]          # 第5章
+    + [('fig', 'chapter5')] + [('manga', n) for n in range(36, 41)]
     + [('fig', 'matome05'), ('fig', 'fig05-checklist')]
     + [('text', 'owarini'), ('fig', 'fig06-kanmatsu'), ('tokuten', 'tokuten')]
 )
