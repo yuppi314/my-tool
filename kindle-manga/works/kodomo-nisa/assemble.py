@@ -19,9 +19,10 @@ SUBSAMPLING = 2  # 4:2:0。吹き出しの文字は黒白=輝度のみなので�
 
 # 本の並び。('manga', n) は manga/P{n}.jpg、('fig', 名前) は figures/{名前}.png。
 LAYOUT = (
-    [('manga', 1), ('text', 'hajimeni')]
+    # 登場人物は本編前に置く。7ページ読んでから誰が誰かを知る形だと遅い。
+    [('manga', 1), ('text', 'hajimeni'), ('fig', 'fig01-jinbutsu')]
     + [('manga', n) for n in range(2, 8)]            # 第1章
-    + [('fig', 'matome01'), ('fig', 'fig01-jinbutsu')]
+    + [('fig', 'matome01')]
     + [('manga', n) for n in range(8, 20)]           # 第2章
     + [('fig', 'matome02'), ('fig', 'fig02-hayawakari')]
     + [('manga', n) for n in range(20, 30)]          # 第3章
