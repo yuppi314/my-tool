@@ -281,7 +281,9 @@ function build(book, pages, opts = {}) {
   let maxW = 0;
   let maxH = 0;
   const sequence = [];
-  if (coverPage) sequence.push({ kind: 'cover', ...coverPage });
+  // 表紙は読む順番(spine)に入れない。Kindleは cover-image を指定した画像を
+  // 表紙として自動で表示するため、ページとしても持たせると2回続けて出る。
+  // KDPは表紙を別途アップロードする方式なので、原稿側に表紙ページは要らない。
   pages.forEach((p, i) => {
     if (p.unreadable) throw new Error(`画像を解析できません: ${p.name}`);
     const ext = p.ext === '.jpeg' ? '.jpg' : p.ext;
@@ -301,20 +303,16 @@ function build(book, pages, opts = {}) {
   });
 
   sequence.forEach((item, i) => {
-    if (item.kind === 'page') {
-      manifest.push({ id: item.id, href: item.href, mediaType: item.mediaType });
-    }
-    const pageId = item.kind === 'cover' ? 'cover-page' : `page${pad(i)}`;
-    const xhtmlHref = item.kind === 'cover' ? 'text/cover.xhtml' : `text/p${pad(i)}.xhtml`;
+    const n = pad(i + 1);
+    const xhtmlHref = `text/p${n}.xhtml`;
+    manifest.push({ id: item.id, href: item.href, mediaType: item.mediaType });
     zip.add(`OEBPS/${xhtmlHref}`, pageXhtml(item, item.href, book.language));
-    manifest.push({ id: pageId, href: xhtmlHref, mediaType: 'application/xhtml+xml' });
+    manifest.push({ id: `page${n}`, href: xhtmlHref, mediaType: 'application/xhtml+xml' });
     spine.push({
-      idref: pageId,
+      idref: `page${n}`,
       properties: spreadProperty(i + 1, book.direction),
     });
-    if (item.kind === 'cover' || (i - (coverPage ? 1 : 0)) % 10 === 0) {
-      navEntries.push({ href: xhtmlHref, label: item.title });
-    }
+    if (i % 10 === 0) navEntries.push({ href: xhtmlHref, label: item.title });
   });
 
   const resolution = `${maxW || (coverPage ? coverPage.width : 0)}x${maxH || (coverPage ? coverPage.height : 0)}`;

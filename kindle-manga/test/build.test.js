@@ -80,9 +80,14 @@ test('EPUBが固定レイアウト・右開きの漫画として生成される'
   assert.match(opf, /<dc:title id="title">漫画でわかるテスト<\/dc:title>/);
   assert.match(opf, /belongs-to-collection/);
 
-  // 表紙1 + 本文4 = 5ページ
-  assert.strictEqual(built.pageCount, 5);
-  assert.strictEqual((opf.match(/<itemref /g) || []).length, 5);
+  // 表紙は読む順番に入れない。Kindleが cover-image を表紙として自動表示するため、
+  // ページとしても持たせると表紙が2回続けて出る。
+  assert.strictEqual(built.pageCount, 4);
+  assert.strictEqual((opf.match(/<itemref /g) || []).length, 4);
+  assert.doesNotMatch(opf, /idref="cover-page"/);
+  assert.ok(!zip.files['OEBPS/text/cover.xhtml']);
+  // 表紙画像そのものは残す。KDPと読書アプリがこれを表紙として使う。
+  assert.ok(zip.files['OEBPS/images/cover.png']);
 
   // 右開きなので先頭は右ページ、次が左ページ
   const spreads = [...opf.matchAll(/<itemref idref="([^"]+)" properties="([^"]+)"\/>/g)].map((m) => m[2]);
@@ -96,6 +101,7 @@ test('EPUBが固定レイアウト・右開きの漫画として生成される'
   // 各ページのviewportが実寸と一致している(固定レイアウトの肝)
   const first = zip.files['OEBPS/text/p0001.xhtml'].toString();
   assert.match(first, /content="width=1600, height=2432"/);
+  assert.match(first, /src="\.\.\/images\/p0001\.png"/);
   assert.ok(zip.files['OEBPS/images/p0001.png']);
   assert.ok(zip.files['OEBPS/nav.xhtml']);
   assert.ok(zip.files['OEBPS/toc.ncx']);
