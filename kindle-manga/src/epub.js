@@ -135,6 +135,12 @@ function contentOpf(book, manifest, spine, resolution, modified) {
   const meta = [];
   meta.push(`    <dc:identifier id="BookId">urn:uuid:${esc(book.uuid)}</dc:identifier>`);
   meta.push(`    <dc:title id="title">${esc(book.title)}</dc:title>`);
+  // dc:titleが複数あるとき、どれが主タイトルかをtitle-typeで示さないと
+  // KindleGenは書名を決められず「The book title was not set」で変換に失敗する。
+  // 副題を出すなら主タイトル側の明示が必須。
+  if (book.subtitle) {
+    meta.push('    <meta refines="#title" property="title-type">main</meta>');
+  }
   if (book.titleReading) {
     meta.push(`    <meta refines="#title" property="file-as">${esc(book.titleReading)}</meta>`);
   }

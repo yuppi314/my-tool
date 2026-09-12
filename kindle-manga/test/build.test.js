@@ -202,3 +202,20 @@ test('出力ファイル名はASCIIになる(Kindle Previewerが日本語名を�
   assert.ok(asciiOnly.test(name), `ファイル名に非ASCIIが残っている: ${name}`);
   assert.match(name, /\.epub$/);
 });
+
+test('副題があるとき主タイトルにtitle-type=mainが付く(KindleGenが書名を決められない)', () => {
+  const withSub = project.load(makeBook({ subtitle: '副題です' }));
+  const opfSub = readZip(fs.readFileSync(epub.build(withSub, pagesLib.collect(withSub.pagesPath)).file))
+    .files['OEBPS/content.opf'].toString();
+  assert.match(opfSub, /<meta refines="#title" property="title-type">main<\/meta>/);
+  assert.match(opfSub, /<meta refines="#subtitle" property="title-type">subtitle<\/meta>/);
+  // dc:titleが2つある以上、どちらがmainか必ず示されていること
+  assert.strictEqual((opfSub.match(/<dc:title /g) || []).length, 2);
+
+  // 副題が無ければdc:titleは1つなので、title-typeは不要
+  const noSub = project.load(makeBook({ subtitle: '' }));
+  const opfNo = readZip(fs.readFileSync(epub.build(noSub, pagesLib.collect(noSub.pagesPath)).file))
+    .files['OEBPS/content.opf'].toString();
+  assert.strictEqual((opfNo.match(/<dc:title /g) || []).length, 1);
+  assert.doesNotMatch(opfNo, /title-type/);
+});
