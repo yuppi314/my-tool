@@ -1,7 +1,7 @@
 {
   "name": "kyusei-mayan-fortune",
   "version": "1.0.0",
-  "description": "九星気学 x マヤ暦 診断ツール(フリーミアム・マネタイズ型)",
+  "description": "診断ツール(九星気学×マヤ暦 / 本音診断)フリーミアム・マネタイズ型",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

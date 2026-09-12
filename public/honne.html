@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>本音診断 | あの人を本当はどう思っている？</title>
+  <meta name="description" content="12の質問に答えるだけ。自分でも気づいていない「あの人への本音」を6つの心理軸で診断します。" />
+  <meta property="og:title" content="本音診断 | あの人を本当はどう思っている？" />
+  <meta property="og:description" content="12の質問で、自分でも気づいていない本音がわかる無料診断。" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>本音診断</h1>
+      <p>あの人のことを、あなたは本当はどう思っている？<br />12の質問で、自分でも気づいていない本音を言葉にします。</p>
+    </header>
+
+    <!-- STEP1: 相手の設定 -->
+    <div class="card" id="intro-card">
+      <div class="section-title">診断する相手</div>
+      <label for="relation">その人との関係</label>
+      <select id="relation"></select>
+
+      <label for="target-label">相手の呼び名(任意・結果の文章に使います)</label>
+      <input type="text" id="target-label" placeholder="例: A / 田中さん / ニックネーム" maxlength="20" />
+
+      <p class="note-text">
+        入力は診断結果の文章に使うだけで、相手には一切通知されません。本名を入れる必要はありません。
+      </p>
+
+      <button type="button" class="primary" id="start-btn">診断をはじめる(無料・約2分)</button>
+      <p class="error-text" id="intro-error"></p>
+    </div>
+
+    <!-- STEP2: 質問 -->
+    <div class="card" id="quiz-card" style="display:none;">
+      <div class="quiz-progress">
+        <div class="quiz-progress-bar"><span id="progress-fill"></span></div>
+        <div class="quiz-progress-label" id="progress-label"></div>
+      </div>
+      <div class="quiz-question" id="quiz-question"></div>
+      <div id="quiz-options"></div>
+      <button type="button" class="text-link" id="back-btn">← 前の質問に戻る</button>
+    </div>
+
+    <!-- STEP3: メール(任意) -->
+    <div class="card" id="email-card" style="display:none;">
+      <div class="section-title">回答が完了しました</div>
+      <p>結果を表示します。メールアドレスを入れておくと、結果ページのURLを後から見返せます(任意)。</p>
+      <label for="email">メールアドレス(任意)</label>
+      <input type="email" id="email" placeholder="example@mail.com" />
+      <button type="button" class="primary" id="submit-btn">本音を見る</button>
+      <button type="button" class="text-link" id="skip-btn">入力せずに結果を見る</button>
+      <p class="error-text" id="quiz-error"></p>
+    </div>
+
+    <!-- STEP4: 無料結果 -->
+    <div class="card" id="result-card" style="display:none;">
+      <div class="type-headline" id="r-headline"></div>
+      <div class="type-name" id="r-type"></div>
+      <div class="type-catch" id="r-catch"></div>
+
+      <div class="summary-text">
+        <div class="honne-label">言葉にすると、あなたの本音は</div>
+        <div class="honne-quote" id="r-honne"></div>
+      </div>
+
+      <div class="section-title">開示された心理軸</div>
+      <div id="r-open-axes"></div>
+
+      <div class="section-title">残りの心理軸(完全版で開示)</div>
+      <div id="r-locked-axes"></div>
+
+      <div class="cta-box">
+        <div class="price" id="honne-price">¥980</div>
+        <p>
+          6軸すべてのスコア／本音の深層解説／<b>あなた自身が気づいていない矛盾</b>／<br />
+          相手から見えているあなた／3ヶ月後の関係予測／今すべきこと・NG行動
+        </p>
+        <button type="button" class="primary" id="checkout-btn">完全版レポートを読む</button>
+      </div>
+
+      <div class="section-title">結果をシェアする</div>
+      <div class="share-row">
+        <button type="button" class="secondary" id="share-x">Xでシェア</button>
+        <button type="button" class="secondary" id="share-line">LINEで送る</button>
+        <button type="button" class="secondary" id="copy-btn">結果URLをコピー</button>
+      </div>
+      <p class="note-text" id="share-note">シェアされるのはタイプ名だけです。相手の呼び名や回答内容は含まれません。</p>
+
+      <div class="ad-slot">[広告枠プレースホルダー: アフィリエイト/純広告を掲載可能]</div>
+
+      <div class="cross-sell">
+        <div class="section-title">あわせて試す</div>
+        <p>生年月日から見る「二人の相性」は <a href="/index.html">九星気学×マヤ暦 診断</a> でわかります。</p>
+      </div>
+    </div>
+
+    <footer class="legal">
+      本診断は心理学の一般的な考え方を参考にした娯楽・自己内省コンテンツであり、心理検査・医療行為ではありません。
+      医療・法律等の専門的助言に代わるものではなく、他者の心理を判定するものでもありません。<br />
+      <a href="/tokushoho.html">特定商取引法に基づく表記</a> ・
+      <a href="/terms.html">利用規約</a> ・
+      <a href="/privacy.html">プライバシーポリシー</a>
+    </footer>
+  </div>
+
+  <script src="/js/honne.js"></script>
+</body>
+</html>

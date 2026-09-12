@@ -14,12 +14,30 @@ router.get('/admin/stats', (req, res) => {
   const leadCount = db.prepare('SELECT COUNT(*) AS c FROM leads').get().c;
   const diagnosisCount = db.prepare('SELECT COUNT(*) AS c FROM diagnoses').get().c;
   const paidCount = db.prepare('SELECT COUNT(*) AS c FROM diagnoses WHERE paid = 1').get().c;
+  const honneCount = db.prepare('SELECT COUNT(*) AS c FROM honne_results').get().c;
+  const honnePaidCount = db.prepare('SELECT COUNT(*) AS c FROM honne_results WHERE paid = 1').get().c;
   const revenue = db
     .prepare(`SELECT COALESCE(SUM(amount), 0) AS total FROM orders WHERE status IN ('paid', 'paid_mock')`)
     .get().total;
   const conversionRate = diagnosisCount > 0 ? ((paidCount / diagnosisCount) * 100).toFixed(1) : '0.0';
+  const honneConversionRate = honneCount > 0 ? ((honnePaidCount / honneCount) * 100).toFixed(1) : '0.0';
 
-  res.json({ leadCount, diagnosisCount, paidCount, revenueJpy: revenue, conversionRatePercent: Number(conversionRate) });
+  // 本音診断でどのタイプが多いかは、追加コンテンツや広告文の改善に使える
+  const honneTypeBreakdown = db
+    .prepare('SELECT type_id, COUNT(*) AS c FROM honne_results GROUP BY type_id ORDER BY c DESC')
+    .all();
+
+  res.json({
+    leadCount,
+    diagnosisCount,
+    paidCount,
+    revenueJpy: revenue,
+    conversionRatePercent: Number(conversionRate),
+    honneCount,
+    honnePaidCount,
+    honneConversionRatePercent: Number(honneConversionRate),
+    honneTypeBreakdown,
+  });
 });
 
 module.exports = router;

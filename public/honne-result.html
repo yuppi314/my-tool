@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>本音診断 完全版レポート</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>本音診断 完全版レポート</h1>
+      <p id="status-line"></p>
+    </header>
+
+    <div class="card" id="summary-card" style="display:none;">
+      <div class="type-headline" id="r-headline"></div>
+      <div class="type-name" id="r-type"></div>
+      <div class="type-catch" id="r-catch"></div>
+      <div class="summary-text">
+        <div class="honne-label">言葉にすると、あなたの本音は</div>
+        <div class="honne-quote" id="r-honne"></div>
+      </div>
+    </div>
+
+    <div class="card" id="full-card" style="display:none;">
+      <div class="section-title">6つの心理軸のすべて</div>
+      <div id="f-axes"></div>
+
+      <div class="section-title">総合バランス</div>
+      <p id="f-balance"></p>
+
+      <div class="section-title">本音の深層</div>
+      <p id="f-deep"></p>
+
+      <div class="section-title">あなた自身が気づいていない矛盾</div>
+      <p id="f-conflict"></p>
+
+      <div class="section-title">相手から見えているあなた</div>
+      <p id="f-mirror"></p>
+
+      <div class="section-title">このままの3ヶ月後</div>
+      <p id="f-forecast"></p>
+
+      <div class="section-title">今すべきこと</div>
+      <ul id="f-todo"></ul>
+
+      <div class="section-title">やらない方がいいこと</div>
+      <ul id="f-ng" class="ng-list"></ul>
+    </div>
+
+    <div class="card" id="locked-card" style="display:none;">
+      <p>この先の完全版レポートは購入者限定です。</p>
+      <button type="button" class="primary" id="unlock-btn">完全版レポートを購入する</button>
+      <p class="error-text" id="page-error"></p>
+      <p class="note-text"><a href="/honne.html">← 無料結果のページに戻る</a></p>
+    </div>
+
+    <div class="card" id="cross-card" style="display:none;">
+      <div class="section-title">クロス診断(購入者限定特典)</div>
+      <p class="note-text">
+        本音(あなたの内側)に、生年月日から見た二人の相性(九星気学×マヤ暦)を重ねて読み解きます。
+      </p>
+      <label for="your-birthdate">あなたの生年月日</label>
+      <input type="date" id="your-birthdate" />
+      <label for="partner-birthdate">お相手の生年月日</label>
+      <input type="date" id="partner-birthdate" />
+      <button type="button" class="secondary" id="cross-btn">クロス診断を見る</button>
+      <div id="cross-result" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="ad-slot">[広告枠プレースホルダー: アフィリエイト/純広告を掲載可能]</div>
+
+    <footer class="legal">
+      本診断は心理学の一般的な考え方を参考にした娯楽・自己内省コンテンツであり、心理検査・医療行為ではありません。
+      医療・法律等の専門的助言に代わるものではなく、他者の心理を判定するものでもありません。<br />
+      <a href="/tokushoho.html">特定商取引法に基づく表記</a> ・
+      <a href="/terms.html">利用規約</a> ・
+      <a href="/privacy.html">プライバシーポリシー</a>
+    </footer>
+  </div>
+
+  <script src="/js/honne-result.js"></script>
+</body>
+</html>

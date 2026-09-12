@@ -4,13 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>管理統計 | 九星気学×マヤ暦</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <div class="wrap">
     <header class="hero">
       <h1>マネタイズ状況</h1>
-      <p>リード数・診断数・売上を確認できます</p>
+      <p>診断ごとのリード数・購入数・売上・本音タイプの分布を確認できます</p>
     </header>
 
     <div class="card">
@@ -20,18 +21,44 @@
     </div>
 
     <div class="card" id="stats-card" style="display:none;">
+      <div class="section-title">全体</div>
       <table class="stats-table">
         <tr><td>累計リード数(メール取得数)</td><td id="s-leads"></td></tr>
+        <tr><td>売上合計(円・両診断の合算)</td><td id="s-revenue"></td></tr>
+      </table>
+
+      <div class="section-title">生年月日診断(九星気学×マヤ暦)</div>
+      <table class="stats-table">
         <tr><td>累計診断数</td><td id="s-diagnoses"></td></tr>
         <tr><td>有料購入数</td><td id="s-paid"></td></tr>
-        <tr><td>売上合計(円)</td><td id="s-revenue"></td></tr>
         <tr><td>コンバージョン率</td><td id="s-cvr"></td></tr>
       </table>
+
+      <div class="section-title">本音診断</div>
+      <table class="stats-table">
+        <tr><td>累計診断数</td><td id="s-honne"></td></tr>
+        <tr><td>有料購入数</td><td id="s-honne-paid"></td></tr>
+        <tr><td>コンバージョン率</td><td id="s-honne-cvr"></td></tr>
+      </table>
+
+      <div class="section-title">本音タイプの分布(訴求コピー改善に使えます)</div>
+      <table class="stats-table" id="s-honne-types"></table>
     </div>
     <p class="error-text" id="admin-error"></p>
   </div>
 
   <script>
+    const HONNE_TYPE_NAMES = {
+      honmei: '本命まっすぐ型',
+      shuchaku: '手放せない執着型',
+      akogare: '憧れが恋に見えている型',
+      soubou: '情でつながる相棒型',
+      ambivalent: '好きなのに腹が立つ両価型',
+      nagori: '情が残っているだけ型',
+      hanare: 'そっと離れたい型',
+      mikakutei: 'まだ言葉にならない型',
+    };
+
     document.getElementById('load-btn').addEventListener('click', async () => {
       const token = document.getElementById('token').value;
       const errorEl = document.getElementById('admin-error');
@@ -49,6 +76,14 @@
         document.getElementById('s-paid').textContent = data.paidCount;
         document.getElementById('s-revenue').textContent = data.revenueJpy.toLocaleString();
         document.getElementById('s-cvr').textContent = `${data.conversionRatePercent}%`;
+        document.getElementById('s-honne').textContent = data.honneCount;
+        document.getElementById('s-honne-paid').textContent = data.honnePaidCount;
+        document.getElementById('s-honne-cvr').textContent = `${data.honneConversionRatePercent}%`;
+        document.getElementById('s-honne-types').innerHTML = data.honneTypeBreakdown.length
+          ? data.honneTypeBreakdown
+              .map((t) => `<tr><td>${HONNE_TYPE_NAMES[t.type_id] || t.type_id}</td><td>${t.c}</td></tr>`)
+              .join('')
+          : '<tr><td>まだデータがありません</td><td>-</td></tr>';
         document.getElementById('stats-card').style.display = 'block';
       } catch (err) {
         errorEl.textContent = '通信エラーが発生しました。';

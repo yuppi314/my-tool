@@ -4,7 +4,29 @@ const db = require('../db');
 const router = express.Router();
 
 const REPORT_PRICE_JPY = Number(process.env.REPORT_PRICE_JPY || 980);
+const HONNE_PRICE_JPY = Number(process.env.HONNE_PRICE_JPY || 980);
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
+// 販売商品の定義。kind ごとに参照するテーブルと戻り先ページを切り替える。
+// table 名はこの固定マップ由来のみを使うため、SQLへの動的埋め込みでも安全。
+const PRODUCTS = {
+  birth: {
+    table: 'diagnoses',
+    productName: '九星気学×マヤ暦 詳細鑑定レポート',
+    price: REPORT_PRICE_JPY,
+    resultPath: '/result.html',
+  },
+  honne: {
+    table: 'honne_results',
+    productName: '本音診断 完全版レポート',
+    price: HONNE_PRICE_JPY,
+    resultPath: '/honne-result.html',
+  },
+};
+
+function getProduct(kind) {
+  return PRODUCTS[kind] || PRODUCTS.birth;
+}
 
 function getStripe() {
   if (!process.env.STRIPE_SECRET_KEY) return null;
@@ -12,23 +34,27 @@ function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
-// 詳細レポートの決済セッションを作成
+// 詳細レポートの決済セッションを作成(kind: 'birth' = 生年月日診断 / 'honne' = 本音診断)
 router.post('/checkout', async (req, res) => {
-  const { diagnosisId } = req.body || {};
-  const diagnosis = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(diagnosisId);
-  if (!diagnosis) return res.status(404).json({ error: '診断結果が見つかりません。' });
+  const { diagnosisId, kind } = req.body || {};
+  const productKind = PRODUCTS[kind] ? kind : 'birth';
+  const product = getProduct(productKind);
+
+  const target = db.prepare(`SELECT id FROM ${product.table} WHERE id = ?`).get(diagnosisId);
+  if (!target) return res.status(404).json({ error: '診断結果が見つかりません。' });
 
   const stripe = getStripe();
 
   // STRIPE_SECRET_KEY 未設定時は開発用モックモード: 即時に決済成功として扱う
   if (!stripe) {
-    db.prepare('UPDATE diagnoses SET paid = 1 WHERE id = ?').run(diagnosisId);
+    db.prepare(`UPDATE ${product.table} SET paid = 1 WHERE id = ?`).run(diagnosisId);
     db.prepare(
-      `INSERT INTO orders (diagnosis_id, stripe_session_id, amount, status) VALUES (?, NULL, ?, 'paid_mock')`
-    ).run(diagnosisId, REPORT_PRICE_JPY);
+      `INSERT INTO orders (diagnosis_id, kind, stripe_session_id, amount, status)
+       VALUES (?, ?, NULL, ?, 'paid_mock')`
+    ).run(diagnosisId, productKind, product.price);
     return res.json({
       mock: true,
-      redirect: `/result.html?id=${diagnosisId}&mock=1`,
+      redirect: `${product.resultPath}?id=${diagnosisId}&mock=1`,
     });
   }
 
@@ -39,26 +65,32 @@ router.post('/checkout', async (req, res) => {
         {
           price_data: {
             currency: 'jpy',
-            product_data: { name: '九星気学×マヤ暦 詳細鑑定レポート' },
-            unit_amount: REPORT_PRICE_JPY,
+            product_data: { name: product.productName },
+            unit_amount: product.price,
           },
           quantity: 1,
         },
       ],
-      success_url: `${BASE_URL}/result.html?id=${diagnosisId}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${BASE_URL}/result.html?id=${diagnosisId}&canceled=1`,
-      metadata: { diagnosisId },
+      success_url: `${BASE_URL}${product.resultPath}?id=${diagnosisId}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${BASE_URL}${product.resultPath}?id=${diagnosisId}&canceled=1`,
+      metadata: { diagnosisId, kind: productKind },
     });
 
     db.prepare(
-      `INSERT INTO orders (diagnosis_id, stripe_session_id, amount, status) VALUES (?, ?, ?, 'pending')`
-    ).run(diagnosisId, session.id, REPORT_PRICE_JPY);
+      `INSERT INTO orders (diagnosis_id, kind, stripe_session_id, amount, status)
+       VALUES (?, ?, ?, ?, 'pending')`
+    ).run(diagnosisId, productKind, session.id, product.price);
 
     res.json({ mock: false, url: session.url });
   } catch (err) {
     console.error('Stripe checkout error:', err.message);
     res.status(500).json({ error: '決済セッションの作成に失敗しました。' });
   }
+});
+
+// 価格表示用(フロントのCTA文言と実際の請求額をずらさないため)
+router.get('/prices', (req, res) => {
+  res.json({ birth: REPORT_PRICE_JPY, honne: HONNE_PRICE_JPY });
 });
 
 // Stripe Webhook: raw body で検証するため server.js 側で express.raw() を適用して呼び出す
@@ -77,12 +109,12 @@ function stripeWebhookHandler(req, res) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const diagnosisId = session.metadata && session.metadata.diagnosisId;
+    const metadata = session.metadata || {};
+    const diagnosisId = metadata.diagnosisId;
+    const product = getProduct(metadata.kind);
     if (diagnosisId) {
-      db.prepare('UPDATE diagnoses SET paid = 1 WHERE id = ?').run(diagnosisId);
-      db.prepare(
-        `UPDATE orders SET status = 'paid' WHERE stripe_session_id = ?`
-      ).run(session.id);
+      db.prepare(`UPDATE ${product.table} SET paid = 1 WHERE id = ?`).run(diagnosisId);
+      db.prepare(`UPDATE orders SET status = 'paid' WHERE stripe_session_id = ?`).run(session.id);
     }
   }
 

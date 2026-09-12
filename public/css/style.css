@@ -184,6 +184,8 @@ footer.legal {
   opacity: 0.7;
 }
 
+footer.legal a { color: var(--text-dim); }
+
 table.stats-table {
   width: 100%;
   border-collapse: collapse;
@@ -192,4 +194,224 @@ table.stats-table td, table.stats-table th {
   padding: 10px;
   border-bottom: 1px solid var(--border);
   text-align: left;
+}
+
+/* ===== 本音診断 ===== */
+
+select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #16103a;
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
+.note-text {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.note-text a { color: var(--accent-soft); }
+
+button.text-link {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 400;
+  padding: 10px 0 0;
+  width: 100%;
+  text-decoration: underline;
+}
+
+button.text-link:hover { transform: none; color: var(--accent-soft); }
+
+.quiz-progress { margin-bottom: 18px; }
+
+.quiz-progress-bar {
+  height: 6px;
+  background: #16103a;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.quiz-progress-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), #ffb454);
+  transition: width 0.3s ease;
+}
+
+.quiz-progress-label {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.quiz-question {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+button.quiz-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #16103a;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+
+button.quiz-option:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+button.quiz-option.selected {
+  border-color: var(--accent);
+  background: #201646;
+}
+
+.type-headline {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.type-name {
+  font-size: 1.7rem;
+  font-weight: 800;
+  text-align: center;
+  margin: 6px 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.type-catch {
+  text-align: center;
+  color: var(--accent-soft);
+  font-size: 0.95rem;
+}
+
+.honne-label { font-size: 0.75rem; color: var(--text-dim); }
+
+.honne-quote {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.axis-row { margin-bottom: 16px; }
+
+.axis-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.axis-score { color: var(--accent); font-weight: 700; }
+
+.axis-track {
+  height: 10px;
+  background: #16103a;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.axis-track span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #ffb454);
+}
+
+.axis-comment {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+.locked-axis .axis-track span {
+  background: repeating-linear-gradient(45deg, #2b2158, #2b2158 6px, #221a47 6px, #221a47 12px);
+}
+
+.locked-axis .axis-score { color: var(--text-dim); }
+
+.share-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.share-row button {
+  flex: 1 1 30%;
+  padding: 12px 10px;
+  font-size: 0.85rem;
+}
+
+.cross-sell {
+  margin-top: 24px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.cross-sell a { color: var(--accent-soft); }
+
+.ng-list li { color: #ffb9b9; }
+
+ul#f-todo, ul#f-ng {
+  padding-left: 20px;
+  margin: 8px 0 0;
+}
+
+ul#f-todo li, ul#f-ng li { margin-bottom: 8px; }
+
+.mode-switch {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.mode-card {
+  display: block;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.mode-card:hover { border-color: var(--accent); }
+
+.mode-card .mode-title {
+  font-weight: 700;
+  color: var(--accent-soft);
+  margin-bottom: 4px;
+}
+
+.mode-card .mode-desc { font-size: 0.85rem; color: var(--text-dim); }
+
+@media (max-width: 480px) {
+  .result-grid { grid-template-columns: 1fr; }
+  .share-row button { flex: 1 1 100%; }
 }

@@ -6,6 +6,7 @@ const cors = require('cors');
 const diagnosisRoutes = require('./routes/diagnosis');
 const { router: paymentRoutes, stripeWebhookHandler } = require('./routes/payment');
 const compatibilityRoutes = require('./routes/compatibility');
+const honneRoutes = require('./routes/honne');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/api', diagnosisRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', compatibilityRoutes);
+app.use('/api', honneRoutes);
 app.use('/api', adminRoutes);
 
 app.get('/health', (req, res) => res.json({ ok: true }));
