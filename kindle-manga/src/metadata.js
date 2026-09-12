@@ -39,12 +39,19 @@ function sheet(book, pages, buildResult) {
   lines.push(`| 本のタイトル | ${book.title} |`);
   lines.push(`| サブタイトル | ${book.subtitle || '(なし)'} |`);
   lines.push(`| タイトルのヨミガナ | ${book.titleReading || '(未設定 — 日本語書籍では必須)'} |`);
+  lines.push(`| タイトルのローマ字 | ${book.titleRomaji || '(未設定)'} |`);
   lines.push(`| シリーズ | ${book.series && book.series.name ? `${book.series.name} 第${book.series.index || 1}巻` : '(なし)'} |`);
   lines.push(`| 著者 | ${book.author} |`);
   lines.push(`| 著者のヨミガナ | ${book.authorReading || '(未設定 — 日本語書籍では必須)'} |`);
+  lines.push(`| 著者のローマ字 | ${book.authorRomaji || '(未設定)'} |`);
   lines.push(`| 出版社 | ${book.publisher || '(なし)'} |`);
+  lines.push(`| 出版社のローマ字 | ${book.publisherRomaji || '(なし)'} |`);
   lines.push(`| 出版に関する権利 | 私は著作権者であり、出版に必要な権利を保有しています |`);
   lines.push(`| 成人向けコンテンツ | いいえ |`);
+  lines.push('');
+  lines.push('> ローマ字はKDPの本の登録画面には欄がありません。海外ストアでの表示、');
+  lines.push('> 著者ページ、問い合わせ時の表記を揺らさないために決めて控えておく値です。');
+  lines.push('> シリーズ2冊目以降も必ず同じ綴りを使ってください。');
   lines.push('');
   lines.push('### 内容紹介(コピペ用・HTML)');
   lines.push('');
@@ -99,6 +106,7 @@ function checklist(book, pages, buildResult, validation) {
   lines.push('');
   if (!validation.issues.length) {
     lines.push('- 指摘なし。そのままアップロードできます。');
+    lines.push('');
   } else {
     const label = { error: '❌ 要修正', warn: '⚠️ 推奨', info: 'ℹ️ 参考' };
     for (const level of ['error', 'warn', 'info']) {
@@ -110,6 +118,21 @@ function checklist(book, pages, buildResult, validation) {
       lines.push('');
     }
   }
+  lines.push('## 初回だけ必要なアカウント設定(すべて半角アルファベット)');
+  lines.push('');
+  lines.push('KDPの支払いは海外送金の仕組みに乗るため、次の3つは日本語では登録できません。');
+  lines.push('氏名は3つとも同じ綴りにします。1文字でも違うと入金が止まります。');
+  lines.push('');
+  lines.push('1. 著者/出版社情報 — 本名・住所・電話番号をローマ字と半角数字で');
+  lines.push('   (ペンネームはここでは使いません。本の登録画面の著者欄だけで使います)');
+  lines.push('2. 税に関する情報(米国の税務インタビュー) — 氏名・住所をローマ字で。');
+  lines.push('   「納税者番号」にはマイナンバー(個人番号)を入れます。これで日米租税条約が適用され、');
+  lines.push('   米国での源泉徴収が30%から0%になります。入れ忘れると売上の3割が引かれます');
+  lines.push('3. 銀行口座 — 口座名義は通帳の英字表記(半角カタカナではなくローマ字)。');
+  lines.push('   ゆうちょ銀行は記号番号ではなく、振込用の店名・預金種目・口座番号に読み替えが必要です');
+  lines.push('');
+  lines.push('この3つが終わるまで「出版」ボタンは押せません。初回だけ30分ほどかかります。');
+  lines.push('');
   lines.push('## 手動での最終手順(KDPには公開APIが無いためここだけ人力)');
   lines.push('');
   lines.push('1. Kindle Previewer 3 で生成EPUBを開き、右開き・ページ順・文字の可読性を確認する');
@@ -147,9 +170,12 @@ function write(book, pages, buildResult, validation) {
         title: book.title,
         subtitle: book.subtitle,
         titleReading: book.titleReading,
+        titleRomaji: book.titleRomaji,
         author: book.author,
         authorReading: book.authorReading,
+        authorRomaji: book.authorRomaji,
         publisher: book.publisher,
+        publisherRomaji: book.publisherRomaji,
         language: book.language,
         series: book.series,
         description: book.description,
