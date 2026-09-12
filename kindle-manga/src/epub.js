@@ -206,6 +206,31 @@ ${spineXml}
 `;
 }
 
+// 出力ファイル名は必ずASCIIにする。
+// Kindle Previewer(Windows版)は日本語を含むファイル名を開けず、理由を示さない
+// エラーで止まる。入稿前の唯一の確認手段なので、ここで詰まると本が出せない。
+// KDPはアップロード時のファイル名を見ないため、ASCIIにしても実害はない。
+function safeFileName(book) {
+  const ascii = (s) =>
+    String(s || '')
+      .replace(/[^\x20-\x7E]/g, '') // 非ASCIIを落とす
+      .replace(/[\\/:*?"<>|]+/g, '') // ファイル名に使えない文字
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+  // 作品フォルダ名を第一候補にする。works/kodomo-nisa のように、
+  // 作品を表す短いASCII名が付いていることが多い。
+  const fromDir = ascii(path.basename(book.root || ''));
+  if (fromDir.length >= 2) return fromDir;
+
+  const fromTitle = ascii(book.title);
+  if (fromTitle.length >= 2) return fromTitle;
+
+  return 'book';
+}
+
 /**
  * EPUBを生成してファイルに書き出す。
  * @param {object} book project.load() の戻り値
@@ -294,13 +319,11 @@ function build(book, pages, opts = {}) {
   zip.add('OEBPS/content.opf', contentOpf(book, manifest, spine, resolution, modified));
 
   const buf = zip.toBuffer();
-  const outFile =
-    opts.outFile ||
-    path.join(book.outPath, `${(book.title || 'book').replace(/[\\/:*?"<>|\s]+/g, '_')}.epub`);
+  const outFile = opts.outFile || path.join(book.outPath, `${safeFileName(book)}.epub`);
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, buf);
 
   return { file: outFile, bytes: buf.length, pageCount: sequence.length, resolution };
 }
 
-module.exports = { build, esc };
+module.exports = { build, safeFileName, esc };

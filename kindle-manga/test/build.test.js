@@ -180,3 +180,25 @@ test('プリフライト: 9:16の縦長ページは解像度警告を出さな�
   const sr = validate.run(sb, pagesLib.collect(sb.pagesPath));
   assert.match(sr.issues.map((i) => i.message).join('\n'), /1300x1900px/);
 });
+
+test('出力ファイル名はASCIIになる(Kindle Previewerが日本語名を開けないため)', () => {
+  const asciiOnly = /^[\x20-\x7E]+$/;
+
+  // 作品フォルダ名を優先する
+  assert.strictEqual(
+    epub.safeFileName({ root: '/w/works/kodomo-nisa', title: '漫画でわかるこどもNISA' }),
+    'kodomo-nisa'
+  );
+  // フォルダ名が使えなければタイトルからASCIIを拾う
+  assert.strictEqual(epub.safeFileName({ root: '/w/作品', title: 'Manga NISA' }), 'Manga-NISA');
+  // どちらも使えなければ既定値
+  assert.strictEqual(epub.safeFileName({ root: '/w/作品', title: '漫画' }), 'book');
+
+  // 実際のビルドでも日本語が混ざらない
+  const dir = makeBook();
+  const book = project.load(dir);
+  const built = epub.build(book, pagesLib.collect(book.pagesPath));
+  const name = path.basename(built.file);
+  assert.ok(asciiOnly.test(name), `ファイル名に非ASCIIが残っている: ${name}`);
+  assert.match(name, /\.epub$/);
+});
