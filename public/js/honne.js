@@ -22,7 +22,7 @@ async function init() {
     state.questions = qData.questions;
     state.relations = qData.relations;
     if (pRes.ok) state.prices = await pRes.json();
-    el('honne-price').textContent = `¥${state.prices.honne}`;
+    setPriceLabel(state.prices.honne);
     renderRelations();
   } catch (err) {
     el('intro-error').textContent = '質問の読み込みに失敗しました。ページを再読み込みしてください。';
@@ -153,7 +153,13 @@ function resetSubmitButton() {
   el('submit-btn').textContent = '本音を見る';
 }
 
+// 価格はABテストで診断ごとに変わるため、必ず結果に含まれる price を表示する
+function setPriceLabel(price) {
+  el('honne-price').textContent = `¥${Number(price).toLocaleString()}`;
+}
+
 function renderResult(data) {
+  if (data.price) setPriceLabel(data.price);
   el('r-headline').textContent = data.headline;
   el('r-type').textContent = data.type.name;
   el('r-catch').textContent = data.type.catch;
@@ -209,9 +215,13 @@ el('checkout-btn').addEventListener('click', async () => {
   }
 });
 
-// シェア導線(結果URLからは回答内容も相手の呼び名も推測できない)
+// シェア導線
+// シェアするのは /s/:id (タイプ名だけを表示するページ)。相手の呼び名やスコアは含まれない。
+// 自分の結果に戻るためのURLは /honne.html?id=... で、用途を分けている。
 function shareUrl() {
-  return `${window.location.origin}/honne.html`;
+  return state.resultId
+    ? `${window.location.origin}/s/${state.resultId}`
+    : `${window.location.origin}/honne.html`;
 }
 
 function shareText() {
@@ -230,12 +240,13 @@ el('share-line').addEventListener('click', () => {
 });
 
 el('copy-btn').addEventListener('click', async () => {
+  // コピーするのは本人が自分の結果に戻るためのURL(スコアや呼び名が見えるので共有向きではない)
   const url = state.resultId
     ? `${window.location.origin}/honne.html?id=${state.resultId}`
-    : shareUrl();
+    : `${window.location.origin}/honne.html`;
   try {
     await navigator.clipboard.writeText(url);
-    el('share-note').textContent = 'URLをコピーしました。この結果URLを開くと同じ診断結果が見られます。';
+    el('share-note').textContent = 'あなた専用の結果URLをコピーしました(このURLでは呼び名やスコアも表示されるので、共有はX・LINEのボタンをお使いください)。';
   } catch (err) {
     el('share-note').textContent = `コピーできませんでした。このURLをお使いください: ${url}`;
   }

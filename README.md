@@ -33,7 +33,40 @@
   さらにクロス診断(本音タイプ × 九星気学×マヤ暦の相性)
 
 残り4軸を鍵マークで見せることで「続きが見たい」状態を作り、そのまま決済に接続しています。
-結果画面にはX/LINE/URLコピーのシェア導線があり、シェアされるのはタイプ名のみ(相手の呼び名・回答内容は含まれません)。
+
+### シェア導線とOGP
+
+結果画面のX/LINEボタンが共有するのは `/s/:診断ID` という**シェア専用ページ**です。
+このページは本音タイプとキャッチコピーだけを表示し、お相手の呼び名・6軸スコア・回答内容は一切含みません。
+SNSのクローラーはJavaScriptを実行しないため、このページだけはサーバー側でHTMLを生成し、
+タイプごとのOGP画像(`public/og/honne-<タイプID>.jpg`)を `og:image` に指定しています。
+
+診断した本人が自分の結果に戻るためのURLは `/honne.html?id=...` で、こちらは呼び名やスコアも表示されます。
+用途が違うため、ボタンも「シェア」と「自分用URLをコピー」に分けています。
+
+OGP画像は `scripts/generate-og.js` で生成し、`public/og/` にコミット済みです。
+タイプ名やキャッチコピーを変更したときだけ再生成してください(Playwrightが必要です)。
+
+```bash
+npm i -D playwright && node scripts/generate-og.js
+```
+
+> `og:image` / `og:url` は絶対URLでないとSNS側が解決できないため、`BASE_URL` の設定が必須です。
+> 未設定のままだとプレビュー画像が表示されません。
+
+### 価格ABテスト
+
+`HONNE_PRICE_AB` にカンマ区切りで価格を並べると、診断ごとにランダムで価格を割り当てます。
+
+```
+HONNE_PRICE_AB=480,980
+```
+
+割り当てた価格は `honne_results.price_jpy` に保存し、決済時も環境変数ではなくこの保存値で請求するため、
+**画面に出した価格と実際の請求額がずれません**。結果は `/admin.html` の価格別テーブルで比較できます。
+
+売上は「診断数 × CVR × 価格」で決まるので、CVRが下がっても売上が伸びる価格がありえます。
+判断はCVRではなく**売上列**で行ってください。未設定なら `HONNE_PRICE_JPY` の単価のみで動作します(既定)。
 
 ## マネタイズの仕組み
 
@@ -42,7 +75,9 @@
 3. **相性診断(購入者限定特典)**: 詳細レポート購入者だけが使える追加機能として、パートナーの生年月日を入れると五行相性スコアを算出します。アップセル・リピート利用の動機付けになります。
 4. **広告枠プレースホルダー**: 無料結果画面・詳細レポート画面に広告枠(`<div class="ad-slot">`)を設置済み。Google AdSenseやアフィリエイトタグを差し込むだけで広告収益化も可能です。
 5. **2診断のクロスセル**: 生年月日診断のトップから本音診断へ、本音診断の結果画面から生年月日診断へ相互に送客しています。本音診断の購入者にはクロス診断(本音 × 相性)を特典として提供し、2商品を続けて買う動機を作っています。
-6. **簡易管理画面 `/admin.html`**: リード数・診断ごとの購入数・売上・コンバージョン率、および本音タイプの分布をトークン認証付きで確認できます(`ADMIN_TOKEN`で保護)。タイプ分布は訴求コピーや追加コンテンツの優先順位付けに使えます。
+6. **タイプ別OGP画像でシェアを回す**: 本音診断の結果をシェアすると、タイプ名入りの画像付きでリンクプレビューが出ます(`public/og/`)。「私は手放せない執着型でした」という具体性がクリック率を押し上げるため、新規流入の主動線になります。
+7. **価格ABテスト**: `HONNE_PRICE_AB` を設定すると診断ごとに価格を振り分け、価格別のCVRと売上を比較できます(下記「価格ABテスト」参照)。
+8. **簡易管理画面 `/admin.html`**: リード数・診断ごとの購入数・売上・コンバージョン率、本音タイプの分布、価格ABテストの結果をトークン認証付きで確認できます(`ADMIN_TOKEN`で保護)。タイプ分布は訴求コピーや追加コンテンツの優先順位付けに使えます。
 
 ## セットアップ
 
@@ -58,9 +93,16 @@ npm start
 ### Stripe決済について
 
 `.env` に `STRIPE_SECRET_KEY` を設定しない場合、決済は**開発用モックモード**で動作し、
-「詳細レポートを見る」ボタンを押すと即座に購入済み扱いになります(デモ・開発に便利)。
+購入ボタンを押すと即座に購入済み扱いになります(デモ・開発に便利)。
 
-本番で実際に課金する場合は以下を設定してください。
+本番で実際に課金する場合の手順です。
+
+1. [Stripeダッシュボード](https://dashboard.stripe.com/apikeys)でシークレットキーを取得する
+   (まずは `sk_test_` で始まるテストキーで通しで確認するのが安全です)
+2. Webhookを登録する: ダッシュボードの「開発者 > Webhook」でエンドポイント
+   `https://あなたのドメイン/webhook/stripe` を追加し、イベント `checkout.session.completed` を購読する。
+   発行された署名シークレット(`whsec_` で始まる文字列)を控える
+3. 以下を環境変数に設定してデプロイする
 
 ```
 STRIPE_SECRET_KEY=sk_live_xxx (またはテスト用 sk_test_xxx)
@@ -68,8 +110,19 @@ STRIPE_WEBHOOK_SECRET=whsec_xxx
 BASE_URL=https://your-domain.example.com
 ```
 
-Stripeダッシュボードで Webhook エンドポイント `POST /webhook/stripe` を登録し、
-`checkout.session.completed` イベントを購読してください。
+4. テストキーのまま[テストカード番号](https://docs.stripe.com/testing) `4242 4242 4242 4242`
+   (有効期限は未来の日付、CVCは任意の3桁)で購入し、レポートがアンロックされることを確認する
+5. 問題なければ `sk_live_` の本番キーに差し替える
+
+`BASE_URL` は決済後の戻り先URLとOGP画像の絶対URLに使われるため、本番では必ず設定してください。
+
+#### Webhookの遅延対策
+
+本番では購入確定(`paid`)を立てるのはWebhookですが、Webhookの到着が遅れると
+決済直後に戻ってきたユーザーに未購入画面が出てしまいます。
+そのため決済後の戻り先で `POST /api/checkout/verify` を呼び、`session_id` から
+Stripe側の支払い状況を直接確認して購入を確定させています(Webhookが先に届いていても冪等です)。
+`src/routes/payment.js` の `/checkout/verify` と、`public/js/honne-result.js` / `public/js/result.js` が該当箇所です。
 
 ## ディレクトリ構成
 
@@ -83,16 +136,20 @@ src/
     content.js        本命星×紋章の組み合わせから診断文を合成
     compatibility.js  五行相性理論に基づく相性診断
     honne.js          本音診断(12問・6軸・8タイプ)の質問/配点/判定/テキスト
+    pricing.js        本音診断の価格ABテスト(割り当て・解決)
   routes/
     diagnosis.js      無料診断・詳細レポートAPI(生年月日)
     payment.js        Stripe Checkout・Webhook(2商品対応)
     compatibility.js  相性診断API(購入者限定)
-    honne.js          本音診断API(質問取得・診断・完全版・クロス診断)
+    honne.js          本音診断API(質問取得・診断・完全版・クロス診断)+ シェアページ描画
     admin.js          管理統計API
+scripts/
+  generate-og.js     OGP画像(1200x630)の生成(再生成時のみ実行)
 public/
   index.html / result.html               生年月日診断
   honne.html / honne-result.html         本音診断
   admin.html                             管理統計
+  og/*.jpg                               シェア用OGP画像(タイプ別・生成済み)
   css/style.css, js/*.js, favicon.svg    フロントエンド(素のHTML/CSS/JS)
 ```
 
@@ -106,6 +163,8 @@ public/
 | GET | `/api/honne/:id/full` | 完全版レポート(未購入なら402) |
 | POST | `/api/honne/:id/cross` | クロス診断(未購入なら402) |
 | POST | `/api/checkout` | `{ diagnosisId, kind: 'honne' }` で決済セッションを作成 |
+| POST | `/api/checkout/verify` | `{ sessionId }` でStripeの支払い状況を確認し購入を確定(Webhook遅延の保険) |
+| GET | `/s/:id` | シェア専用ページ(タイプ名のみ+OGPタグ。サーバー側で描画) |
 
 ## 計算ロジックについて
 

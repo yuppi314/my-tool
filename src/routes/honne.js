@@ -2,10 +2,13 @@ const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const honne = require('../lib/honne');
+const pricing = require('../lib/pricing');
 const content = require('../lib/content');
 const { buildCompatibility } = require('../lib/compatibility');
 
 const router = express.Router();
+
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 function isValidDateStr(s) {
   return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(new Date(s).getTime());
@@ -49,18 +52,20 @@ router.post('/honne/diagnosis', (req, res) => {
   const id = uuidv4();
   const rel = normalizeRelation(relation);
   const label = typeof targetLabel === 'string' && targetLabel.trim() ? targetLabel.trim().slice(0, 20) : null;
+  // 価格ABテスト: 診断ごとに提示価格を確定させ、決済時もこの価格を使う
+  const price = pricing.assignPrice();
 
   db.prepare(
-    `INSERT INTO honne_results (id, relation, target_label, email, answers, scores, type_id, paid)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 0)`
-  ).run(id, rel, label, email || null, JSON.stringify(answers), JSON.stringify(scores), typeId);
+    `INSERT INTO honne_results (id, relation, target_label, email, answers, scores, type_id, price_jpy, paid)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`
+  ).run(id, rel, label, email || null, JSON.stringify(answers), JSON.stringify(scores), typeId, price);
 
   if (email) {
     db.prepare(`INSERT INTO leads (email, name, birthdate) VALUES (?, ?, NULL)`).run(email, label);
   }
 
   const freeResult = honne.buildFreeResult({ scores, typeId, relation: rel, targetLabel: label });
-  res.json({ id, paid: false, ...freeResult });
+  res.json({ id, paid: false, price, ...freeResult });
 });
 
 // 無料結果の再取得(シェアされたURLからの再訪に対応)
@@ -74,7 +79,7 @@ router.get('/honne/:id', (req, res) => {
     relation: row.relation,
     targetLabel: row.target_label,
   });
-  res.json({ id: row.id, paid: !!row.paid, ...freeResult });
+  res.json({ id: row.id, paid: !!row.paid, price: pricing.resolvePrice(row.price_jpy), ...freeResult });
 });
 
 // 完全版レポート(有料コンテンツ)
@@ -124,4 +129,77 @@ router.post('/honne/:id/cross', (req, res) => {
   });
 });
 
-module.exports = router;
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+}
+
+// シェア用ページ (GET /s/:id)
+//
+// SNSのクローラーはJavaScriptを実行しないため、OGPタグはサーバー側でHTMLに埋め込む必要がある。
+// このページは本音タイプだけを表示し、相手の呼び名・6軸スコア・回答内容は一切含めない。
+// 診断した本人が自分の結果に戻るためのURLは /honne.html?id=... 側で、用途を分けている。
+function sharePageHandler(req, res) {
+  const row = db.prepare('SELECT type_id FROM honne_results WHERE id = ?').get(req.params.id);
+  const type = row ? honne.TYPES[row.type_id] : null;
+
+  const title = type ? `私の本音は「${type.name}」でした | 本音診断` : '本音診断 | あの人を本当はどう思っている？';
+  const description = type
+    ? `${type.catch} 12の質問で、自分でも気づいていない本音がわかる無料診断。`
+    : '12の質問で、自分でも気づいていない「あの人への本音」がわかる無料診断。';
+  const image = `${BASE_URL}/og/honne-${type ? type.id : 'default'}.jpg`;
+  const heading = type ? type.name : 'あの人への本音';
+  const lead = type ? type.catch : '12の質問で、自分でも気づいていない本音を言葉にします。';
+
+  res.set('Content-Type', 'text/html; charset=utf-8').send(`<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${escapeHtml(title)}</title>
+  <meta name="description" content="${escapeHtml(description)}" />
+  <meta property="og:title" content="${escapeHtml(title)}" />
+  <meta property="og:description" content="${escapeHtml(description)}" />
+  <meta property="og:image" content="${escapeHtml(image)}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${escapeHtml(`${BASE_URL}/s/${req.params.id}`)}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>本音診断</h1>
+      <p>あの人のことを、あなたは本当はどう思っている？</p>
+    </header>
+
+    <div class="card">
+      <div class="type-headline">${type ? 'この診断結果は' : ''}</div>
+      <div class="type-name">${escapeHtml(heading)}</div>
+      <div class="type-catch">${escapeHtml(lead)}</div>
+
+      <div class="cta-box">
+        <p>12の質問に答えるだけ。<br />あなたの本音は6つの心理軸で言葉になります。</p>
+        <a class="cta-link" href="/honne.html">あなたも無料で診断する</a>
+      </div>
+
+      <p class="note-text">
+        このページに表示されるのは診断タイプだけです。回答内容やお相手の呼び名は含まれていません。
+      </p>
+    </div>
+
+    <footer class="legal">
+      本診断は心理学の一般的な考え方を参考にした娯楽・自己内省コンテンツであり、心理検査・医療行為ではありません。
+      医療・法律等の専門的助言に代わるものではなく、他者の心理を判定するものでもありません。<br />
+      <a href="/tokushoho.html">特定商取引法に基づく表記</a> ・
+      <a href="/terms.html">利用規約</a> ・
+      <a href="/privacy.html">プライバシーポリシー</a>
+    </footer>
+  </div>
+</body>
+</html>`);
+}
+
+module.exports = { router, sharePageHandler };

@@ -11,6 +11,8 @@ if (!resultId) {
 async function load() {
   // まず無料結果(タイプ名・本音の一行)を表示し、その後に有料部分を取得する
   try {
+    // Stripeから戻ってきた直後はWebhookが未達のことがあるため、支払い状況を確認する
+    await verifyCheckout();
     const res = await fetch(`/api/honne/${encodeURIComponent(resultId)}`);
     const data = await res.json();
     if (!res.ok) {
@@ -18,12 +20,29 @@ async function load() {
       return;
     }
     renderSummary(data);
+    if (data.price) {
+      el('unlock-btn').textContent = `完全版レポートを購入する(¥${Number(data.price).toLocaleString()})`;
+    }
     if (params.get('canceled')) {
       el('status-line').textContent = '決済はキャンセルされました。';
     }
     await loadFull();
   } catch (err) {
     el('status-line').textContent = '通信エラーが発生しました。';
+  }
+}
+
+async function verifyCheckout() {
+  const sessionId = params.get('session_id');
+  if (!sessionId) return;
+  try {
+    await fetch('/api/checkout/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    });
+  } catch (err) {
+    /* 確認できなくてもWebhookで確定するため、そのまま表示に進む */
   }
 }
 

@@ -415,3 +415,16 @@ ul#f-todo li, ul#f-ng li { margin-bottom: 8px; }
   .result-grid { grid-template-columns: 1fr; }
   .share-row button { flex: 1 1 100%; }
 }
+
+.cta-link {
+  display: inline-block;
+  margin-top: 8px;
+  background: linear-gradient(90deg, var(--accent), #ffb454);
+  color: #241503;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 14px 28px;
+}
+
+.cta-link:hover { transform: translateY(-1px); }

@@ -41,6 +41,10 @@
         <tr><td>コンバージョン率</td><td id="s-honne-cvr"></td></tr>
       </table>
 
+      <div class="section-title">価格ABテスト(本音診断)</div>
+      <p class="note-text" id="s-price-variants"></p>
+      <table class="stats-table" id="s-price-test"></table>
+
       <div class="section-title">本音タイプの分布(訴求コピー改善に使えます)</div>
       <table class="stats-table" id="s-honne-types"></table>
     </div>
@@ -79,6 +83,20 @@
         document.getElementById('s-honne').textContent = data.honneCount;
         document.getElementById('s-honne-paid').textContent = data.honnePaidCount;
         document.getElementById('s-honne-cvr').textContent = `${data.honneConversionRatePercent}%`;
+        document.getElementById('s-price-variants').textContent =
+          data.honnePriceVariants.length > 1
+            ? `テスト中の価格: ${data.honnePriceVariants.map((p) => '¥' + p.toLocaleString()).join(' / ')}`
+            : `単価運用中(¥${data.honnePriceVariants[0].toLocaleString()})。HONNE_PRICE_AB に「480,980」のように設定するとABテストが始まります。`;
+        document.getElementById('s-price-test').innerHTML =
+          '<tr><th>価格</th><th>診断数</th><th>購入数</th><th>CVR</th><th>売上</th></tr>' +
+          (data.honnePriceTest.length
+            ? data.honnePriceTest
+                .map(
+                  (r) =>
+                    `<tr><td>¥${r.price.toLocaleString()}</td><td>${r.diagnoses}</td><td>${r.purchases}</td><td>${r.conversionRatePercent}%</td><td>¥${r.revenue.toLocaleString()}</td></tr>`
+                )
+                .join('')
+            : '<tr><td colspan="5">まだデータがありません</td></tr>');
         document.getElementById('s-honne-types').innerHTML = data.honneTypeBreakdown.length
           ? data.honneTypeBreakdown
               .map((t) => `<tr><td>${HONNE_TYPE_NAMES[t.type_id] || t.type_id}</td><td>${t.c}</td></tr>`)

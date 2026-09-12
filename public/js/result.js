@@ -12,6 +12,9 @@ if (!diagnosisId) {
 }
 
 async function init() {
+  // Stripeから戻ってきた直後はWebhookが未達のことがあるため、支払い状況を確認する
+  await verifyCheckout();
+
   const res = await fetch(`/api/diagnosis/${diagnosisId}`);
   const data = await res.json();
   if (!res.ok) {
@@ -33,6 +36,20 @@ async function init() {
     statusLine.textContent = '無料診断の結果です。詳細レポートで運勢・相性まで見られます。';
     fullCard.style.display = 'none';
     lockedCard.style.display = 'block';
+  }
+}
+
+async function verifyCheckout() {
+  const sessionId = params.get('session_id');
+  if (!sessionId) return;
+  try {
+    await fetch('/api/checkout/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    });
+  } catch (err) {
+    /* 確認できなくてもWebhookで確定するため、そのまま表示に進む */
   }
 }
 

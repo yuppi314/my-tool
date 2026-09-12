@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS honne_results (
   answers TEXT NOT NULL,
   scores TEXT NOT NULL,
   type_id TEXT NOT NULL,
+  price_jpy INTEGER,
   paid INTEGER NOT NULL DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -63,5 +64,7 @@ function addColumnIfMissing(table, column, definition) {
 }
 
 addColumnIfMissing('orders', 'kind', "TEXT NOT NULL DEFAULT 'birth'");
+// 価格ABテストの導入で、診断ごとに提示した価格を持つ必要が出た
+addColumnIfMissing('honne_results', 'price_jpy', 'INTEGER');
 
 module.exports = db;

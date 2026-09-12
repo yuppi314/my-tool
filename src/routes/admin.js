@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('../db');
+const pricing = require('../lib/pricing');
 
 const router = express.Router();
 
@@ -11,6 +12,7 @@ router.get('/admin/stats', (req, res) => {
     return res.status(401).json({ error: '認証に失敗しました。ADMIN_TOKEN を確認してください。' });
   }
 
+  const basePrice = pricing.basePrice();
   const leadCount = db.prepare('SELECT COUNT(*) AS c FROM leads').get().c;
   const diagnosisCount = db.prepare('SELECT COUNT(*) AS c FROM diagnoses').get().c;
   const paidCount = db.prepare('SELECT COUNT(*) AS c FROM diagnoses WHERE paid = 1').get().c;
@@ -27,6 +29,24 @@ router.get('/admin/stats', (req, res) => {
     .prepare('SELECT type_id, COUNT(*) AS c FROM honne_results GROUP BY type_id ORDER BY c DESC')
     .all();
 
+  // 価格ABテストの結果。売上は「診断数 × CVR × 価格」で決まるので、
+  // CVRが下がっても売上が伸びる価格がありうる。判断はこの売上列で行う。
+  const honnePriceTest = db
+    .prepare(
+      `SELECT COALESCE(price_jpy, ?) AS price,
+              COUNT(*) AS diagnoses,
+              SUM(paid) AS purchases,
+              SUM(paid) * COALESCE(price_jpy, ?) AS revenue
+       FROM honne_results
+       GROUP BY COALESCE(price_jpy, ?)
+       ORDER BY price`
+    )
+    .all(basePrice, basePrice, basePrice)
+    .map((row) => ({
+      ...row,
+      conversionRatePercent: row.diagnoses > 0 ? Number(((row.purchases / row.diagnoses) * 100).toFixed(1)) : 0,
+    }));
+
   res.json({
     leadCount,
     diagnosisCount,
@@ -37,6 +57,8 @@ router.get('/admin/stats', (req, res) => {
     honnePaidCount,
     honneConversionRatePercent: Number(honneConversionRate),
     honneTypeBreakdown,
+    honnePriceTest,
+    honnePriceVariants: pricing.variants(),
   });
 });
 
