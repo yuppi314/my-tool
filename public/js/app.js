@@ -4,6 +4,22 @@ const resultCard = document.getElementById('result-card');
 const checkoutBtn = document.getElementById('checkout-btn');
 
 let currentDiagnosisId = null;
+let paymentMode = 'comingsoon';
+
+// 販売準備中は購入ボタンを「近日公開」に差し替える(押しても買えないボタンを残さない)
+fetch('/api/config')
+  .then((res) => (res.ok ? res.json() : null))
+  .then((config) => {
+    if (!config) return;
+    paymentMode = config.paymentMode;
+    document.getElementById('price-label').textContent = `¥${config.prices.birth.toLocaleString()}`;
+    if (paymentMode === 'comingsoon') {
+      document.getElementById('price-label').textContent = '近日公開';
+      checkoutBtn.textContent = '詳細レポートは近日公開';
+      checkoutBtn.disabled = true;
+    }
+  })
+  .catch(() => {});
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();

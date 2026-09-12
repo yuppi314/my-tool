@@ -23,9 +23,13 @@
     <div class="card" id="stats-card" style="display:none;">
       <div class="section-title">全体</div>
       <table class="stats-table">
+        <tr><td>決済モード</td><td id="s-payment-mode"></td></tr>
         <tr><td>累計リード数(メール取得数)</td><td id="s-leads"></td></tr>
         <tr><td>売上合計(円・両診断の合算)</td><td id="s-revenue"></td></tr>
       </table>
+
+      <div class="section-title">リードの獲得元</div>
+      <table class="stats-table" id="s-lead-sources"></table>
 
       <div class="section-title">生年月日診断(九星気学×マヤ暦)</div>
       <table class="stats-table">
@@ -52,6 +56,18 @@
   </div>
 
   <script>
+    const PAYMENT_MODE_LABELS = {
+      live: 'live(Stripeで課金中)',
+      mock: 'mock(購入ボタンで即アンロック。公開サーバーでは使わないでください)',
+      comingsoon: 'comingsoon(有料レポートは販売せず「近日公開」として案内中)',
+    };
+
+    const LEAD_SOURCE_LABELS = {
+      birth: '生年月日診断',
+      honne: '本音診断',
+      'honne-comingsoon': '本音診断(公開お知らせ登録)',
+    };
+
     const HONNE_TYPE_NAMES = {
       honmei: '本命まっすぐ型',
       shuchaku: '手放せない執着型',
@@ -75,7 +91,13 @@
           document.getElementById('stats-card').style.display = 'none';
           return;
         }
+        document.getElementById('s-payment-mode').textContent = PAYMENT_MODE_LABELS[data.paymentMode] || data.paymentMode;
         document.getElementById('s-leads').textContent = data.leadCount;
+        document.getElementById('s-lead-sources').innerHTML = data.leadSources.length
+          ? data.leadSources
+              .map((r) => `<tr><td>${LEAD_SOURCE_LABELS[r.source] || r.source}</td><td>${r.c}</td></tr>`)
+              .join('')
+          : '<tr><td>まだデータがありません</td><td>-</td></tr>';
         document.getElementById('s-diagnoses').textContent = data.diagnosisCount;
         document.getElementById('s-paid').textContent = data.paidCount;
         document.getElementById('s-revenue').textContent = data.revenueJpy.toLocaleString();

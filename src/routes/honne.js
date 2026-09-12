@@ -8,7 +8,7 @@ const { buildCompatibility } = require('../lib/compatibility');
 
 const router = express.Router();
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const { baseUrl } = require('../lib/config');
 
 function isValidDateStr(s) {
   return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(new Date(s).getTime());
@@ -61,7 +61,7 @@ router.post('/honne/diagnosis', (req, res) => {
   ).run(id, rel, label, email || null, JSON.stringify(answers), JSON.stringify(scores), typeId, price);
 
   if (email) {
-    db.prepare(`INSERT INTO leads (email, name, birthdate) VALUES (?, ?, NULL)`).run(email, label);
+    db.prepare(`INSERT INTO leads (email, name, birthdate, source) VALUES (?, ?, NULL, 'honne')`).run(email, label);
   }
 
   const freeResult = honne.buildFreeResult({ scores, typeId, relation: rel, targetLabel: label });
@@ -148,6 +148,7 @@ function sharePageHandler(req, res) {
   const description = type
     ? `${type.catch} 12の質問で、自分でも気づいていない本音がわかる無料診断。`
     : '12の質問で、自分でも気づいていない「あの人への本音」がわかる無料診断。';
+  const BASE_URL = baseUrl();
   const image = `${BASE_URL}/og/honne-${type ? type.id : 'default'}.jpg`;
   const heading = type ? type.name : 'あの人への本音';
   const lead = type ? type.catch : '12の質問で、自分でも気づいていない本音を言葉にします。';

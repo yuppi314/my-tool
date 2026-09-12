@@ -36,6 +36,23 @@ async function init() {
     statusLine.textContent = '無料診断の結果です。詳細レポートで運勢・相性まで見られます。';
     fullCard.style.display = 'none';
     lockedCard.style.display = 'block';
+
+    // 販売準備中は買えないボタンを出さない
+    const config = await fetchConfig();
+    if (config && config.paymentMode === 'comingsoon') {
+      const unlockBtn = document.getElementById('unlock-btn');
+      unlockBtn.textContent = '詳細レポートは近日公開';
+      unlockBtn.disabled = true;
+    }
+  }
+}
+
+async function fetchConfig() {
+  try {
+    const res = await fetch('/api/config');
+    return res.ok ? await res.json() : null;
+  } catch (err) {
+    return null;
   }
 }
 

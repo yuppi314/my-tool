@@ -1,6 +1,12 @@
-# 無料プランで最短公開するための設定(カード登録不要)。
+# Render の無料プランで公開するための設定(クレジットカード登録は不要)。
+#
+# 決済は既定で「近日公開」モードになります(PAYMENT_MODE を設定しないため)。
+# 有料レポートは開放されず、結果画面ではメールアドレスのお知らせ登録を受け付けます。
+# 販売を始めるときに STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET を追加してください。
+#
 # 無料プランは永続ディスクが使えないため、再起動・再デプロイでリード/診断データはリセットされます。
-# 本格運用する際は runtime を docker に変え、有料プラン+ディスク(このファイルの過去バージョン参照)に切り替えてください。
+# データを失いたくない段階になったら runtime を docker に変え、有料プラン + ディスク
+# (mountPath: /app/data) に切り替えてください。
 services:
   - type: web
     name: kyusei-mayan-fortune
@@ -8,12 +14,14 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /health
     envVars:
-      - key: PORT
-        value: 3000
-      - key: BASE_URL
-        sync: false
+      # BASE_URL は未設定でよい。Render が渡す RENDER_EXTERNAL_URL を自動で使うため、
+      # シェア時のOGP画像も正しい絶対URLになる。独自ドメインを使うときだけ設定する。
       - key: REPORT_PRICE_JPY
         value: 980
+      - key: HONNE_PRICE_JPY
+        value: 980
+      # 管理画面 /admin.html のアクセストークン。推測されにくい文字列を入力する。
       - key: ADMIN_TOKEN
         sync: false

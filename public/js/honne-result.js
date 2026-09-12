@@ -32,6 +32,15 @@ async function load() {
   }
 }
 
+async function fetchConfig() {
+  try {
+    const res = await fetch('/api/config');
+    return res.ok ? await res.json() : null;
+  } catch (err) {
+    return null;
+  }
+}
+
 async function verifyCheckout() {
   const sessionId = params.get('session_id');
   if (!sessionId) return;
@@ -59,8 +68,17 @@ async function loadFull() {
   const data = await res.json();
 
   if (res.status === 402) {
-    el('status-line').textContent = '完全版レポートは購入後に表示されます。';
     el('locked-card').style.display = 'block';
+    // 販売準備中は買えないボタンを出さず、無料結果ページへ戻す
+    const config = await fetchConfig();
+    if (config && config.paymentMode === 'comingsoon') {
+      el('status-line').textContent = '完全版レポートは近日公開です。';
+      el('unlock-btn').style.display = 'none';
+      el('page-error').textContent =
+        '完全版レポートは現在準備中です。無料結果のページでお知らせ登録ができます。';
+    } else {
+      el('status-line').textContent = '完全版レポートは購入後に表示されます。';
+    }
     return;
   }
   if (!res.ok) {

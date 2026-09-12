@@ -7,6 +7,7 @@ const state = {
   answers: {},
   resultId: null,
   prices: { honne: 980 },
+  paymentMode: 'comingsoon',
 };
 
 // 既存の結果URL(?id=...)で開かれた場合は、その結果を再表示する
@@ -17,11 +18,15 @@ init();
 
 async function init() {
   try {
-    const [qRes, pRes] = await Promise.all([fetch('/api/honne/questions'), fetch('/api/prices')]);
+    const [qRes, cRes] = await Promise.all([fetch('/api/honne/questions'), fetch('/api/config')]);
     const qData = await qRes.json();
     state.questions = qData.questions;
     state.relations = qData.relations;
-    if (pRes.ok) state.prices = await pRes.json();
+    if (cRes.ok) {
+      const config = await cRes.json();
+      state.prices = config.prices;
+      state.paymentMode = config.paymentMode;
+    }
     setPriceLabel(state.prices.honne);
     renderRelations();
   } catch (err) {
@@ -158,8 +163,18 @@ function setPriceLabel(price) {
   el('honne-price').textContent = `¥${Number(price).toLocaleString()}`;
 }
 
+// 販売準備中は購入ボタンの代わりに「公開時にお知らせ」の登録欄を出す。
+// 押しても買えないボタンを置いたままにすると、見込み客をそのまま失ってしまう。
+function applyPaymentMode() {
+  if (state.paymentMode !== 'comingsoon') return;
+  el('checkout-btn').style.display = 'none';
+  el('notify-box').style.display = 'block';
+  el('honne-price').textContent = '近日公開';
+}
+
 function renderResult(data) {
   if (data.price) setPriceLabel(data.price);
+  applyPaymentMode();
   el('r-headline').textContent = data.headline;
   el('r-type').textContent = data.type.name;
   el('r-catch').textContent = data.type.catch;
@@ -187,6 +202,37 @@ function lockedBar(name) {
       <div class="axis-track"><span style="width:100%"></span></div>
     </div>`;
 }
+
+el('notify-btn').addEventListener('click', async () => {
+  const email = el('notify-email').value.trim();
+  const note = el('notify-note');
+  note.textContent = '';
+  if (!email) {
+    note.textContent = 'メールアドレスをご入力ください。';
+    return;
+  }
+
+  el('notify-btn').disabled = true;
+  try {
+    const res = await fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, source: 'honne-comingsoon' }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      note.textContent = data.error || '登録に失敗しました。';
+      el('notify-btn').disabled = false;
+      return;
+    }
+    el('notify-email').style.display = 'none';
+    el('notify-btn').style.display = 'none';
+    note.textContent = '登録しました。完全版レポートの公開時にお知らせします。';
+  } catch (err) {
+    note.textContent = '通信エラーが発生しました。';
+    el('notify-btn').disabled = false;
+  }
+});
 
 el('checkout-btn').addEventListener('click', async () => {
   if (!state.resultId) return;

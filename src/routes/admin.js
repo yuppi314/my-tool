@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const pricing = require('../lib/pricing');
+const { paymentMode } = require('../lib/config');
 
 const router = express.Router();
 
@@ -14,6 +15,10 @@ router.get('/admin/stats', (req, res) => {
 
   const basePrice = pricing.basePrice();
   const leadCount = db.prepare('SELECT COUNT(*) AS c FROM leads').get().c;
+  // どの導線からメールを獲得できているか(honne-comingsoon は販売前のお知らせ登録)
+  const leadSources = db
+    .prepare(`SELECT COALESCE(source, '(不明)') AS source, COUNT(*) AS c FROM leads GROUP BY COALESCE(source, '(不明)') ORDER BY c DESC`)
+    .all();
   const diagnosisCount = db.prepare('SELECT COUNT(*) AS c FROM diagnoses').get().c;
   const paidCount = db.prepare('SELECT COUNT(*) AS c FROM diagnoses WHERE paid = 1').get().c;
   const honneCount = db.prepare('SELECT COUNT(*) AS c FROM honne_results').get().c;
@@ -59,6 +64,8 @@ router.get('/admin/stats', (req, res) => {
     honneTypeBreakdown,
     honnePriceTest,
     honnePriceVariants: pricing.variants(),
+    leadSources,
+    paymentMode: paymentMode(),
   });
 });
 

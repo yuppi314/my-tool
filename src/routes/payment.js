@@ -1,11 +1,11 @@
 const express = require('express');
 const db = require('../db');
 const pricing = require('../lib/pricing');
+const { baseUrl, paymentMode } = require('../lib/config');
 
 const router = express.Router();
 
 const REPORT_PRICE_JPY = Number(process.env.REPORT_PRICE_JPY || 980);
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // 販売商品の定義。kind ごとに参照するテーブルと戻り先ページを切り替える。
 // table 名はこの固定マップ由来のみを使うため、SQLへの動的埋め込みでも安全。
@@ -49,9 +49,20 @@ router.post('/checkout', async (req, res) => {
     ? pricing.resolvePrice(target[product.priceColumn])
     : product.price;
 
+  const mode = paymentMode();
+
+  // 販売準備中(既定): 有料レポートは開放せず、準備中であることを伝える。
+  // 決済を用意せず公開したときに、押した全員へ有料レポートを配ってしまうのを防ぐ。
+  if (mode === 'comingsoon') {
+    return res.status(503).json({
+      error: '完全版レポートは近日公開です。公開時にお知らせしますので、メールアドレスをご登録ください。',
+      comingSoon: true,
+    });
+  }
+
   const stripe = getStripe();
 
-  // STRIPE_SECRET_KEY 未設定時は開発用モックモード: 即時に決済成功として扱う
+  // モックモード(PAYMENT_MODE=mock): 即時に決済成功として扱う。開発・デモ用。
   if (!stripe) {
     db.prepare(`UPDATE ${product.table} SET paid = 1 WHERE id = ?`).run(diagnosisId);
     db.prepare(
@@ -77,8 +88,8 @@ router.post('/checkout', async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${BASE_URL}${product.resultPath}?id=${diagnosisId}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${BASE_URL}${product.resultPath}?id=${diagnosisId}&canceled=1`,
+      success_url: `${baseUrl()}${product.resultPath}?id=${diagnosisId}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl()}${product.resultPath}?id=${diagnosisId}&canceled=1`,
       metadata: { diagnosisId, kind: productKind },
     });
 
@@ -130,11 +141,31 @@ router.post('/checkout/verify', async (req, res) => {
   }
 });
 
-// 価格表示用(フロントのCTA文言と実際の請求額をずらさないため)
+// フロントが表示を切り替えるための設定。
 // 本音診断はABテストで診断ごとに価格が変わるため、実際の提示価格は
 // /api/honne/:id が返す price を使う。ここでは既定価格のみを返す。
+router.get('/config', (req, res) => {
+  res.json({
+    paymentMode: paymentMode(),
+    prices: { birth: REPORT_PRICE_JPY, honne: pricing.basePrice() },
+  });
+});
+
+// 旧エンドポイント(価格のみ)。既存のフロントとの互換用に残している。
 router.get('/prices', (req, res) => {
   res.json({ birth: REPORT_PRICE_JPY, honne: pricing.basePrice() });
+});
+
+// 販売開始のお知らせ登録。
+// 準備中でも見込み客を取り逃がさないための導線で、既存の leads テーブルに貯める。
+router.post('/notify', (req, res) => {
+  const { email, source } = req.body || {};
+  if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return res.status(400).json({ error: 'メールアドレスの形式をご確認ください。' });
+  }
+  const label = typeof source === 'string' ? source.slice(0, 40) : null;
+  db.prepare('INSERT INTO leads (email, source) VALUES (?, ?)').run(email.trim(), label);
+  res.json({ ok: true });
 });
 
 // Stripe Webhook: raw body で検証するため server.js 側で express.raw() を適用して呼び出す

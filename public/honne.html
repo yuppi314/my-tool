@@ -84,6 +84,14 @@
           相手から見えているあなた／3ヶ月後の関係予測／今すべきこと・NG行動
         </p>
         <button type="button" class="primary" id="checkout-btn">完全版レポートを読む</button>
+
+        <!-- 販売準備中(PAYMENT_MODE未設定)のときはこちらを表示する -->
+        <div id="notify-box" style="display:none;">
+          <label for="notify-email">公開時にお知らせします(メールアドレス)</label>
+          <input type="email" id="notify-email" placeholder="example@mail.com" />
+          <button type="button" class="primary" id="notify-btn">お知らせを受け取る</button>
+          <p class="note-text" id="notify-note"></p>
+        </div>
       </div>
 
       <div class="section-title">結果をシェアする</div>

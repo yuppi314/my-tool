@@ -25,7 +25,7 @@ router.post('/diagnosis', (req, res) => {
   ).run(id, birthdate, name || null, email || null, profile.honmeiId, profile.kin);
 
   if (email) {
-    db.prepare(`INSERT INTO leads (email, name, birthdate) VALUES (?, ?, ?)`).run(email, name || null, birthdate);
+    db.prepare(`INSERT INTO leads (email, name, birthdate, source) VALUES (?, ?, ?, 'birth')`).run(email, name || null, birthdate);
   }
 
   const freeResult = content.buildFreeResult(profile);

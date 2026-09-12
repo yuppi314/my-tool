@@ -10,9 +10,11 @@ const compatibilityRoutes = require('./routes/compatibility');
 const { router: honneRoutes, sharePageHandler } = require('./routes/honne');
 const adminRoutes = require('./routes/admin');
 
+const { baseUrl, paymentMode } = require('./lib/config');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
-const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+const BASE_URL = baseUrl();
 
 // OGPの og:image / og:url は絶対URLでないとSNS側が解決できないため、
 // 本音診断の入口ページだけは起動時に BASE_URL を埋め込んだHTMLを配信する。
@@ -47,8 +49,15 @@ app.get('/s/:id', sharePageHandler);
 app.get('/health', (req, res) => res.json({ ok: true }));
 
 app.listen(PORT, () => {
-  console.log(`九星気学×マヤ暦 診断ツール起動: http://localhost:${PORT}`);
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.log('※ STRIPE_SECRET_KEY 未設定のため、決済は開発用モックモードで動作します。');
+  console.log(`診断ツール起動: http://localhost:${PORT}`);
+  console.log(`公開URL(OGP・決済の戻り先に使用): ${BASE_URL}`);
+  const mode = paymentMode();
+  if (mode === 'live') {
+    console.log('決済モード: live (Stripeで実際に課金します)');
+  } else if (mode === 'mock') {
+    console.log('決済モード: mock (購入ボタンで即アンロック。開発・デモ用です)');
+  } else {
+    console.log('決済モード: comingsoon (有料レポートは販売せず「近日公開」として案内します)');
+    console.log('  → 販売を始めるには STRIPE_SECRET_KEY を設定してください。');
   }
 });

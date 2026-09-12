@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS leads (
   email TEXT NOT NULL,
   name TEXT,
   birthdate TEXT,
+  source TEXT,
   created_at TEXT DEFAULT (datetime('now'))
 );
 
@@ -66,5 +67,7 @@ function addColumnIfMissing(table, column, definition) {
 addColumnIfMissing('orders', 'kind', "TEXT NOT NULL DEFAULT 'birth'");
 // 価格ABテストの導入で、診断ごとに提示した価格を持つ必要が出た
 addColumnIfMissing('honne_results', 'price_jpy', 'INTEGER');
+// どの診断・どの導線から獲得したリードかを区別する
+addColumnIfMissing('leads', 'source', 'TEXT');
 
 module.exports = db;
