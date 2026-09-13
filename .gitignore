@@ -3,3 +3,7 @@ node_modules/
 data/*.db
 data/*.db-journal
 npm-debug.log
+
+# Python
+__pycache__/
+*.pyc
