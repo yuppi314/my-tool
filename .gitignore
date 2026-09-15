@@ -7,3 +7,5 @@ npm-debug.log
 # Python
 __pycache__/
 *.pyc
+manga/.epub_work/
+manga/out/*.epub
