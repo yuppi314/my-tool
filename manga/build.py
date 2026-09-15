@@ -5,6 +5,7 @@
 固定ブロックは spec.py から一字一句同じものを全ページへ流し込むので、
 文言の揺れによる作画ドリフトが起きない。
 """
+import io
 import os
 import re
 import shutil
@@ -416,6 +417,57 @@ def build_outline():
     return "\n".join(o) + "\n"
 
 
+
+# ─────────────────────────────────────────────
+# ④ 引き直し用「貼るだけファイル」
+# ─────────────────────────────────────────────
+
+def build_redraw():
+    from redraw import GROUPS
+    import re as _re
+    src = io.open_text = None
+    with open(os.path.join(OUT, "03_ページプロンプト集.md"), encoding="utf-8") as f:
+        body = f.read()
+    blocks = _re.split(r"(?=^## ページ )", body, flags=_re.M)
+    by_page = {}
+    for b in blocks:
+        m = _re.match(r"## ページ (\d+)／", b)
+        if m:
+            by_page[int(m.group(1))] = b.rstrip()
+
+    o = []
+    a = o.append
+    a("# 引き直し 貼るだけファイル\n")
+    a("## 使い方\n")
+    a("1. **1ページにつき、新しいチャットを1つ開く**")
+    a("2. そのページの **````  ```` で囲まれた中身だけ** を全部コピーして貼る")
+    a("3. 指定のキャラシート画像を添付する")
+    a("4. 送信する。**それ以外は何も書かない**\n")
+    a("> 「さっきのキャラで」「前のページを直して」とは絶対に言わないでください。")
+    a("> うまくいかなかったら、修正を頼まずに**新しいチャットで引き直します**。")
+    a("> 3回だめなら、そのページだけご連絡ください。文面を短くした版を作ります。\n")
+    total = sum(len(g[2]) for g in GROUPS)
+    a("\n## 対象ページ（全{}枚）\n".format(total))
+    a("| 区分 | 枚数 | 内容 |")
+    a("|---|---|---|")
+    for key, label, items in GROUPS:
+        a("| {} | {}枚 | {} |".format(key, len(items), label))
+    a("")
+    for key, label, items in GROUPS:
+        a("\n---\n")
+        a("# {}．{}（{}枚）\n".format(key, label, len(items)))
+        a("| P | 理由 |")
+        a("|---|---|")
+        for n, why in items:
+            a("| {} | {} |".format(n, why))
+        for n, why in items:
+            a("\n---\n")
+            a("### ▸ P{}　{}\n".format(n, why))
+            a(by_page.get(n, "（ブロックが見つかりませんでした）"))
+    a("")
+    return "\n".join(o) + "\n"
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     files = {
@@ -433,6 +485,12 @@ def main():
         with open(path, "w", encoding="utf-8") as f:
             f.write(body)
         print("wrote {:>36}  {:>8,} bytes".format(fn, len(body.encode("utf-8"))))
+
+    # 03 を読んで作るので最後に生成する
+    rd = build_redraw()
+    with open(os.path.join(OUT, "11_引き直し_貼るだけ.md"), "w", encoding="utf-8") as f:
+        f.write(rd)
+    print("wrote {:>36}  {:>8,} bytes".format("11_引き直し_貼るだけ.md", len(rd.encode("utf-8"))))
 
 
 if __name__ == "__main__":
