@@ -406,9 +406,13 @@ def to_jpeg(src, dst, quality=JPEG_QUALITY):
     return os.path.getsize(dst)
 
 
-def build(src, cover, out, work, expect, quality, no_frontmatter):
+def build(src, cover, out, work, expect, quality, no_frontmatter, draft=False):
     files = collect_pages(src)
     problems, warnings, rows = inspect(files, expect)
+    if draft:
+        keep = [m for m in problems if not (m.startswith("枚数が") or m.startswith("番号が飛"))]
+        warnings += ["（仮組み）" + m for m in problems if m not in keep]
+        problems = keep
     report(problems, warnings, rows)
     if problems:
         sys.exit("\n✗ 上のエラーを直してからもう一度実行してください。")
@@ -547,6 +551,7 @@ def main():
     ap.add_argument("--no-frontmatter", action="store_true", help="免責ページと奥付を入れない")
     ap.add_argument("--pubdate", help="奥付に入れる初版発行日（例: 2026年10月1日）")
     ap.add_argument("--title-suffix", default="", help="仮組み版のタイトル末尾に付ける文字（例: 【第1〜5章 仮組み】）")
+    ap.add_argument("--draft", action="store_true", help="枚数不足・番号の飛びを警告にとどめて仮組みする")
     a = ap.parse_args()
 
     global PUBDATE, TITLE
@@ -567,7 +572,7 @@ def main():
         shutil.rmtree(work)
     out = a.out if os.path.isabs(a.out) else os.path.join(HERE, a.out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    build(a.src, a.cover, out, work, a.expect, a.quality, a.no_frontmatter)
+    build(a.src, a.cover, out, work, a.expect, a.quality, a.no_frontmatter, a.draft)
 
 
 if __name__ == "__main__":
