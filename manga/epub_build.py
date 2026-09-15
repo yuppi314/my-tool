@@ -27,9 +27,14 @@ sys.path.insert(0, HERE)
 # ─────────────────────────────────────────────
 TITLE = "漫画でわかる 離婚バイブル"
 SUBTITLE = "子どもがいるママが損しないための 離婚前にやること・お金・養育費・離婚後の手続きのすべて"
-AUTHOR = "（著者名を入れてください）"
-PUBLISHER = "（発行者名を入れてください）"
+# 奥付に描くときの折り返し（1行が長すぎると全体が縮んで読みにくくなるため）
+SUBTITLE_LINES = """子どもがいるママが損しないための
+離婚前にやること・お金・養育費・
+離婚後の手続きのすべて"""
+AUTHOR = "あさひ なぎさ"
+PUBLISHER = "あさひ なぎさ"
 LANG = "ja"
+PUBDATE = "2026年9月15日"   # --pubdate で上書きできる
 PAGE_W, PAGE_H = 1024, 1536
 JPEG_QUALITY = 85
 
@@ -90,7 +95,7 @@ COLOPHON = """{title}
 
 発行　　　{publisher}
 
-初版発行　（YYYY年MM月DD日）
+初版発行　{pubdate}
 
 
 本書の内容の無断転載・複製を禁じます。
@@ -458,7 +463,8 @@ def build(src, cover, out, work, expect, quality, no_frontmatter):
 
     # 奥付
     if not no_frontmatter:
-        text = COLOPHON.format(title=TITLE, subtitle=SUBTITLE, author=AUTHOR, publisher=PUBLISHER)
+        text = COLOPHON.format(title=TITLE, subtitle=SUBTITLE_LINES, author=AUTHOR,
+                               publisher=PUBLISHER, pubdate=PUBDATE)
         render_text_page(text, os.path.join(img_dir, "colophon.jpg"))
         total_bytes += os.path.getsize(os.path.join(img_dir, "colophon.jpg"))
         items.append({"id": "img-colophon", "href": "images/colophon.jpg", "type": "image/jpeg"})
@@ -539,7 +545,15 @@ def main():
     ap.add_argument("--quality", type=int, default=JPEG_QUALITY, help="JPEG画質（既定85）")
     ap.add_argument("--check", action="store_true", help="画像の検査だけして終わる")
     ap.add_argument("--no-frontmatter", action="store_true", help="免責ページと奥付を入れない")
+    ap.add_argument("--pubdate", help="奥付に入れる初版発行日（例: 2026年10月1日）")
+    ap.add_argument("--title-suffix", default="", help="仮組み版のタイトル末尾に付ける文字（例: 【第1〜5章 仮組み】）")
     a = ap.parse_args()
+
+    global PUBDATE, TITLE
+    if a.pubdate:
+        PUBDATE = a.pubdate
+    if a.title_suffix:
+        TITLE = TITLE + a.title_suffix
 
     if a.check:
         files = collect_pages(a.src)
