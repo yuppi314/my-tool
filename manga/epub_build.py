@@ -399,6 +399,11 @@ def build_ncx(toc, uid):
 # ─────────────────────────────────────────────
 
 def to_jpeg(src, dst, quality=JPEG_QUALITY):
+    """JPEGにして書き出す。元がすでにJPEGなら再圧縮せずそのまま複製する
+    （二重圧縮で文字の輪郭が濁るのを防ぐため）。"""
+    if os.path.splitext(src)[1].lower() in (".jpg", ".jpeg"):
+        shutil.copyfile(src, dst)
+        return os.path.getsize(dst)
     with Image.open(src) as im:
         if im.mode not in ("RGB", "L"):
             im = im.convert("RGB")
