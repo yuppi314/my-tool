@@ -15,7 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import spec                      # noqa: E402
-from characters import CHARACTERS, MOBS   # noqa: E402
+from characters import CHARACTERS, MOBS, MOBS_COLOR   # noqa: E402
 from scenario import PAGES, CHAPTERS      # noqa: E402
 
 OUT = os.path.join(HERE, "out")
@@ -33,11 +33,15 @@ def nm(label):
     return CHARACTERS[label]["name"] if label in CHARACTERS else label
 
 
-def expand(text):
-    """{HINA} のようなモブ記号を、全ページ共通の外見文言に展開する。"""
+def expand(text, color=False):
+    """{HINA} のようなモブ記号を、全ページ共通の外見文言に展開する。
+    color=True（扉絵）のときはフルカラー用の外見に差し替える。"""
     if not text:
         return text
-    return re.sub(r"\{(\w+)\}", lambda m: MOBS.get(m.group(1), m.group(0)), text)
+    table = dict(MOBS)
+    if color:
+        table.update(MOBS_COLOR)
+    return re.sub(r"\{(\w+)\}", lambda m: table.get(m.group(1), m.group(0)), text)
 
 
 def positions(t):
@@ -168,12 +172,17 @@ def build_prompts():
 def page_block(pg, prev_page):
     tpl = spec.TEMPLATES[pg["t"]]
     cast = pg["cast"]
+    is_color = pg["t"] == "T1"   # 扉絵だけフルカラー
     sheets = ", ".join("`{}`".format(CHARACTERS[c]["sheet"]) for c in cast) if cast else "なし"
     labels = "・".join(cast) if cast else "（人物なし）"
 
     o = []
     a = o.append
     a("\n## ページ {}／{}　― {}\n".format(pg["p"], B["total_pages"], pg["head"]))
+    if is_color:
+        sheets = ", ".join("`{}`".format(CHARACTERS[c]["sheet"].replace(".png", "_color.png"))
+                           for c in cast) if cast else "なし"
+        a("**フルカラーの扉絵です。カラー用のキャラシートを添付してください。**\n")
     a("**添付**: {} のみ（**コマ割りテンプレ画像は添付しない**）\n".format(sheets))
     a("````")
     if cast:
@@ -186,15 +195,15 @@ def page_block(pg, prev_page):
         a("添付のキャラシートと100%同一の外見で描画してください。")
         a("髪色・髪型・服装・顔立ち・体型は、私の文章よりも添付画像を優先してください。")
         for c in cast:
-            a(CHARACTERS[c]["id_line"])
+            a(CHARACTERS[c]["id_line_color"] if is_color else CHARACTERS[c]["id_line"])
     else:
         a("人物は登場しません。物と背景のみを描いてください。")
     a("")
     a(spec.SIZE_BLOCK)
     a("")
-    a(spec.ART_BLOCK)
+    a(spec.ART_BLOCK_COLOR if is_color else spec.ART_BLOCK)
     a("")
-    a(spec.COLOR_BLOCK)
+    a(spec.COLOR_BLOCK_COLOR if is_color else spec.COLOR_BLOCK)
     a("")
     a(spec.RULE_BLOCK)
     a("")
@@ -202,7 +211,7 @@ def page_block(pg, prev_page):
     for i, pos in enumerate(positions(pg["t"])[:len(pg["panels"])]):
         a("　コマ{}＝{}".format(i + 1, pos))
     if tpl.get("band"):
-        a("　帯＝ページ下部15%。枠線なし。縦書きの日本語タイトル文字のみを置く。")
+        a("　帯＝ページ下部15%。枠線なし。横書きの日本語タイトル文字のみを置く。")
     a("")
     prev = pg["prev"] or auto_prev(prev_page)
     if prev:
@@ -214,7 +223,7 @@ def page_block(pg, prev_page):
         pos = positions(pg["t"])[i]
         a("")
         a("コマ{}（{}）".format(i + 1, pos))
-        a("  情景: {}".format(expand(pn["s"])))
+        a("  情景: {}".format(expand(pn["s"], color=is_color)))
         for ln in pn["l"]:
             a(fmt_prompt_line(ln))
         if pn["sfx"]:
@@ -225,7 +234,7 @@ def page_block(pg, prev_page):
     if pg["band"]:
         a("")
         a("帯（ページ下部15%・枠線なし）")
-        a("  縦書きの日本語文字のみ: 「{}」".format(pg["band"]))
+        a("  横書きの日本語文字のみ: 「{}」".format(pg["band"]))
         a("  ※帯にコマ枠線を描かないこと。人物や背景も描かない。")
     a("````")
     return "\n".join(o)
@@ -289,6 +298,30 @@ def charsheet_chapter():
         a(spec.ART_BLOCK)
         a("")
         a(spec.COLOR_BLOCK)
+        a("````")
+    a("\n---\n")
+    a("## カラー用キャラシート（扉絵9枚のためだけに使う）\n")
+    a("本文はモノクロですが、**扉絵（中表紙と章扉の計9枚）はフルカラー**です。")
+    a("モノクロのシートから色を起こすと髪や服の色が毎回変わるため、")
+    a("**カラー用のシートを3枚つくって、扉絵ではそちらを添付してください。**\n")
+    for k, c in CHARACTERS.items():
+        a("\n### {}（{}・カラー）→ `{}`\n".format(
+            c["name"], k, c["sheet"].replace(".png", "_color.png")))
+        a("````")
+        a("日本の漫画のキャラクター設定シートを1枚の画像として描いてください。")
+        a("")
+        a("◆【レイアウト】")
+        a("左: 全身の立ち絵（正面・直立・頭から足先まで切れないこと）")
+        a("右上: 顔のアップ（正面）")
+        a("右下: 表情差分3種（真顔／笑顔／困り顔）を横並び")
+        a("背景は白一色。文字・ラベル・枠線は一切入れない。")
+        a("")
+        a("◆【キャラクター】")
+        a(c["look_color"] + "。")
+        a("")
+        a(spec.ART_BLOCK_COLOR)
+        a("")
+        a(spec.COLOR_BLOCK_COLOR)
         a("````")
     a("")
     a("> 2体目以降は、上のブロックをコピーして **◆【キャラクター】欄だけ** 差し替える。")
@@ -443,6 +476,9 @@ def build_redraw():
     a("2. そのページの **````  ```` で囲まれた中身だけ** を全部コピーして貼る")
     a("3. 指定のキャラシート画像を添付する")
     a("4. 送信する。**それ以外は何も書かない**\n")
+    a("> **区分Cの扉絵9枚だけはフルカラーです。** カラー用のキャラシート（`char_XXX_color.png`）を")
+    a("> 先に3枚つくってから取りかかってください。作り方は `03_ページプロンプト集.md` の")
+    a("> 「STEP 0」の一番下にあります。モノクロのシートを使うと色が毎回変わります。\n")
     a("> 「さっきのキャラで」「前のページを直して」とは絶対に言わないでください。")
     a("> うまくいかなかったら、修正を頼まずに**新しいチャットで引き直します**。")
     a("> 3回だめなら、そのページだけご連絡ください。文面を短くした版を作ります。\n")
