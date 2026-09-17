@@ -278,12 +278,36 @@ def esc(s):
              .replace('"', "&quot;"))
 
 
+# 完成版（漫画100＋解説16＝116ページ）の目次。
+# scenario.py が無い環境（お手元のPC）ではこちらを使う。
+DEFAULT_MARKS = [
+    (2, "登場人物"),
+    (3, "第1章 まだ決めなくていい"),
+    (15, "第2章 離婚の入口は3つ"),
+    (25, "第3章 離婚前にやることリスト"),
+    (37, "第4章 お金のすべて"),
+    (51, "第5章 養育費"),
+    (65, "第6章 親権と面会交流"),
+    (77, "第7章 離婚後の生活設計"),
+    (89, "第8章 離婚を「成功」に変える"),
+    (99, "巻末 チェックリストと相談先"),
+    (101, "解説1 離婚の入口"),
+    (103, "解説2 お金の基礎知識"),
+    (105, "解説3 財産分与"),
+    (107, "解説4 年金分割"),
+    (109, "解説5 子どものこと"),
+    (111, "解説6 離婚の手続き"),
+    (113, "解説7 離婚後の生活設計"),
+    (115, "解説8 相談先とおわりに"),
+]
+
+
 def chapter_marks():
-    """scenario.py があれば、各章の扉ページ番号から目次を作る。"""
+    """scenario.py があれば各章の扉ページから目次を作る。無ければ既定の目次を使う。"""
     try:
         from scenario import PAGES, CHAPTERS
     except Exception:
-        return []
+        return list(DEFAULT_MARKS)
     marks, seen = [], set()
     for pg in PAGES:
         if pg["ch"] in seen:
@@ -550,7 +574,7 @@ def main():
     ap.add_argument("--cover", help="表紙画像（1600×2560px 推奨）")
     ap.add_argument("--out", default="out/divorce_bible.epub", help="出力するEPUBのパス")
     ap.add_argument("--work", default=None, help="作業フォルダ（省略時は一時フォルダ）")
-    ap.add_argument("--expect", type=int, default=100, help="想定するページ数（既定100）")
+    ap.add_argument("--expect", type=int, default=116, help="想定するページ数（既定116＝漫画100＋解説16）")
     ap.add_argument("--quality", type=int, default=JPEG_QUALITY, help="JPEG画質（既定85）")
     ap.add_argument("--check", action="store_true", help="画像の検査だけして終わる")
     ap.add_argument("--no-frontmatter", action="store_true", help="免責ページと奥付を入れない")
