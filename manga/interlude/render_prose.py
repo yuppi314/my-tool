@@ -79,29 +79,35 @@ def page(ch):
         ly += 44
     y += lh + 40
 
-    # 本文
-    f_h, f_b = font(33), font(26)
-    blocks = []
-    for head, body in ch["secs"]:
-        hl = wrap(d, head, f_h, inner - 26)
-        bl = wrap(d, body, f_b, inner)
-        blocks.append((hl, bl, 44 * len(hl) + 14 + 43 * len(bl)))
-
+    # 本文（入りきらないときは自動で文字を小さくする）
     close_h = 118
     avail = H - MARGIN - close_h - 34 - y
-    gap = (avail - sum(b[2] for b in blocks)) // max(1, len(blocks))
-    gap = max(26, min(gap, 58))
+
+    for hs, bs, lead in ((33, 26, 43), (31, 25, 41), (30, 24, 39),
+                         (29, 23, 37), (28, 22, 35), (27, 21, 33)):
+        f_h, f_b = font(hs), font(bs)
+        hl_lead = hs + 11
+        blocks = []
+        for head, body in ch["secs"]:
+            hl = wrap(d, head, f_h, inner - 26)
+            bl = wrap(d, body, f_b, inner)
+            blocks.append((hl, bl, hl_lead * len(hl) + 14 + lead * len(bl)))
+        need = sum(b[2] for b in blocks)
+        gap = (avail - need) // max(1, len(blocks))
+        if gap >= 22:
+            break
+    gap = max(18, min(gap, 58))
 
     for hl, bl, _ in blocks:
-        d.rectangle([MARGIN, y + 8, MARGIN + 14, y + 36], fill=INK)
+        d.rectangle([MARGIN, y + 8, MARGIN + 14, y + 8 + hs - 5], fill=INK)
         hy = y
         for ln in hl:
             d.text((MARGIN + 26, hy), ln, font=f_h, fill=INK)
-            hy += 44
+            hy += hl_lead
         by = hy + 14
         for ln in bl:
             d.text((MARGIN, by), ln, font=f_b, fill=BODY)
-            by += 43
+            by += lead
         y = by + gap
 
     # 締め
