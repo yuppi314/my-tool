@@ -11,19 +11,28 @@ import os, re, shutil, sys
 
 
 def numbered(folder, label):
+    """フォルダの中の画像を、ファイル名の数字の順に並べて返す。
+
+    章ごとのサブフォルダに分かれていても、まとめて拾う。
+    """
     exts = (".png", ".jpg", ".jpeg")
     found = []
-    for name in sorted(os.listdir(folder)):
-        if name.lower().endswith(exts):
+    for root, _dirs, names in os.walk(folder):
+        for name in sorted(names):
+            if not name.lower().endswith(exts):
+                continue
             m = re.search(r"(\d+)", name)
             if not m:
                 raise SystemExit(f"{label}: 番号が読み取れません → {name}")
-            found.append((int(m.group(1)), os.path.join(folder, name)))
+            found.append((int(m.group(1)), os.path.join(root, name)))
     found.sort()
     nums = [n for n, _ in found]
     dup = sorted({n for n in nums if nums.count(n) > 1})
     if dup:
-        raise SystemExit(f"{label}: 同じ番号が複数あります → {dup}")
+        raise SystemExit(
+            f"{label}: 同じ番号が複数あります → {dup}\n"
+            "章ごとに1から振り直している場合は、通し番号に直す必要があります。"
+        )
     return found
 
 
