@@ -102,6 +102,18 @@ COLOPHON = """{title}
 """
 
 FONT_CANDIDATES = [
+    # Windows
+    r"C:\Windows\Fonts\YuGothM.ttc",
+    r"C:\Windows\Fonts\yugothm.ttc",
+    r"C:\Windows\Fonts\meiryo.ttc",
+    r"C:\Windows\Fonts\msgothic.ttc",
+    r"C:\Windows\Fonts\YuGothR.ttc",
+    r"C:\Windows\Fonts\BIZ-UDGothicR.ttc",
+    # macOS
+    "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc",
+    "/System/Library/Fonts/Hiragino Sans GB.ttc",
+    "/Library/Fonts/Arial Unicode.ttf",
+    # Linux
     "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf",
     "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
@@ -189,6 +201,20 @@ def find_font():
     for p in FONT_CANDIDATES:
         if os.path.exists(p):
             return p
+    # 候補になければ、OSのフォントフォルダから日本語フォントを探す
+    for folder in (r"C:\Windows\Fonts", "/System/Library/Fonts",
+                   "/Library/Fonts", "/usr/share/fonts"):
+        if not os.path.isdir(folder):
+            continue
+        for root, _dirs, names in os.walk(folder):
+            for n in sorted(names):
+                low = n.lower()
+                if not low.endswith((".ttc", ".ttf", ".otf")):
+                    continue
+                if any(k in low for k in ("gothic", "yugoth", "meiryo", "msmincho",
+                                          "msgothic", "hiragino", "notosanscjk",
+                                          "ipag", "ipam", "biz-ud")):
+                    return os.path.join(root, n)
     return None
 
 
