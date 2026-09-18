@@ -306,6 +306,7 @@ def esc(s):
 
 # 完成版（漫画100＋解説16＝116ページ）の目次。
 # scenario.py が無い環境（お手元のPC）ではこちらを使う。
+# 目次の見出し（漫画の通しページ番号で書く）
 DEFAULT_MARKS = [
     (2, "登場人物"),
     (3, "第1章 まだ決めなくていい"),
@@ -317,21 +318,38 @@ DEFAULT_MARKS = [
     (77, "第7章 離婚後の生活設計"),
     (89, "第8章 離婚を「成功」に変える"),
     (99, "巻末 チェックリストと相談先"),
-    (101, "解説1 離婚の入口"),
-    (103, "解説2 お金の基礎知識"),
-    (105, "解説3 財産分与"),
-    (107, "解説4 年金分割"),
-    (109, "解説5 子どものこと"),
-    (111, "解説6 離婚の手続き"),
-    (113, "解説7 離婚後の生活設計"),
-    (115, "解説8 相談先とおわりに"),
-    (117, "著者紹介"),
-    (118, "読者特典"),
 ]
 
+# assemble.py の PLACEMENT と同じ内容にすること。
+# {漫画の最終ページ: [そのうしろに挟む解説・図解の番号]}
+PLACEMENT = {
+    14: [1],
+    24: [6],
+    36: [],
+    50: [2, 3, 4],
+    64: [],
+    76: [5],
+    88: [7],
+    98: [8],
+}
 
-def chapter_marks():
-    """scenario.py があれば各章の扉ページから目次を作る。無ければ既定の目次を使う。"""
+KAISETSU_TITLES = {
+    1: "離婚の入口",
+    2: "お金の基礎知識",
+    3: "財産分与",
+    4: "年金分割",
+    5: "子どものこと",
+    6: "離婚の手続き",
+    7: "離婚後の生活設計",
+    8: "相談先とおわりに",
+}
+
+BACK_MARKS = ["著者紹介", "読者特典"]
+
+
+def manga_marks():
+    """scenario.py があれば各章の扉ページから、無ければ既定から、
+    漫画の通しページ番号で目次を作る。"""
     try:
         from scenario import PAGES, CHAPTERS
     except Exception:
@@ -350,6 +368,29 @@ def chapter_marks():
             label = "{} {}".format(info["label"], info["title"])
         marks.append((pg["p"], label))
     return marks
+
+
+def chapter_marks():
+    """漫画ページ番号の目次を、解説・図解を挟んだあとの実際の位置に直す。
+
+    解説と図解そのものも目次に足す。巻末2枚は最後に付く。
+    """
+    base = dict(manga_marks())
+    marks, pos = [], 0
+    for p in range(1, 101):
+        pos += 1
+        if p in base:
+            marks.append((pos, base[p]))
+        for n in PLACEMENT.get(p, []):
+            title = KAISETSU_TITLES.get(n, "解説{}".format(n))
+            pos += 1
+            marks.append((pos, "解説{} {}".format(n, title)))
+            pos += 1  # 図解は目次に出さない（解説とひと続きのため）
+    for label in BACK_MARKS:
+        pos += 1
+        marks.append((pos, label))
+    return marks
+
 
 
 def build_opf(items, spine, cover_id, uid):
