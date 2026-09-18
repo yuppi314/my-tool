@@ -299,6 +299,8 @@ DEFAULT_MARKS = [
     (111, "解説6 離婚の手続き"),
     (113, "解説7 離婚後の生活設計"),
     (115, "解説8 相談先とおわりに"),
+    (117, "著者紹介"),
+    (118, "読者特典"),
 ]
 
 
@@ -574,7 +576,7 @@ def main():
     ap.add_argument("--cover", help="表紙画像（1600×2560px 推奨）")
     ap.add_argument("--out", default="out/divorce_bible.epub", help="出力するEPUBのパス")
     ap.add_argument("--work", default=None, help="作業フォルダ（省略時は一時フォルダ）")
-    ap.add_argument("--expect", type=int, default=116, help="想定するページ数（既定116＝漫画100＋解説16）")
+    ap.add_argument("--expect", type=int, default=118, help="想定するページ数（既定118＝漫画100＋解説16＋巻末2）")
     ap.add_argument("--quality", type=int, default=JPEG_QUALITY, help="JPEG画質（既定85）")
     ap.add_argument("--check", action="store_true", help="画像の検査だけして終わる")
     ap.add_argument("--no-frontmatter", action="store_true", help="免責ページと奥付を入れない")
