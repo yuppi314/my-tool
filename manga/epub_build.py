@@ -626,7 +626,13 @@ def main():
     work = a.work or os.path.join(HERE, ".epub_work")
     if os.path.exists(work):
         import shutil
-        shutil.rmtree(work)
+        import tempfile
+        shutil.rmtree(work, ignore_errors=True)
+        if os.path.exists(work):
+            # OneDrive などがフォルダを掴んでいて消せないことがある。
+            # 消せないときは、一時フォルダに逃がして先へ進む。
+            work = tempfile.mkdtemp(prefix="epub_work_")
+            print("  作業フォルダを一時領域に切り替えました:", work)
     out = a.out if os.path.isabs(a.out) else os.path.join(HERE, a.out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     build(a.src, a.cover, out, work, a.expect, a.quality, a.no_frontmatter, a.draft)
