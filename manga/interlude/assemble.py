@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""漫画100枚のあいだに、解説8枚と図解8枚を章ごとに挟み、巻末2枚をつける。
+"""漫画100枚のあいだに、解説8枚と図解8枚を章ごとに挟み、巻末3枚をつける。
 
     python3 assemble.py <漫画100枚> <説明文8枚> <図解8枚> <出力先> [巻末フォルダ]
 
@@ -98,14 +98,18 @@ def main():
             order.append(figs[n])
             plan.append(("図解", f"図解{n}"))
 
+    BACK_FILES = (("b1_著者紹介.png", "著者紹介"),
+                  ("b2_読者特典.png", "読者特典"),
+                  ("b3_著者の他の本.png", "著者の他の本"))
     back = []
-    for name in ("b1_著者紹介.png", "b2_読者特典.png"):
+    for name, label in BACK_FILES:
         path = os.path.join(back_dir, name)
         if os.path.exists(path):
-            back.append(path)
-    if back and len(back) != 2:
-        raise SystemExit(f"巻末ページは2枚そろえてください（いまは {len(back)} 枚）。")
-    for path, label in zip(back, ("著者紹介", "読者特典")):
+            back.append((path, label))
+    if back and len(back) != len(BACK_FILES):
+        raise SystemExit(
+            f"巻末ページは{len(BACK_FILES)}枚そろえてください（いまは {len(back)} 枚）。")
+    for path, label in back:
         order.append(path)
         plan.append(("巻末", label))
 

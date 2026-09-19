@@ -344,7 +344,7 @@ KAISETSU_TITLES = {
     8: "相談先とおわりに",
 }
 
-BACK_MARKS = ["著者紹介", "読者特典"]
+BACK_MARKS = ["著者紹介", "読者特典", "著者の他の本"]
 
 
 def manga_marks():
@@ -643,7 +643,7 @@ def main():
     ap.add_argument("--cover", help="表紙画像（1600×2560px 推奨）")
     ap.add_argument("--out", default="out/divorce_bible.epub", help="出力するEPUBのパス")
     ap.add_argument("--work", default=None, help="作業フォルダ（省略時は一時フォルダ）")
-    ap.add_argument("--expect", type=int, default=118, help="想定するページ数（既定118＝漫画100＋解説16＋巻末2）")
+    ap.add_argument("--expect", type=int, default=119, help="想定するページ数（既定119＝漫画100＋解説16＋巻末3）")
     ap.add_argument("--quality", type=int, default=JPEG_QUALITY, help="JPEG画質（既定85）")
     ap.add_argument("--check", action="store_true", help="画像の検査だけして終わる")
     ap.add_argument("--no-frontmatter", action="store_true", help="免責ページと奥付を入れない")

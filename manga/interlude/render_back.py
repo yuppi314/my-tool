@@ -5,7 +5,7 @@
 """
 import os, sys
 from PIL import Image, ImageDraw, ImageFont
-from back_text import AUTHOR, LINE
+from back_text import AUTHOR, LINE, OTHER
 
 W, H = 1024, 1536
 MARGIN = 92
@@ -139,10 +139,92 @@ def line_page():
     return img
 
 
+def other_page():
+    """著者の他の本（こどもNISA）の案内ページ。"""
+    img = Image.new("RGB", (W, H), (255, 255, 255))
+    d = ImageDraw.Draw(img)
+    inner = W - MARGIN * 2
+
+    y = MARGIN
+    d.text((MARGIN, y), OTHER["label"], font=font(26), fill=SOFT)
+    y += 44
+    d.line([(MARGIN, y), (W - MARGIN, y)], fill=INK, width=3)
+    y += 46
+
+    f_l = font(28)
+    for ln in wrap(d, OTHER["lead"], f_l, inner):
+        d.text((MARGIN, y), ln, font=f_l, fill=BODY)
+        y += 48
+    y += 56
+
+    # 表紙と書名を横に並べる
+    cw, ch = 410, 656
+    cover = None
+    if os.path.exists(OTHER["cover"]):
+        cover = Image.open(OTHER["cover"]).convert("RGB")
+        cover = cover.resize((cw, ch), Image.LANCZOS)
+    if cover is None:
+        cover = Image.new("RGB", (cw, ch), (244, 244, 244))
+        ImageDraw.Draw(cover).text((24, ch // 2 - 16), "（表紙）", font=font(26), fill=SOFT)
+    img.paste(cover, (MARGIN, y))
+    d.rectangle([MARGIN, y, MARGIN + cw, y + ch], outline=(150, 150, 150), width=2)
+
+    tx = MARGIN + cw + 40
+    tw = W - MARGIN - tx
+    ty = y + 6
+    # 書名は空白で区切って、語の途中で折り返さないようにする
+    parts = OTHER["title"].split()
+    for size in (40, 38, 36, 34, 32, 30, 28):
+        f_t = font(size)
+        if all(d.textlength(p, font=f_t) <= tw for p in parts):
+            break
+    for p in parts:
+        d.text((tx, ty), p, font=f_t, fill=INK)
+        ty += int(f_t.size * 1.45)
+    ty += 6
+    f_s = font(24)
+    for ln in wrap(d, OTHER["sub"], f_s, tw):
+        d.text((tx, ty), ln, font=f_s, fill=SOFT)
+        ty += 38
+    ty += 34
+
+    f_ph, f_pb = font(28), font(23)
+    for head, body in OTHER["points"]:
+        d.ellipse([tx, ty + 13, tx + 13, ty + 26], fill=INK)
+        d.text((tx + 28, ty), head, font=f_ph, fill=INK)
+        ty += 42
+        for ln in wrap(d, body, f_pb, tw - 28):
+            d.text((tx + 28, ty), ln, font=f_pb, fill=BODY)
+            ty += 34
+        ty += 20
+
+    y = max(y + ch, ty) + 64
+
+    f_h = font(29)
+    for ln in wrap(d, OTHER["how"], f_h, inner):
+        d.text((MARGIN, y), ln, font=f_h, fill=INK)
+        y += 46
+    y += 34
+
+    d.line([(MARGIN, y), (W - MARGIN, y)], fill=(190, 190, 190), width=1)
+    y += 28
+    f_n = font(23)
+    for t in OTHER["notes"]:
+        for i, ln in enumerate(wrap(d, t, f_n, inner - 26)):
+            d.text((MARGIN + 26, y), ln, font=f_n, fill=SOFT)
+            if i == 0:
+                d.ellipse([MARGIN + 6, y + 10, MARGIN + 14, y + 18], fill=SOFT)
+            y += 35
+        y += 10
+    return img
+
+
 def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "back"
     os.makedirs(out, exist_ok=True)
-    for name, fn in (("b1_著者紹介.png", author_page), ("b2_読者特典.png", line_page)):
+    for name, fn in (("b1_著者紹介.png", author_page),
+                     ("b2_読者特典.png", line_page),
+                     ("b3_著者の他の本.png", other_page)):
         p = os.path.join(out, name)
         fn().save(p)
         print("書き出しました →", p)
