@@ -123,7 +123,15 @@ def line_page():
     d.text((ux, y + 108), LINE["url"], font=f_u, fill=INK)
     d.line([(ux, y + 150), (ux + d.textlength(LINE["url"], font=f_u), y + 150)],
            fill=INK, width=2)
-    y += 300 + 40
+    y += 300 + 34
+
+    # 合言葉の案内
+    if LINE.get("after"):
+        f_a = font(26)
+        for ln in wrap(d, LINE["after"], f_a, inner):
+            d.text((MARGIN, y), ln, font=f_a, fill=INK)
+            y += 42
+        y += 18
 
     # 注意書き
     d.line([(MARGIN, y), (W - MARGIN, y)], fill=(190, 190, 190), width=1)
