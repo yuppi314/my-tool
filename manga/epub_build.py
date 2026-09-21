@@ -385,7 +385,7 @@ def chapter_marks():
         for n in PLACEMENT.get(p, []):
             title = KAISETSU_TITLES.get(n, "解説{}".format(n))
             pos += 1
-            marks.append((pos, "解説{} {}".format(n, title)))
+            marks.append((pos, "解説 {}".format(title)))
             pos += 1  # 図解は目次に出さない（解説とひと続きのため）
     for label in BACK_MARKS:
         pos += 1

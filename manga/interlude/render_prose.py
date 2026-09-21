@@ -56,8 +56,8 @@ def page(ch):
     # 柱
     y = MARGIN
     f_no = font(26)
-    d.text((MARGIN, y), f"第{ch['no']}章", font=f_no, fill=SOFT)
-    lab = "この章の話"
+    d.text((MARGIN, y), "解説", font=f_no, fill=SOFT)
+    lab = "ここまでのまとめ"
     d.text((W - MARGIN - d.textlength(lab, font=f_no), y), lab, font=f_no, fill=SOFT)
     y += 46
     d.line([(MARGIN, y), (W - MARGIN, y)], fill=INK, width=3)
