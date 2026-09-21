@@ -13,6 +13,7 @@ import argparse
 import datetime
 import os
 import re
+import shutil
 import sys
 import uuid
 import zipfile
@@ -666,7 +667,6 @@ def main():
 
     work = a.work or os.path.join(HERE, ".epub_work")
     if os.path.exists(work):
-        import shutil
         import tempfile
         shutil.rmtree(work, ignore_errors=True)
         if os.path.exists(work):
