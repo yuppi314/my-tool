@@ -23,6 +23,30 @@
       <div class="summary-text" id="r-summary"></div>
     </div>
 
+    <div class="card" id="daily-card">
+      <div class="section-title">今日の運勢 <span id="d-date" class="daily-date"></span></div>
+      <div class="result-grid">
+        <div class="stat-box"><div class="label">今日のKIN</div><div class="value" id="d-kin"></div></div>
+        <div class="stat-box"><div class="label">今日の紋章</div><div class="value" id="d-seal"></div></div>
+      </div>
+      <div id="daily-personal" style="display:none;">
+        <div class="stat-box" style="margin-bottom:12px;">
+          <div class="label">あなたの運勢</div>
+          <div class="value stars" id="d-score"></div>
+        </div>
+        <p><strong id="d-theme"></strong></p>
+        <p id="d-message"></p>
+        <p>ラッキーカラー: <span id="d-color"></span></p>
+        <p id="d-action"></p>
+        <button class="link-button" id="cancel-sub-btn">月額会員を解約する</button>
+        <p id="cancel-note" class="daily-note"></p>
+      </div>
+      <div id="daily-locked" style="display:none;">
+        <p>あなたの本命星・KINと今日の暦を掛け合わせた「毎日の運勢」は月額会員限定です。詳細レポートと相性診断もすべて見放題になります。</p>
+        <button class="primary" id="subscribe-btn">月額会員になる(月¥480・いつでも解約OK)</button>
+      </div>
+    </div>
+
     <div class="card" id="full-card">
       <div class="section-title">パーソナリティ詳細</div>
       <p id="f-personality"></p>
@@ -35,7 +59,7 @@
     </div>
 
     <div class="card" id="locked-card" style="display:none;">
-      <p>この先の詳細鑑定は購入者限定です。</p>
+      <p>この先の詳細鑑定は購入者・月額会員限定です。</p>
       <button class="primary" id="unlock-btn">詳細レポートを購入する(¥980)</button>
     </div>
 

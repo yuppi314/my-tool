@@ -25,6 +25,8 @@ async function init() {
   document.getElementById('r-tone').textContent = data.tone.name;
   document.getElementById('r-summary').textContent = data.summary;
 
+  await loadDaily(data);
+
   if (data.paid) {
     statusLine.innerHTML = 'ご購入ありがとうございます <span class="badge">unlocked</span>';
     await loadFull();
@@ -45,6 +47,65 @@ async function loadFull() {
   document.getElementById('f-monthly').textContent = data.monthlyFortune;
   document.getElementById('f-advice').textContent = data.advice;
 }
+
+async function loadDaily(diagnosis) {
+  const res = await fetch(`/api/diagnosis/${diagnosisId}/daily`);
+  const data = await res.json();
+  if (!res.ok) return;
+
+  document.getElementById('d-date').textContent = data.date;
+  document.getElementById('d-kin').textContent = `KIN ${data.day.kin}`;
+  document.getElementById('d-seal').textContent = `${data.day.seal.name}・${data.day.tone.name}`;
+
+  if (data.locked) {
+    document.getElementById('daily-locked').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('daily-personal').style.display = 'block';
+  document.getElementById('d-score').textContent = '★'.repeat(data.score) + '☆'.repeat(5 - data.score);
+  document.getElementById('d-theme').textContent = data.theme;
+  document.getElementById('d-message').textContent = data.message;
+  document.getElementById('d-color').textContent = data.luckyColor;
+  document.getElementById('d-action').textContent = data.luckyAction;
+
+  if (diagnosis.cancelAtPeriodEnd) {
+    document.getElementById('cancel-sub-btn').style.display = 'none';
+    document.getElementById('cancel-note').textContent = '解約手続き済みです。現在の請求期間の終了まではご利用いただけます。';
+  }
+}
+
+document.getElementById('subscribe-btn').addEventListener('click', async () => {
+  const res = await fetch('/api/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ diagnosisId }),
+  });
+  const data = await res.json();
+  if (!res.ok) return;
+  window.location.href = data.mock ? data.redirect : data.url;
+});
+
+document.getElementById('cancel-sub-btn').addEventListener('click', async () => {
+  if (!window.confirm('月額会員を解約しますか?')) return;
+  const res = await fetch('/api/subscription/cancel', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ diagnosisId }),
+  });
+  const data = await res.json();
+  const note = document.getElementById('cancel-note');
+  if (!res.ok) {
+    note.textContent = data.error || '解約処理に失敗しました。';
+    return;
+  }
+  if (data.immediate) {
+    window.location.reload();
+    return;
+  }
+  document.getElementById('cancel-sub-btn').style.display = 'none';
+  note.textContent = '解約を受け付けました。現在の請求期間の終了まではご利用いただけます。';
+});
 
 document.getElementById('unlock-btn').addEventListener('click', async () => {
   const res = await fetch('/api/checkout', {

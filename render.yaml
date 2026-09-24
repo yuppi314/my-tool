@@ -15,5 +15,7 @@ services:
         sync: false
       - key: REPORT_PRICE_JPY
         value: 980
+      - key: SUBSCRIPTION_PRICE_JPY
+        value: 480
       - key: ADMIN_TOKEN
         sync: false

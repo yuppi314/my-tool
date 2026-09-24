@@ -26,6 +26,8 @@
         <tr><td>有料購入数</td><td id="s-paid"></td></tr>
         <tr><td>売上合計(円)</td><td id="s-revenue"></td></tr>
         <tr><td>コンバージョン率</td><td id="s-cvr"></td></tr>
+        <tr><td>月額会員数</td><td id="s-subs"></td></tr>
+        <tr><td>月額売上 MRR(円)</td><td id="s-mrr"></td></tr>
       </table>
     </div>
     <p class="error-text" id="admin-error"></p>
@@ -49,6 +51,8 @@
         document.getElementById('s-paid').textContent = data.paidCount;
         document.getElementById('s-revenue').textContent = data.revenueJpy.toLocaleString();
         document.getElementById('s-cvr').textContent = `${data.conversionRatePercent}%`;
+        document.getElementById('s-subs').textContent = data.activeSubscribers;
+        document.getElementById('s-mrr').textContent = data.mrrJpy.toLocaleString();
         document.getElementById('stats-card').style.display = 'block';
       } catch (err) {
         errorEl.textContent = '通信エラーが発生しました。';

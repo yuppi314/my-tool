@@ -37,6 +37,19 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (diagnosis_id) REFERENCES diagnoses(id)
 );
+
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  diagnosis_id TEXT NOT NULL,
+  stripe_session_id TEXT,
+  stripe_subscription_id TEXT,
+  amount INTEGER,
+  status TEXT NOT NULL DEFAULT 'pending',
+  cancel_at_period_end INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now')),
+  FOREIGN KEY (diagnosis_id) REFERENCES diagnoses(id)
+);
 `);
 
 module.exports = db;

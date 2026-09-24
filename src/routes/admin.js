@@ -17,9 +17,23 @@ router.get('/admin/stats', (req, res) => {
   const revenue = db
     .prepare(`SELECT COALESCE(SUM(amount), 0) AS total FROM orders WHERE status IN ('paid', 'paid_mock')`)
     .get().total;
+  const activeSubscribers = db
+    .prepare(`SELECT COUNT(DISTINCT diagnosis_id) AS c FROM subscriptions WHERE status IN ('active', 'trialing', 'active_mock')`)
+    .get().c;
+  const mrr = db
+    .prepare(`SELECT COALESCE(SUM(amount), 0) AS total FROM subscriptions WHERE status IN ('active', 'trialing', 'active_mock')`)
+    .get().total;
   const conversionRate = diagnosisCount > 0 ? ((paidCount / diagnosisCount) * 100).toFixed(1) : '0.0';
 
-  res.json({ leadCount, diagnosisCount, paidCount, revenueJpy: revenue, conversionRatePercent: Number(conversionRate) });
+  res.json({
+    leadCount,
+    diagnosisCount,
+    paidCount,
+    revenueJpy: revenue,
+    conversionRatePercent: Number(conversionRate),
+    activeSubscribers,
+    mrrJpy: mrr,
+  });
 });
 
 module.exports = router;

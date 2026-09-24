@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('../db');
 const content = require('../lib/content');
 const { buildCompatibility } = require('../lib/compatibility');
+const { hasPremiumAccess } = require('../lib/access');
 
 const router = express.Router();
 
@@ -14,8 +15,8 @@ router.post('/compatibility', (req, res) => {
   const { diagnosisId, partnerBirthdate } = req.body || {};
   const diagnosis = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(diagnosisId);
   if (!diagnosis) return res.status(404).json({ error: '診断結果が見つかりません。' });
-  if (!diagnosis.paid) {
-    return res.status(402).json({ error: '相性診断は詳細レポート購入者限定の機能です。', diagnosisId });
+  if (!hasPremiumAccess(diagnosis)) {
+    return res.status(402).json({ error: '相性診断は詳細レポート購入者・月額会員限定の機能です。', diagnosisId });
   }
   if (!isValidDateStr(partnerBirthdate)) {
     return res.status(400).json({ error: 'partnerBirthdate は YYYY-MM-DD 形式で指定してください。' });
