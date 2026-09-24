@@ -14,7 +14,7 @@ function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
-// 詳細レポートの決済セッションを作成
+// 12ヶ月の吉方位カレンダー(買い切り)の決済セッションを作成
 router.post('/checkout', async (req, res) => {
   const { diagnosisId } = req.body || {};
   const diagnosis = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(diagnosisId);
@@ -41,7 +41,7 @@ router.post('/checkout', async (req, res) => {
         {
           price_data: {
             currency: 'jpy',
-            product_data: { name: '九星気学×マヤ暦 詳細鑑定レポート' },
+            product_data: { name: '吉方位×マイル旅 12ヶ月の吉方位カレンダー(買い切り)' },
             unit_amount: REPORT_PRICE_JPY,
           },
           quantity: 1,
@@ -63,7 +63,7 @@ router.post('/checkout', async (req, res) => {
   }
 });
 
-// 月額会員(毎日の運勢)の決済セッションを作成
+// 月額会員(毎月の吉方位旅プラン)の決済セッションを作成
 router.post('/subscribe', async (req, res) => {
   const { diagnosisId } = req.body || {};
   const diagnosis = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(diagnosisId);
@@ -91,7 +91,7 @@ router.post('/subscribe', async (req, res) => {
         {
           price_data: {
             currency: 'jpy',
-            product_data: { name: '九星気学×マヤ暦 毎日の運勢(月額会員)' },
+            product_data: { name: '吉方位×マイル旅 月額会員' },
             unit_amount: SUBSCRIPTION_PRICE_JPY,
             recurring: { interval: 'month' },
           },

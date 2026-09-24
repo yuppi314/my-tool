@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS diagnoses (
   name TEXT,
   email TEXT,
   honmei_star INTEGER NOT NULL,
-  kin INTEGER NOT NULL,
+  origin TEXT NOT NULL,
   paid INTEGER NOT NULL DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );

@@ -104,7 +104,7 @@ router.get('/admin/weekly-report', requireAdmin, (req, res) => {
     alerts.push('有料転換率が目標3%を下回っています。結果ページの会員訴求・価格を検証しましょう。');
   }
   if (activeSubscribers > 0 && thisWeek.cancellations / activeSubscribers > 0.1) {
-    alerts.push('今週の解約が会員数の10%を超えています。毎日の運勢の内容・配信を見直しましょう。');
+    alerts.push('今週の解約が会員数の10%を超えています。毎月の吉方位のお届け内容を見直しましょう。');
   }
   if (thisWeek.diagnoses < lastWeek.diagnoses) {
     alerts.push('無料診断数が前週より減っています。SNS投稿・広告の集客を確認しましょう。');
@@ -114,7 +114,7 @@ router.get('/admin/weekly-report', requireAdmin, (req, res) => {
     '【週次レポート】直近7日間',
     `無料診断: ${thisWeek.diagnoses}件 ${changeLabel(thisWeek.diagnoses, lastWeek.diagnoses)}`,
     `メール登録: ${thisWeek.leads}件(登録率 ${thisWeek.emailOptInRatePercent}%)`,
-    `詳細レポート販売: ${thisWeek.reportSales}件 / ¥${thisWeek.reportRevenueJpy.toLocaleString()}`,
+    `カレンダー買い切り販売: ${thisWeek.reportSales}件 / ¥${thisWeek.reportRevenueJpy.toLocaleString()}`,
     `新規月額会員: ${thisWeek.newSubscribers}人 ${changeLabel(thisWeek.newSubscribers, lastWeek.newSubscribers)} / 解約: ${thisWeek.cancellations}人`,
     `有料転換率: ${thisWeek.paidConversionRatePercent}%`,
     `現在の月額会員: ${activeSubscribers}人 / MRR ¥${mrr.toLocaleString()}`,

@@ -1,7 +1,7 @@
 {
-  "name": "kyusei-mayan-fortune",
+  "name": "kippou-mile-travel",
   "version": "1.0.0",
-  "description": "九星気学 x マヤ暦 診断ツール(フリーミアム・マネタイズ型)",
+  "description": "九星気学の吉方位 x マイル旅 診断ツール(フリーミアム・マネタイズ型)",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
