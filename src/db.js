@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS diagnoses (
   name TEXT,
   email TEXT,
   honmei_star INTEGER NOT NULL,
-  kin INTEGER NOT NULL,
+  origin_label TEXT NOT NULL,
+  origin_lat REAL NOT NULL,
+  origin_lon REAL NOT NULL,
   paid INTEGER NOT NULL DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -35,6 +37,19 @@ CREATE TABLE IF NOT EXISTS orders (
   amount INTEGER,
   status TEXT NOT NULL DEFAULT 'pending',
   created_at TEXT DEFAULT (datetime('now')),
+  FOREIGN KEY (diagnosis_id) REFERENCES diagnoses(id)
+);
+
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  diagnosis_id TEXT NOT NULL,
+  stripe_session_id TEXT,
+  stripe_subscription_id TEXT,
+  amount INTEGER,
+  status TEXT NOT NULL DEFAULT 'pending',
+  cancel_at_period_end INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (diagnosis_id) REFERENCES diagnoses(id)
 );
 `);

@@ -3,57 +3,65 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>詳細鑑定レポート | 九星気学×マヤ暦</title>
+  <title>あなたの吉方位旅 | 50代からの開運旅</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <div class="wrap">
     <header class="hero">
-      <h1>あなたの詳細鑑定レポート</h1>
+      <h1>あなたの吉方位旅</h1>
       <p id="status-line"></p>
     </header>
 
     <div class="card">
       <div class="result-grid">
         <div class="stat-box"><div class="label">本命星</div><div class="value" id="r-star"></div></div>
-        <div class="stat-box"><div class="label">マヤ暦 KIN</div><div class="value" id="r-kin"></div></div>
-        <div class="stat-box"><div class="label">太陽の紋章</div><div class="value" id="r-seal"></div></div>
-        <div class="stat-box"><div class="label">銀河の音</div><div class="value" id="r-tone"></div></div>
+        <div class="stat-box"><div class="label">出発地</div><div class="value" id="r-origin"></div></div>
       </div>
       <div class="summary-text" id="r-summary"></div>
     </div>
 
-    <div class="card" id="full-card">
-      <div class="section-title">パーソナリティ詳細</div>
-      <p id="f-personality"></p>
-      <div class="section-title">今年の運気サイクル</div>
-      <p id="f-yearly"></p>
-      <div class="section-title">今月の運勢</div>
-      <p id="f-monthly"></p>
-      <div class="section-title">アドバイス</div>
-      <p id="f-advice"></p>
+    <div class="card">
+      <div class="section-title" style="margin-top:0;">今月の吉方位 <span class="sub-label" id="m-period"></span></div>
+      <p class="sub-label" id="m-centers"></p>
+      <div class="houi-board" id="m-board"></div>
+      <p class="board-legend">◎ 最大吉方(年盤・月盤とも吉) / 星は月盤の回座星</p>
+      <div class="summary-text" id="m-message"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-top:0;">今月のおすすめ旅先</div>
+      <div id="dest-list"></div>
+      <p class="board-legend">必要マイルは特典航空券の目安です。時期・航空会社・空席で変わるため、予約前に各社サイトでご確認ください。</p>
+    </div>
+
+    <div class="card" id="affiliate-card" style="display:none;">
+      <div class="section-title" style="margin-top:0;">旅の準備 <span class="pr-label">PR</span></div>
+      <div id="affiliate-list"></div>
     </div>
 
     <div class="card" id="locked-card" style="display:none;">
-      <p>この先の詳細鑑定は購入者限定です。</p>
-      <button class="primary" id="unlock-btn">詳細レポートを購入する(¥980)</button>
+      <div class="section-title" style="margin-top:0;">12ヶ月の吉方位カレンダー</div>
+      <p>この先12ヶ月、いつ・どの方位へ・どこへ行けばいいかが一覧でわかります。マイルの特典航空券は早めの予約が取りやすいので、先の予定を立てたい方に。</p>
+      <p class="coming-soon" id="coming-soon" style="display:none;">カレンダーのお申し込みは近日スタート予定です。Instagram @secondlife_50s でお知らせします。</p>
+      <button class="primary" id="subscribe-btn">月額会員になる(月¥480・いつでも解約OK)</button>
+      <button class="secondary full" id="unlock-btn">買い切りで見る(¥980)</button>
     </div>
 
-    <div class="card" id="compat-card" style="display:none;">
-      <div class="section-title">相性診断(購入者限定特典)</div>
-      <label for="partner-birthdate">お相手の生年月日</label>
-      <input type="date" id="partner-birthdate" />
-      <button class="secondary" id="compat-btn">相性を見る</button>
-      <div id="compat-result" style="margin-top:16px;"></div>
+    <div class="card" id="calendar-card" style="display:none;">
+      <div class="section-title" style="margin-top:0;">12ヶ月の吉方位カレンダー</div>
+      <div id="calendar-list"></div>
+      <button class="link-button" id="cancel-sub-btn" style="display:none;">月額会員を解約する</button>
+      <p id="cancel-note" class="board-legend"></p>
     </div>
-
-    <div class="ad-slot">[広告枠プレースホルダー: アフィリエイト/純広告を掲載可能]</div>
 
     <footer class="legal">
-      本診断は九星気学・マヤ暦の一般的な考え方に基づく娯楽コンテンツです。医療・法律・投資等の専門的助言に代わるものではありません。<br />
-      <a href="/tokushoho.html" style="color:#c9c0e8;">特定商取引法に基づく表記</a> ・
-      <a href="/terms.html" style="color:#c9c0e8;">利用規約</a> ・
-      <a href="/privacy.html" style="color:#c9c0e8;">プライバシーポリシー</a>
+      本診断は九星気学の一般的な考え方に基づく娯楽コンテンツです。吉方位の取り方は流派により異なります。医療・法律・投資等の専門的助言に代わるものではありません。<br />
+      <a href="/">もう一度診断する</a> ・
+      <a href="/tokushoho.html">特定商取引法に基づく表記</a> ・
+      <a href="/terms.html">利用規約</a> ・
+      <a href="/privacy.html">プライバシーポリシー</a> ・
+      <a href="https://www.instagram.com/secondlife_50s/" target="_blank" rel="noopener">Instagram @secondlife_50s</a>
     </footer>
   </div>
 

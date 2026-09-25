@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>管理統計 | 九星気学×マヤ暦</title>
+  <title>管理統計 | 吉方位×マイル旅</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
@@ -26,7 +26,14 @@
         <tr><td>有料購入数</td><td id="s-paid"></td></tr>
         <tr><td>売上合計(円)</td><td id="s-revenue"></td></tr>
         <tr><td>コンバージョン率</td><td id="s-cvr"></td></tr>
+        <tr><td>月額会員数</td><td id="s-subs"></td></tr>
+        <tr><td>月額売上 MRR(円)</td><td id="s-mrr"></td></tr>
       </table>
+    </div>
+    <div class="card" id="weekly-card" style="display:none;">
+      <div class="section-title" style="margin-top:0;">週次レポート(直近7日 vs 前の7日)</div>
+      <pre id="weekly-summary" class="weekly-summary"></pre>
+      <button class="secondary" id="copy-weekly-btn">レポートをコピー</button>
     </div>
     <p class="error-text" id="admin-error"></p>
   </div>
@@ -49,9 +56,28 @@
         document.getElementById('s-paid').textContent = data.paidCount;
         document.getElementById('s-revenue').textContent = data.revenueJpy.toLocaleString();
         document.getElementById('s-cvr').textContent = `${data.conversionRatePercent}%`;
+        document.getElementById('s-subs').textContent = data.activeSubscribers;
+        document.getElementById('s-mrr').textContent = data.mrrJpy.toLocaleString();
         document.getElementById('stats-card').style.display = 'block';
+
+        const weeklyRes = await fetch(`/api/admin/weekly-report?token=${encodeURIComponent(token)}`);
+        const weekly = await weeklyRes.json();
+        if (weeklyRes.ok) {
+          document.getElementById('weekly-summary').textContent = weekly.summary;
+          document.getElementById('weekly-card').style.display = 'block';
+        }
       } catch (err) {
         errorEl.textContent = '通信エラーが発生しました。';
+      }
+    });
+
+    document.getElementById('copy-weekly-btn').addEventListener('click', async () => {
+      const text = document.getElementById('weekly-summary').textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        document.getElementById('copy-weekly-btn').textContent = 'コピーしました';
+      } catch (err) {
+        document.getElementById('admin-error').textContent = 'コピーに失敗しました。テキストを選択してコピーしてください。';
       }
     });
   </script>

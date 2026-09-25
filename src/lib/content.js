@@ -1,60 +1,104 @@
-// 九星気学 x マヤ暦 の組み合わせから診断コンテンツを合成するロジック
+// 本命星 × 今月の吉方位 × 自宅から行ける旅先 を組み合わせて診断コンテンツを作る
 const kyusei = require('./kyusei');
-const mayan = require('./mayan');
+const houi = require('./houi');
+const travel = require('./travel');
+
+// 日本時間での「今日」を、ローカル日付として扱える Date にして返す(サーバーのTZに依存しないため)
+function todayInJst(now = new Date()) {
+  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  return new Date(jst.getUTCFullYear(), jst.getUTCMonth(), jst.getUTCDate());
+}
 
 function computeProfile(dateStr) {
-  const date = new Date(dateStr);
-  const honmeiId = kyusei.getHonmeiStarId(date);
-  const star = kyusei.getStar(honmeiId);
-  const kin = mayan.getKin(date);
-  const seal = mayan.getSeal(kin);
-  const tone = mayan.getTone(kin);
-  return { date, honmeiId, star, kin, seal, tone };
+  return profileFromStar(kyusei.getHonmeiStarId(new Date(dateStr)));
 }
 
-function buildFreeResult(profile) {
+function profileFromStar(honmeiId) {
+  return { honmeiId, star: kyusei.getStar(honmeiId) };
+}
+
+// 今日の属する節月から数えて i ヶ月後の節月に含まれる日付(各月15日は必ず節入り後)
+function monthDate(from, i) {
+  const info = houi.getMonthInfo(from);
+  return new Date(info.calendarYear, info.setsuMonth - 1 + i, 15);
+}
+
+function starName(id) {
+  return kyusei.getStar(id).name;
+}
+
+// ある節月の吉方位と旅先をまとめる。perDirection で方位ごとの旅先件数を絞る
+function buildMonth(profile, origin, date, perDirection) {
+  const h = houi.getMonthlyHoui(profile.honmeiId, date);
   return {
-    star: { id: profile.star.id, name: profile.star.name, keyword: profile.star.keyword },
-    kin: profile.kin,
-    seal: { name: profile.seal.name, keyword: profile.seal.keyword },
-    tone: { name: profile.tone.name, keyword: profile.tone.keyword },
-    summary: `九星気学では${profile.star.name}(${profile.star.keyword})、マヤ暦ではKIN${profile.kin}「${profile.seal.name}」・${profile.tone.name}のあなた。${profile.star.trait}`,
+    label: h.label,
+    period: h.period,
+    yearCenter: starName(h.yearCenter),
+    monthCenter: starName(h.monthCenter),
+    yearBlocked: h.yearBlocked,
+    monthBlocked: h.monthBlocked,
+    directions: h.directions.map((d) => ({
+      ...d,
+      yearStar: starName(d.yearStar),
+      monthStar: starName(d.monthStar),
+    })),
+    bestDirections: h.bestDirections,
+    destinations: travel.recommend(origin, h.bestDirections, perDirection),
   };
 }
 
-function buildFullResult(profile) {
-  const yearlyPhase = kyusei.getYearlyPhase(profile.honmeiId, new Date());
-  const monthlyNote = buildMonthlyOutlook(profile);
+// 今月から数えて最初に最大吉方がある月(最大12ヶ月先まで)
+function findNextBestMonth(profile, origin, from) {
+  for (let i = 1; i <= 12; i++) {
+    const month = buildMonth(profile, origin, monthDate(from, i), 1);
+    if (month.bestDirections.length) {
+      return { label: month.label, period: month.period, bestDirections: month.bestDirections };
+    }
+  }
+  return null;
+}
+
+function monthMessage(month) {
+  if (month.monthBlocked || month.yearBlocked) {
+    return 'あなたの本命星が中宮に入る「八方塞がり」の時期のため、今月は吉方位がありません。遠出は控えめにして、次の吉方位旅の計画を立てるのに向いています。';
+  }
+  if (!month.bestDirections.length) {
+    return '今月は年盤・月盤の両方で吉となる方位(最大吉方)がありません。次に最大吉方が巡る月に向けて、マイルを貯めておきましょう。';
+  }
+  return `今月の最大吉方は「${month.bestDirections.join('・')}」。年盤・月盤の両方で吉となる、効果が大きいとされる方位です。`;
+}
+
+function buildFreeResult(profile, origin, date = todayInJst()) {
+  const month = buildMonth(profile, origin, date, 3);
   return {
-    personality: `${profile.star.trait} マヤ暦の紋章「${profile.seal.name}」は${profile.seal.keyword}を象徴し、${profile.tone.name}(${profile.tone.keyword})の性質が加わることで、あなたの持ち味に一段と深みを与えています。`,
-    yearlyFortune: `今年のあなたは「${yearlyPhase}」にあたります。九星気学の9年サイクルと照らし合わせると、この時期は${profile.star.name}らしい${profile.star.keyword}を活かす行動が吉です。`,
-    monthlyFortune: monthlyNote,
-    element: profile.star.element,
-    advice: buildAdvice(profile),
+    star: { id: profile.star.id, name: profile.star.name, element: profile.star.element, keyword: profile.star.keyword },
+    origin: origin.name,
+    summary: `${profile.star.name}(${profile.star.keyword})のあなた。${profile.star.trait}`,
+    month: { ...month, message: monthMessage(month) },
+    nextBestMonth: month.bestDirections.length ? null : findNextBestMonth(profile, origin, date),
   };
 }
 
-function buildMonthlyOutlook(profile) {
-  const now = new Date();
-  const dayOfMonthKin = mayan.getKin(now);
-  const diff = ((dayOfMonthKin - profile.kin) % 260 + 260) % 260;
-  const phaseLabel = diff < 65 ? '種まきと準備' : diff < 130 ? '展開と行動' : diff < 195 ? '収穫と発信' : '内省と手放し';
-  return `今月のマヤ暦的な流れは「${phaseLabel}」の局面。KINの巡り(差分${diff})から見て、無理に力まず自分のリズムを大切にすると良いでしょう。`;
-}
-
-function buildAdvice(profile) {
-  const adviceByElement = {
-    木: '新しいことへの挑戦や、人との縁を広げる行動が運気を後押しします。',
-    火: '自分の情熱や個性を発信することが、運気を高める鍵になります。',
-    土: 'コツコツとした積み重ねと、周囲への気配りが信頼を築きます。',
-    金: '目標を明確にし、優先順位をつけて動くことで成果が出やすくなります。',
-    水: '柔軟に流れに乗りつつ、休息とインプットの時間を大切にしましょう。',
-  };
-  return adviceByElement[profile.star.element] || 'あなたらしいペースを大切に過ごしましょう。';
+// 有料会員向け: 今月から12ヶ月分の吉方位カレンダー(旅先は全件)
+function buildCalendar(profile, origin, date = todayInJst()) {
+  const months = [];
+  for (let i = 0; i < 12; i++) {
+    const month = buildMonth(profile, origin, monthDate(date, i), Infinity);
+    months.push({
+      label: month.label,
+      period: month.period,
+      bestDirections: month.bestDirections,
+      blocked: month.monthBlocked || month.yearBlocked,
+      destinations: month.destinations,
+    });
+  }
+  return { months };
 }
 
 module.exports = {
+  todayInJst,
   computeProfile,
+  profileFromStar,
   buildFreeResult,
-  buildFullResult,
+  buildCalendar,
 };
