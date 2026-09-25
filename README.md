@@ -15,7 +15,8 @@
 
 7. **SNS投稿のネタ元 `npm run sns:facts`**: 今月・来月の最大吉方を9つの本命星ぶん、東京・大阪・福岡発の旅先例つきで出力します。毎週日曜の投稿文づくりは、この計算結果だけを根拠に行います(吉方位を推測で書かないため)。
 8. **方位マップ画像 `scripts/sns-map.js`**: 出発地から見た今月の最大吉方を日本地図上に塗り、方位にある旅先を番号で示す Instagram 用画像(1080x1350)を、本命星ごとに自動生成します(表紙・お休みの星のまとめ付き)。例: `NODE_PATH=$(npm root -g) node scripts/sns-map.js 2026-10-15 tokyo out/`
-9. **文字スライド画像 `scripts/sns-images.js`**: マイル術などの文字中心の投稿用に、スライド定義(JSON)から同じデザインの 1080x1350 の JPEG を生成します。Playwright は依存に含めていないため、インストール済みの環境で `NODE_PATH=$(npm root -g) node scripts/sns-images.js slides.json out/` のように実行します。
+9. **リール動画 `scripts/sns-reel.js`**: 「自分の星で止めてね」形式の縦長動画(1080x1920・約24秒・MP4)を生成します。フック → 9つの本命星を2秒ずつ(最大吉方を方位盤で表示) → 無料診断への誘導、の構成です。動画のエンコードには devDependencies の `ffmpeg-static` を使います。例: `NODE_PATH=$(npm root -g) node scripts/sns-reel.js 2026-10-15 tokyo out/`
+10. **文字スライド画像 `scripts/sns-images.js`**: マイル術などの文字中心の投稿用に、スライド定義(JSON)から同じデザインの 1080x1350 の JPEG を生成します。Playwright は依存に含めていないため、インストール済みの環境で `NODE_PATH=$(npm root -g) node scripts/sns-images.js slides.json out/` のように実行します。
 
 ## セットアップ
 

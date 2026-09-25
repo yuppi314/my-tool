@@ -139,14 +139,21 @@ function starMapHtml(h, star, origin, dests) {
 <div class="panel">${rows}<div class="note">年盤・月盤ともに吉の方位 / 自宅から100km以上 / マイルで行ける旅先</div></div>`);
 }
 
-function coverHtml(info, origin, bestStars) {
+// 表紙: 答えは見せずに「自分の星は何枚目？」でめくってもらう(フック)
+function coverHtml(info, origin, bestStars, restStars) {
+  const restPage = bestStars.length + 2;
+  const index = [
+    ...bestStars.map((s, i) => ({ name: s.name, page: i + 2 })),
+    ...restStars.map((s) => ({ name: s.name, page: restPage })),
+  ];
   return page(`
 <div class="center">
   <div><span class="kicker">${info.label}(${info.period})</span></div>
-  <h1>${origin.name}から行く<br><em style="font-style:normal;color:#FF6B3D">今月の吉方位旅</em></h1>
-  <p>9つの本命星ごとに、年盤・月盤の両方で吉となる「最大吉方」と、マイルで行ける旅先を地図にしました。</p>
-  <div class="list">${bestStars.map((s) => `<div class="row"><span class="pill">${s.name}</span><span>${s.directions.join('・')}</span></div>`).join('')}</div>
-  <p style="font-size:32px;color:#6B7A90">自分の星のページを保存してね →</p>
+  <h1 style="font-size:96px">50代、${info.setsuMonth}月に<br>行くなら<em style="font-style:normal;color:#FF6B3D">この方角</em></h1>
+  <p>年盤・月盤の両方で吉の「最大吉方」と、マイルで行ける旅先を、9つの星ごとに地図にしました。</p>
+  <div class="list" style="display:grid;grid-template-columns:1fr 1fr;gap:14px 28px">${index.map((s) => `<div class="row" style="font-size:32px"><span class="pill">${s.name}</span><span>${s.page}枚目</span></div>`).join('')}</div>
+  <p style="font-size:34px;color:#1E5AA8;font-weight:700">あなたの星は何枚目？ めくってね →</p>
+  <p style="font-size:28px;color:#6B7A90;margin-top:12px">${origin.name}から出かける場合の例</p>
 </div>`);
 }
 
@@ -195,7 +202,7 @@ async function main() {
       files.push(await render(starMapHtml(h, star, origin, travel.recommend(origin, h.bestDirections, 3)), `star-${id}.jpg`));
     }
   }
-  files.unshift(await render(coverHtml(info, origin, bestStars), 'cover.jpg'));
+  files.unshift(await render(coverHtml(info, origin, bestStars, restStars), 'cover.jpg'));
   if (restStars.length) files.push(await render(restHtml(info, restStars), 'rest.jpg'));
   await browser.close();
   console.log(files.join('\n'));
