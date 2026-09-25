@@ -47,9 +47,8 @@ function listOrigins() {
   return ORIGINS.map(({ id, name }) => ({ id, name }));
 }
 
-// 出発地から見た全旅先(100km未満は除く)を方位つきで返す。近い順。
-function destinationsFrom(originId) {
-  const origin = getOrigin(originId);
+// 出発地({ name, lat, lon })から見た全旅先(100km未満は除く)を方位つきで返す。近い順。
+function destinationsFrom(origin) {
   return DESTINATIONS.map((dest) => {
     const km = distanceKm(origin, dest);
     return {
@@ -67,8 +66,8 @@ function destinationsFrom(originId) {
 }
 
 // 吉方位にある旅先を、方位ごとに国内の近い順→海外の順で最大 perDirection 件ずつ選ぶ
-function recommend(originId, directions, perDirection = Infinity) {
-  const all = destinationsFrom(originId);
+function recommend(origin, directions, perDirection = Infinity) {
+  const all = destinationsFrom(origin);
   const result = [];
   for (const dir of directions) {
     const inDir = all.filter((d) => d.direction === dir);
@@ -78,4 +77,19 @@ function recommend(originId, directions, perDirection = Infinity) {
   return result;
 }
 
-module.exports = { MIN_DISTANCE_KM, distanceKm, bearingDeg, sectorOf, getOrigin, listOrigins, destinationsFrom, recommend };
+// 日本国内(離島を含むおおよその範囲)にある座標か
+function isInJapan(lat, lon) {
+  return Number.isFinite(lat) && Number.isFinite(lon) && lat >= 20 && lat <= 46 && lon >= 122 && lon <= 154;
+}
+
+module.exports = {
+  MIN_DISTANCE_KM,
+  distanceKm,
+  bearingDeg,
+  sectorOf,
+  getOrigin,
+  listOrigins,
+  isInJapan,
+  destinationsFrom,
+  recommend,
+};

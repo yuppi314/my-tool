@@ -192,7 +192,7 @@ async function main() {
       restStars.push({ name: star.name, reason: '最大吉方なし' });
     } else {
       bestStars.push({ name: star.name, directions: h.bestDirections });
-      files.push(await render(starMapHtml(h, star, origin, travel.recommend(originId, h.bestDirections, 3)), `star-${id}.jpg`));
+      files.push(await render(starMapHtml(h, star, origin, travel.recommend(origin, h.bestDirections, 3)), `star-${id}.jpg`));
     }
   }
   files.unshift(await render(coverHtml(info, origin, bestStars), 'cover.jpg'));

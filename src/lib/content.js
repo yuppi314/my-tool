@@ -25,7 +25,7 @@ function starName(id) {
 }
 
 // ある節月の吉方位と旅先をまとめる。perDirection で方位ごとの旅先件数を絞る
-function buildMonth(profile, originId, date, perDirection) {
+function buildMonth(profile, origin, date, perDirection) {
   const h = houi.getMonthlyHoui(profile.honmeiId, date);
   return {
     label: h.label,
@@ -40,14 +40,14 @@ function buildMonth(profile, originId, date, perDirection) {
       monthStar: starName(d.monthStar),
     })),
     bestDirections: h.bestDirections,
-    destinations: travel.recommend(originId, h.bestDirections, perDirection),
+    destinations: travel.recommend(origin, h.bestDirections, perDirection),
   };
 }
 
 // 今月から数えて最初に最大吉方がある月(最大12ヶ月先まで)
-function findNextBestMonth(profile, originId, from) {
+function findNextBestMonth(profile, origin, from) {
   for (let i = 1; i <= 12; i++) {
-    const month = buildMonth(profile, originId, monthDate(from, i), 1);
+    const month = buildMonth(profile, origin, monthDate(from, i), 1);
     if (month.bestDirections.length) {
       return { label: month.label, period: month.period, bestDirections: month.bestDirections };
     }
@@ -65,22 +65,22 @@ function monthMessage(month) {
   return `今月の最大吉方は「${month.bestDirections.join('・')}」。年盤・月盤の両方で吉となる、効果が大きいとされる方位です。`;
 }
 
-function buildFreeResult(profile, originId, date = todayInJst()) {
-  const month = buildMonth(profile, originId, date, 3);
+function buildFreeResult(profile, origin, date = todayInJst()) {
+  const month = buildMonth(profile, origin, date, 3);
   return {
     star: { id: profile.star.id, name: profile.star.name, element: profile.star.element, keyword: profile.star.keyword },
-    origin: travel.getOrigin(originId).name,
+    origin: origin.name,
     summary: `${profile.star.name}(${profile.star.keyword})のあなた。${profile.star.trait}`,
     month: { ...month, message: monthMessage(month) },
-    nextBestMonth: month.bestDirections.length ? null : findNextBestMonth(profile, originId, date),
+    nextBestMonth: month.bestDirections.length ? null : findNextBestMonth(profile, origin, date),
   };
 }
 
 // 有料会員向け: 今月から12ヶ月分の吉方位カレンダー(旅先は全件)
-function buildCalendar(profile, originId, date = todayInJst()) {
+function buildCalendar(profile, origin, date = todayInJst()) {
   const months = [];
   for (let i = 0; i < 12; i++) {
-    const month = buildMonth(profile, originId, monthDate(date, i), Infinity);
+    const month = buildMonth(profile, origin, monthDate(date, i), Infinity);
     months.push({
       label: month.label,
       period: month.period,

@@ -280,3 +280,10 @@ a.affiliate span { display: block; font-size: 0.85rem; color: var(--text-dim); }
 .cal-month p { margin: 2px 0; }
 .cal-month.good p:first-of-type { color: var(--accent); font-weight: 700; }
 .cal-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+
+.address-row { display: flex; gap: 8px; align-items: flex-start; }
+.address-row input { flex: 1; }
+.address-row button { padding: 12px 18px; white-space: nowrap; }
+details#city-fallback { margin: 12px 0 16px; color: var(--text-dim); font-size: 0.9rem; }
+details#city-fallback summary { cursor: pointer; margin-bottom: 8px; }
+.origin-status { color: var(--accent-soft); font-weight: 700; min-height: 1.5em; }

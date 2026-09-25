@@ -27,9 +27,9 @@ function describeMonth(date) {
       continue;
     }
     const samples = SAMPLE_ORIGINS.map((originId) => {
-      const places = travel.recommend(originId, h.bestDirections, 2).filter((d) => d.region === 'domestic');
-      const origin = travel.getOrigin(originId).name;
-      return `${origin}発: ${places.map((p) => `${p.name}(${p.direction}・約${p.distanceKm}km)`).join('、') || '該当なし'}`;
+      const origin = travel.getOrigin(originId);
+      const places = travel.recommend(origin, h.bestDirections, 2).filter((d) => d.region === 'domestic');
+      return `${origin.name}発: ${places.map((p) => `${p.name}(${p.direction}・約${p.distanceKm}km)`).join('、') || '該当なし'}`;
     });
     lines.push(`- ${name}: 最大吉方 ${h.bestDirections.join('・')} / ${samples.join(' / ')}`);
   }
