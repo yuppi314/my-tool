@@ -16,5 +16,9 @@
     "express": "^4.19.2",
     "stripe": "^16.8.0",
     "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
   }
 }
