@@ -292,3 +292,7 @@ footer.legal a { color: var(--text-dim); }
 .brand { display: inline-block; font-size: 0.85rem; font-weight: 700; color: #fff; background: var(--accent-soft); border-radius: 999px; padding: 4px 16px; margin-bottom: 10px; text-decoration: none; }
 .back-link { text-align: center; }
 .coming-soon { font-size: 0.9rem; color: var(--text-dim); }
+
+/* iOS Safari では日付入力が width:100% を無視して枠からはみ出すため、見た目を標準化する */
+input[type="date"] { -webkit-appearance: none; appearance: none; display: block; min-width: 0; max-width: 100%; min-height: 50px; text-align: left; }
+input[type="date"]::-webkit-date-and-time-value { text-align: left; }
