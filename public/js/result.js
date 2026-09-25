@@ -16,7 +16,9 @@ if (!diagnosisId) {
 }
 
 async function init() {
-  const res = await fetch(`/api/diagnosis/${diagnosisId}`);
+  // URLの本命星・地点も渡し、サーバーに記録が残っていなくても無料結果を表示できるようにする
+  const query = new URLSearchParams({ s: params.get('s') || '', lat: params.get('lat') || '', lon: params.get('lon') || '', o: params.get('o') || '' });
+  const res = await fetch(`/api/diagnosis/${encodeURIComponent(diagnosisId)}?${query}`);
   const data = await res.json();
   if (!res.ok) {
     statusLine.textContent = data.error || '結果の取得に失敗しました。';
@@ -38,6 +40,11 @@ async function init() {
   } else {
     statusLine.textContent = `${data.star.name}のあなたの、今月の吉方位とおすすめ旅先です。`;
     document.getElementById('locked-card').style.display = 'block';
+    if (!data.paymentsEnabled) {
+      document.getElementById('coming-soon').style.display = 'block';
+      document.getElementById('subscribe-btn').style.display = 'none';
+      document.getElementById('unlock-btn').style.display = 'none';
+    }
   }
 }
 

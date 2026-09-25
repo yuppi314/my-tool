@@ -10,7 +10,10 @@ function todayInJst(now = new Date()) {
 }
 
 function computeProfile(dateStr) {
-  const honmeiId = kyusei.getHonmeiStarId(new Date(dateStr));
+  return profileFromStar(kyusei.getHonmeiStarId(new Date(dateStr)));
+}
+
+function profileFromStar(honmeiId) {
   return { honmeiId, star: kyusei.getStar(honmeiId) };
 }
 
@@ -95,6 +98,7 @@ function buildCalendar(profile, origin, date = todayInJst()) {
 module.exports = {
   todayInJst,
   computeProfile,
+  profileFromStar,
   buildFreeResult,
   buildCalendar,
 };

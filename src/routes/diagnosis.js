@@ -6,6 +6,7 @@ const travel = require('../lib/travel');
 const { geocode, toOrigin } = require('../lib/geocode');
 const { getActiveSubscription, hasPremiumAccess } = require('../lib/access');
 const affiliates = require('../data/affiliates');
+const { paymentsEnabled } = require('../lib/payments');
 
 const router = express.Router();
 
@@ -68,13 +69,31 @@ router.post('/diagnosis', (req, res) => {
     db.prepare(`INSERT INTO leads (email, name, birthdate) VALUES (?, ?, ?)`).run(email, name || null, birthdate);
   }
 
-  res.json({ id });
+  // 結果ページのURLにも本命星と丸めた地点を載せ、DBが消えても(無料プランの再起動など)無料結果を再表示できるようにする
+  res.json({ id, s: profile.honmeiId, lat: origin.lat, lon: origin.lon, o: origin.name });
 });
 
 // 無料結果: 今月の吉方位と、方位ごとのおすすめ旅先(上位3件)
 router.get('/diagnosis/:id', (req, res) => {
   const row = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(req.params.id);
-  if (!row) return res.status(404).json({ error: '診断結果が見つかりません。' });
+  const common = { affiliates: affiliates.filter((a) => a.url), paymentsEnabled: paymentsEnabled() };
+
+  if (!row) {
+    // DBに記録がなくても、URLの本命星(s)と地点(lat/lon/o)があれば無料結果は再計算できる
+    const star = Number(req.query.s);
+    const origin = toOrigin(req.query.o, req.query.lat, req.query.lon);
+    if (!Number.isInteger(star) || star < 1 || star > 9 || !origin) {
+      return res.status(404).json({ error: '診断結果が見つかりません。' });
+    }
+    return res.json({
+      id: req.params.id,
+      paid: false,
+      subscribed: false,
+      cancelAtPeriodEnd: false,
+      ...common,
+      ...content.buildFreeResult(content.profileFromStar(star), origin),
+    });
+  }
 
   const profile = content.computeProfile(row.birthdate);
   const subscription = getActiveSubscription(row.id);
@@ -83,7 +102,7 @@ router.get('/diagnosis/:id', (req, res) => {
     paid: hasPremiumAccess(row),
     subscribed: !!subscription,
     cancelAtPeriodEnd: !!(subscription && subscription.cancel_at_period_end),
-    affiliates: affiliates.filter((a) => a.url),
+    ...common,
     ...content.buildFreeResult(profile, originOf(row)),
   });
 });

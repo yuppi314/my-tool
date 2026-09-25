@@ -1,14 +1,15 @@
 :root {
-  --bg: #120b26;
-  --bg-alt: #1c1240;
-  --accent: #f2c14e;
-  --accent-soft: #ffe9b3;
-  --text: #f5f0ff;
-  --text-dim: #c9c0e8;
-  --card: #201646;
-  --border: #3a2c72;
-  --success: #6fcf97;
-  --danger: #eb5757;
+  --bg: #FFF8EE;
+  --bg-alt: #FFEFE0;
+  --accent: #FF6B3D;
+  --accent-soft: #1E5AA8;
+  --text: #1B2A41;
+  --text-dim: #5B6B82;
+  --card: #FFFFFF;
+  --field: #FFFDF9;
+  --border: #EADBC8;
+  --success: #2E9E5B;
+  --danger: #D93A3A;
 }
 
 * { box-sizing: border-box; }
@@ -16,10 +17,11 @@
 body {
   margin: 0;
   font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
-  background: radial-gradient(ellipse at top, var(--bg-alt), var(--bg) 70%);
+  background: linear-gradient(180deg, var(--bg-alt), var(--bg) 320px);
   color: var(--text);
   min-height: 100vh;
-  line-height: 1.7;
+  line-height: 1.8;
+  font-size: 17px;
 }
 
 .wrap {
@@ -36,10 +38,7 @@ header.hero {
 header.hero h1 {
   font-size: 1.8rem;
   margin: 0 0 8px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-soft));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
 }
 
 header.hero p {
@@ -54,7 +53,7 @@ header.hero p {
   border-radius: 16px;
   padding: 24px;
   margin-top: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  box-shadow: 0 6px 20px rgba(27,42,65,0.08);
 }
 
 label {
@@ -69,7 +68,7 @@ input[type="date"], input[type="text"], input[type="email"], select {
   padding: 12px 14px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: #16103a;
+  background: var(--field);
   color: var(--text);
   font-size: 1rem;
   margin-bottom: 16px;
@@ -86,8 +85,8 @@ button {
 }
 
 button.primary {
-  background: linear-gradient(90deg, var(--accent), #ffb454);
-  color: #241503;
+  background: linear-gradient(90deg, var(--accent), #FF8F5B);
+  color: #FFFFFF;
   width: 100%;
 }
 
@@ -108,7 +107,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 }
 
 .stat-box {
-  background: #16103a;
+  background: var(--field);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px;
@@ -119,7 +118,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .stat-box .value { font-size: 1.15rem; font-weight: 700; color: var(--accent-soft); margin-top: 4px; }
 
 .summary-text {
-  background: #16103a;
+  background: var(--field);
   border-left: 3px solid var(--accent);
   padding: 14px 16px;
   border-radius: 8px;
@@ -159,7 +158,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .badge {
   display: inline-block;
   background: var(--success);
-  color: #08240f;
+  color: #FFFFFF;
   font-size: 0.7rem;
   font-weight: 700;
   padding: 2px 10px;
@@ -227,7 +226,7 @@ button.secondary.full { width: 100%; margin-top: 12px; }
   margin-top: 12px;
 }
 .houi-cell {
-  background: #16103a;
+  background: var(--field);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 8px 4px;
@@ -237,7 +236,7 @@ button.secondary.full { width: 100%; margin-top: 12px; }
 .houi-cell .dir { font-size: 0.75rem; color: var(--text-dim); }
 .houi-cell .star { font-size: 0.85rem; font-weight: 700; }
 .houi-cell .mark { font-size: 0.7rem; margin-top: 2px; }
-.houi-cell.best { border-color: var(--accent); background: #2d2250; }
+.houi-cell.best { border-color: var(--accent); background: #FFE9DF; }
 .houi-cell.best .mark { color: var(--accent); font-size: 1rem; }
 .houi-cell.bad .mark { color: var(--danger); }
 .houi-cell.center { border-style: dashed; }
@@ -248,7 +247,7 @@ button.secondary.full { width: 100%; margin-top: 12px; }
 .dest-dir {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #241503;
+  color: #FFFFFF;
   background: var(--accent);
   border-radius: 999px;
   padding: 1px 10px;
@@ -287,3 +286,9 @@ a.affiliate span { display: block; font-size: 0.85rem; color: var(--text-dim); }
 details#city-fallback { margin: 12px 0 16px; color: var(--text-dim); font-size: 0.9rem; }
 details#city-fallback summary { cursor: pointer; margin-bottom: 8px; }
 .origin-status { color: var(--accent-soft); font-weight: 700; min-height: 1.5em; }
+
+a { color: var(--accent-soft); }
+footer.legal a { color: var(--text-dim); }
+.brand { display: inline-block; font-size: 0.85rem; font-weight: 700; color: #fff; background: var(--accent-soft); border-radius: 999px; padding: 4px 16px; margin-bottom: 10px; text-decoration: none; }
+.back-link { text-align: center; }
+.coming-soon { font-size: 0.9rem; color: var(--text-dim); }

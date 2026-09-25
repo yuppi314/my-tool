@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { getActiveSubscription } = require('../lib/access');
+const { getStripe, paymentsEnabled } = require('../lib/payments');
 
 const router = express.Router();
 
@@ -8,21 +9,23 @@ const REPORT_PRICE_JPY = Number(process.env.REPORT_PRICE_JPY || 980);
 const SUBSCRIPTION_PRICE_JPY = Number(process.env.SUBSCRIPTION_PRICE_JPY || 480);
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
-function getStripe() {
-  if (!process.env.STRIPE_SECRET_KEY) return null;
-  const Stripe = require('stripe');
-  return new Stripe(process.env.STRIPE_SECRET_KEY);
+// 販売を開始していない(Stripe 未設定かつモックも無効)ときは申し込みを受け付けない
+function requirePayments(req, res, next) {
+  if (!paymentsEnabled()) {
+    return res.status(503).json({ error: 'お申し込みは近日スタート予定です。' });
+  }
+  next();
 }
 
 // 12ヶ月の吉方位カレンダー(買い切り)の決済セッションを作成
-router.post('/checkout', async (req, res) => {
+router.post('/checkout', requirePayments, async (req, res) => {
   const { diagnosisId } = req.body || {};
   const diagnosis = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(diagnosisId);
   if (!diagnosis) return res.status(404).json({ error: '診断結果が見つかりません。' });
 
   const stripe = getStripe();
 
-  // STRIPE_SECRET_KEY 未設定時は開発用モックモード: 即時に決済成功として扱う
+  // STRIPE_SECRET_KEY 未設定時(MOCK_PAYMENTS=true)は開発用モックモード: 即時に決済成功として扱う
   if (!stripe) {
     db.prepare('UPDATE diagnoses SET paid = 1 WHERE id = ?').run(diagnosisId);
     db.prepare(
@@ -64,7 +67,7 @@ router.post('/checkout', async (req, res) => {
 });
 
 // 月額会員(毎月の吉方位旅プラン)の決済セッションを作成
-router.post('/subscribe', async (req, res) => {
+router.post('/subscribe', requirePayments, async (req, res) => {
   const { diagnosisId } = req.body || {};
   const diagnosis = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(diagnosisId);
   if (!diagnosis) return res.status(404).json({ error: '診断結果が見つかりません。' });
