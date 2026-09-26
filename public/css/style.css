@@ -296,3 +296,18 @@ footer.legal a { color: var(--text-dim); }
 /* iOS Safari では日付入力が width:100% を無視して枠からはみ出すため、見た目を標準化する */
 input[type="date"] { -webkit-appearance: none; appearance: none; display: block; min-width: 0; max-width: 100%; min-height: 50px; text-align: left; }
 input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+
+a.hotel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+a.hotel-link .pr-label { margin-left: 2px; }

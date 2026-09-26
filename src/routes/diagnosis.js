@@ -76,7 +76,7 @@ router.post('/diagnosis', (req, res) => {
 // 無料結果: 今月の吉方位と、方位ごとのおすすめ旅先(上位3件)
 router.get('/diagnosis/:id', (req, res) => {
   const row = db.prepare('SELECT * FROM diagnoses WHERE id = ?').get(req.params.id);
-  const common = { affiliates: affiliates.filter((a) => a.url), paymentsEnabled: paymentsEnabled() };
+  const common = { affiliates: affiliates.links.filter((a) => a.url), paymentsEnabled: paymentsEnabled() };
 
   if (!row) {
     // DBに記録がなくても、URLの本命星(s)と地点(lat/lon/o)があれば無料結果は再計算できる

@@ -71,6 +71,7 @@ function destinationHtml(d) {
       <div class="dest-head"><span class="dest-dir">${escapeHtml(d.direction)}</span><strong>${escapeHtml(d.name)}</strong></div>
       <div class="dest-meta">約${d.distanceKm.toLocaleString()}km・${escapeHtml(d.airport)}空港・${escapeHtml(d.miles)}</div>
       <p class="dest-hint">${escapeHtml(d.hint)}</p>
+      ${d.hotelUrl ? `<a class="hotel-link" href="${escapeHtml(d.hotelUrl)}" target="_blank" rel="sponsored noopener">${escapeHtml(d.name.split('・')[0])}周辺の宿を探す(楽天トラベル)<span class="pr-label">PR</span></a>` : ''}
     </div>`;
 }
 
