@@ -1,6 +1,6 @@
 // Instagram リール用の縦長動画(1080x1920・約24秒・MP4)を生成する。
 // 「自分の星で止めてね」形式: フック → 9つの本命星を1つ2秒ずつ(最大吉方を方位盤で表示) → 締め。
-// 使い方: node scripts/sns-reel.js <基準日 YYYY-MM-DD> <出発地ID(例: tokyo)> <出力ディレクトリ>
+// 使い方: node scripts/sns-reel.js <基準日 YYYY-MM-DD> <出発地ID(例: tokyo)> <出力ディレクトリ> [背景: plain|sunrise|sky|wave]
 // 出力: reel.mp4(本編) / reel-cover.jpg(リールの表紙画像)
 // Playwright はリポジトリの依存に含めていないため、インストール済みのものを使う
 // (例: NODE_PATH=$(npm root -g) node scripts/sns-reel.js 2026-10-15 tokyo out/)。
@@ -23,9 +23,19 @@ const END_SEC = 3;
 // 方位盤の区分(真北0度・時計回り)。東西南北は各30度、四隅は各60度
 const RANGES = { 北: [345, 375], 北東: [15, 75], 東: [75, 105], 南東: [105, 165], 南: [165, 195], 南西: [195, 255], 西: [255, 285], 北西: [285, 345] };
 
-const CSS = `
+// 背景のテーマ。第4引数で選ぶ(省略時は plain)
+const SEIGAIHA = encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60" viewBox="0 0 120 60"><g fill="none" stroke="#F4C9A8" stroke-width="3"><circle cx="0" cy="60" r="56"/><circle cx="0" cy="60" r="40"/><circle cx="0" cy="60" r="24"/><circle cx="120" cy="60" r="56"/><circle cx="120" cy="60" r="40"/><circle cx="120" cy="60" r="24"/><circle cx="60" cy="30" r="56"/><circle cx="60" cy="30" r="40"/><circle cx="60" cy="30" r="24"/></g></svg>');
+const BACKGROUNDS = {
+  plain: '#FFF8EE',
+  sunrise: 'linear-gradient(180deg, #FFD9B8 0%, #FFD3DC 50%, #FFF6EE 100%)',
+  sky: 'linear-gradient(180deg, #A9DBFF 0%, #DDF1FF 45%, #FFF8EE 100%)',
+  wave: `#FFF8EE url("data:image/svg+xml,${SEIGAIHA}") repeat`,
+};
+let background = BACKGROUNDS.plain;
+
+const css = () => `
 * { box-sizing: border-box; margin: 0; }
-body { width: ${W}px; height: ${H}px; overflow: hidden; background: #FFF8EE; color: #1B2A41;
+body { width: ${W}px; height: ${H}px; overflow: hidden; background: ${background}; color: #1B2A41;
   font-family: "Hiragino Sans", "Noto Sans CJK JP", "Noto Sans JP", sans-serif;
   display: flex; flex-direction: column; justify-content: center; padding: 140px 90px; }
 .kicker { align-self: flex-start; background: #1E5AA8; color: #fff; font-size: 40px; font-weight: 700; padding: 10px 28px; border-radius: 999px; }
@@ -41,7 +51,7 @@ h1 em { font-style: normal; color: #FF6B3D; }
 `;
 
 function page(body) {
-  return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${CSS}</style></head><body>${body}</body></html>`;
+  return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${css()}</style></head><body>${body}</body></html>`;
 }
 
 // 北を上にした方位盤。吉方位の扇形をオレンジで塗る
@@ -100,7 +110,12 @@ function endHtml() {
 }
 
 async function main() {
-  const [dateStr, originId, outDir] = process.argv.slice(2);
+  const [dateStr, originId, outDir, bgName = 'plain'] = process.argv.slice(2);
+  if (!BACKGROUNDS[bgName]) {
+    console.error(`背景は ${Object.keys(BACKGROUNDS).join(' / ')} から選んでください。`);
+    process.exit(1);
+  }
+  background = BACKGROUNDS[bgName];
   const origin = originId && travel.getOrigin(originId);
   if (!dateStr || !origin || !outDir) {
     console.error('使い方: node scripts/sns-reel.js <YYYY-MM-DD> <出発地ID> <出力ディレクトリ>');
