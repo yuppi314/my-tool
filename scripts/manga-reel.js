@@ -4,11 +4,12 @@
 // 使い方: node scripts/manga-reel.js <シナリオ.json> <出力ディレクトリ>
 // シナリオ JSON(画像パスは JSON からの相対パス):
 // {
-//   "hook": "50代の旅先、\n“方角”で選んでる？",
+//   "hook": { "text": "10月、行くなら\n**この方角**♨️", "image": "4.png" },  // 文字だけなら "hook": "…" でもよい
+//   "pace": "fast",  // 省略すると normal。fast は12〜15秒ほどのテンポ
 //   "cuts": [
 //     { "image": "1.png", "telop": "いつも同じ旅先…", "lines": [{ "who": "ハル", "text": "旅行先がいつも同じで…", "pos": "top-left" }] }
 //   ],
-//   "end": { "title": "あなたの家から見た\n吉方位は", "em": "無料診断", "sub": "で" , "note": "プロフィールのリンクから🧭" }
+//   "end": { "title": "あなたの家から見た\n吉方位は", "em": "無料診断", "sub": "で" , "note": "プロフィールのリンクから🧭", "sec": 3 }
 // }
 // pos は top-left / top-right / bottom-left / bottom-right(コマの角に吹き出しを置く)。sec を省くと文字数から自動で決める。
 // 出力: manga-reel.mp4 / manga-reel-cover.jpg
@@ -55,6 +56,7 @@ body { width: ${W}px; height: ${H}px; overflow: hidden; background: #FBF3E6; col
 .center { position: absolute; inset: 0; padding: 140px 90px; display: flex; flex-direction: column; justify-content: center; }
 h1 { font-size: 104px; font-weight: 900; line-height: 1.3; white-space: pre-line; }
 .lead { font-size: 52px; line-height: 1.6; margin-top: 48px; white-space: pre-line; }
+.telop.hook { top: 120px; height: 330px; font-size: 96px; }
 .hook-panel { position: absolute; right: -60px; bottom: 160px; width: 560px; height: 560px; border-radius: 28px; overflow: hidden; opacity: 0.9;
   border: 10px solid #fff; box-shadow: 0 12px 32px rgba(27,42,65,0.18); transform: rotate(-4deg); }
 .hook-panel img { width: 100%; height: 100%; object-fit: cover; }
@@ -74,14 +76,19 @@ function cutHtml(cut, imgUrl, shown, index, total, handle) {
     return `<div class="bubble ${who} ${l.pos || 'top-left'}"><div class="who">${esc(l.who)}</div><br>${rich(l.text)}</div>`;
   }).join('');
   return page(`
-<div class="telop">${rich(cut.telop || '')}</div>
+<div class="telop"><div>${rich(cut.telop || '')}</div></div>
 <div class="panel"><img src="${imgUrl}"></div>
 ${bubbles}
 <div class="count">${index + 1} / ${total}</div>
 <div class="handle">${esc(handle)}</div>`);
 }
 
+// フック: 画像つきなら、一番目を引く絵を大きく出して文字を重ねる(最初の1秒で指を止めてもらう)
 function hookHtml(hook, imgUrl) {
+  if (typeof hook === 'object') {
+    return page(`<div class="telop hook"><div>${rich(hook.text)}</div></div>
+<div class="panel"><img src="${imgUrl}"></div>`);
+  }
   return page(`<div class="center" style="justify-content:flex-start;padding-top:360px"><h1>${rich(hook)}</h1></div>
 <div class="hook-panel"><img src="${imgUrl}"></div>`);
 }
@@ -94,8 +101,12 @@ function endHtml(end, handle) {
 </div>`);
 }
 
-// セリフの表示秒数: 読む速さ(1秒に約8文字)+ 間。短すぎ・長すぎを避ける
-const readSec = (text) => Math.min(4, Math.max(1.6, text.replace(/\s/g, '').length / 8 + 0.6));
+// セリフの表示秒数: 読む速さ + 間。短すぎ・長すぎを避ける。fast は短尺リール向け
+const PACES = {
+  normal: { cps: 8, pad: 0.6, min: 1.6, blank: 0.6 },
+  fast: { cps: 10, pad: 0.35, min: 1.2, blank: 0.35 },
+};
+const readSec = (text, pace) => Math.min(4, Math.max(pace.min, text.replace(/\s/g, '').length / pace.cps + pace.pad));
 
 async function main() {
   const [jsonPath, outDir] = process.argv.slice(2);
@@ -116,17 +127,21 @@ async function main() {
   const work = fs.mkdtempSync(path.join(os.tmpdir(), 'manga-reel-'));
 
   const scenes = [];
-  if (spec.hook) scenes.push({ html: hookHtml(spec.hook, imgUrl(spec.cuts[0].image)), sec: HOOK_SEC });
+  const pace = PACES[spec.pace || 'normal'];
+  if (spec.hook) {
+    const hookImage = (typeof spec.hook === 'object' && spec.hook.image) || spec.cuts[0].image;
+    scenes.push({ html: hookHtml(spec.hook, imgUrl(hookImage)), sec: spec.hook.sec || HOOK_SEC });
+  }
   spec.cuts.forEach((cut, i) => {
     const url = imgUrl(cut.image);
     const lines = cut.lines || [];
     // 絵だけ → セリフを1つずつ追加。sec 指定があれば全体をその長さに合わせる
-    const steps = [{ shown: 0, sec: 0.6 }, ...lines.map((l, n) => ({ shown: n + 1, sec: readSec(l.text) }))];
+    const steps = [{ shown: 0, sec: pace.blank }, ...lines.map((l, n) => ({ shown: n + 1, sec: readSec(l.text, pace) }))];
     const total = steps.reduce((a, s) => a + s.sec, 0);
     const k = cut.sec ? cut.sec / total : 1;
     steps.forEach((s) => scenes.push({ html: cutHtml({ ...cut, lines }, url, s.shown, i, spec.cuts.length, handle), sec: s.sec * k }));
   });
-  if (spec.end) scenes.push({ html: endHtml(spec.end, handle), sec: END_SEC });
+  if (spec.end) scenes.push({ html: endHtml(spec.end, handle), sec: spec.end.sec || END_SEC });
 
   const browser = await chromium.launch();
   const tab = await browser.newPage({ viewport: { width: W, height: H } });
