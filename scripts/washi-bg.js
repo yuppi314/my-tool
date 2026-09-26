@@ -1,6 +1,6 @@
 // SNS 画像共通の背景「生成りの和紙」。レイアウト・文字には触れず、body の先頭に敷く飾りレイヤーだけを返す。
 // 方位盤・星・霞雲・青海波をごく薄く置く。乱数は固定シードなので、毎週・どの星でも同じ背景になる。
-// 使い方: page() の body 先頭に washiLayer(W, H, 'cover' | 'map' | 'rest') を差し込む。
+// 使い方: page() の body 先頭に washiLayer(W, H, 'cover' | 'map' | 'rest' | 'reel') を差し込む。
 // (以降の要素は position:absolute で DOM 順に上へ重なるため、既存の CSS を変えずに背面へ入る)
 
 const GOLD = '#B8955A';
@@ -133,11 +133,18 @@ const PRESETS = {
     clouds: [[W - 440, 140, 360, 0.1], [40, H - 120, 340, 0.08]],
     stars: [[W - 110, H - 400, 10, 0.35], [W - 280, 90, 8, 0.35], [W - 60, 560, 7, 0.3]],
   }),
+  // リール(1080x1920): 中央に方位盤や文字が来るので、飾りは上下の余白と右上に寄せる
+  reel: (W, H) => ({
+    compass: [W - 110, 250, 330, 0.15],
+    corners: [[W, H, 420, 0.4], [0, 0, 300, 0.3]],
+    clouds: [[W - 470, 110, 380, 0.1], [50, H - 170, 380, 0.09]],
+    stars: [[W - 330, 70, 12, 0.4], [W - 60, 520, 9, 0.35], [120, 300, 8, 0.3], [W - 200, H - 420, 10, 0.35], [180, H - 330, 7, 0.3]],
+  }),
 };
 
 function washiLayer(W, H, kind = 'map') {
   const p = PRESETS[kind](W, H);
-  return `<svg class="washi" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute;top:0;left:0">
+  return `<svg class="washi deco" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute;top:0;left:0">
   <defs>${SEIGAIHA_PATTERN}</defs>
   <rect width="${W}" height="${H}" fill="#FBF3E6"/>
   ${p.corners.map(([x, y, r, o], i) => seigaihaCorner(`sg${i}`, x, y, r, o)).join('')}
