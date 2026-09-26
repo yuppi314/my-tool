@@ -33,6 +33,23 @@ const BACKGROUNDS = {
 };
 let background = BACKGROUNDS.plain;
 
+// 青空テーマだけ、雲と飛行機の飾りを重ねる(文字の読みやすさを優先し、上端と下端に寄せる)
+const SKY_DECO = `<svg class="deco" width="${1080}" height="${1920}" viewBox="0 0 1080 1920">
+  <g fill="#FFFFFF" opacity="0.9">
+    <ellipse cx="170" cy="120" rx="130" ry="44"/><ellipse cx="250" cy="96" rx="90" ry="52"/><ellipse cx="110" cy="100" rx="70" ry="40"/>
+    <ellipse cx="880" cy="210" rx="150" ry="46"/><ellipse cx="960" cy="186" rx="96" ry="54"/><ellipse cx="800" cy="192" rx="70" ry="40"/>
+    <ellipse cx="930" cy="1800" rx="170" ry="50"/><ellipse cx="1010" cy="1772" rx="100" ry="56"/>
+    <ellipse cx="120" cy="1850" rx="150" ry="44"/><ellipse cx="200" cy="1826" rx="90" ry="50"/>
+  </g>
+  <g transform="translate(610 110) rotate(-18)" fill="#1E5AA8" opacity="0.85">
+    <path d="M0 18 L120 12 L150 0 L162 4 L150 18 L162 32 L150 36 L120 24 L0 18 Z"/>
+    <path d="M70 15 L40 -30 L56 -30 L100 14 Z"/><path d="M70 21 L40 66 L56 66 L100 22 Z"/>
+    <path d="M10 17 L-6 -4 L4 -4 L26 16 Z"/><path d="M10 19 L-6 40 L4 40 L26 20 Z"/>
+  </g>
+  <path d="M340 150 C 420 120, 500 130, 590 150" stroke="#FFFFFF" stroke-width="6" stroke-dasharray="4 18" stroke-linecap="round" fill="none" opacity="0.9"/>
+</svg>`;
+let decoration = '';
+
 const css = () => `
 * { box-sizing: border-box; margin: 0; }
 body { width: ${W}px; height: ${H}px; overflow: hidden; background: ${background}; color: #1B2A41;
@@ -48,10 +65,12 @@ h1 em { font-style: normal; color: #FF6B3D; }
 .places { font-size: 48px; text-align: center; margin-top: 28px; line-height: 1.5; white-space: pre-line; }
 .wheel { display: block; margin: 40px auto 0; }
 .rest { color: #6B7A90; }
+.deco { position: absolute; top: 0; left: 0; pointer-events: none; }
+body > *:not(.deco) { position: relative; }
 `;
 
 function page(body) {
-  return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${css()}</style></head><body>${body}</body></html>`;
+  return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${css()}</style></head><body>${decoration}${body}</body></html>`;
 }
 
 // 北を上にした方位盤。吉方位の扇形をオレンジで塗る
@@ -116,6 +135,7 @@ async function main() {
     process.exit(1);
   }
   background = BACKGROUNDS[bgName];
+  decoration = bgName === 'sky' ? SKY_DECO : '';
   const origin = originId && travel.getOrigin(originId);
   if (!dateStr || !origin || !outDir) {
     console.error('使い方: node scripts/sns-reel.js <YYYY-MM-DD> <出発地ID> <出力ディレクトリ>');
