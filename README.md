@@ -17,7 +17,7 @@
 8. **方位マップ画像 `scripts/sns-map.js`**: 出発地から見た今月の最大吉方を日本地図上に塗り、方位にある旅先を番号で示す Instagram 用画像(1080x1350)を、本命星ごとに自動生成します(表紙・お休みの星のまとめ付き)。例: `NODE_PATH=$(npm root -g) node scripts/sns-map.js 2026-10-15 tokyo out/` 背景は既定で「生成りの和紙」(方位盤・星・霞雲・青海波をごく薄く配置、`scripts/washi-bg.js`)。どの星・月でも同じ背景になり、末尾に `plain` を付けると無地になります。
 9. **リール動画 `scripts/sns-reel.js`**: 「自分の星で止めてね」形式の縦長動画(1080x1920・約24秒・MP4)を生成します。フック → 9つの本命星を2秒ずつ(最大吉方を方位盤で表示) → 無料診断への誘導、の構成です。動画のエンコードには optionalDependencies の `ffmpeg-static` を使います(サーバーのデプロイでダウンロードに失敗しても止まらないよう optional にしています)。例: `NODE_PATH=$(npm root -g) node scripts/sns-reel.js 2026-10-15 tokyo out/`(第4引数は背景: washi(既定・カルーセルと共通の和紙) / plain / sunrise / sky / wave)
 10. **漫画リール `scripts/manga-reel.js`**: ChatGPT などで作った4コマの絵(吹き出し・文字なし)に、セリフの吹き出しとテロップを重ねて、和紙背景の縦長リール(1080x1920・MP4)にします。セリフは1つずつ表示し、秒数は文字数から自動で決めます。シナリオ JSON の形式はファイル先頭のコメント参照。例: `NODE_PATH=$(npm root -g) node scripts/manga-reel.js scenario.json out/`
-10. **文字スライド画像 `scripts/sns-images.js`**: マイル術などの文字中心の投稿用に、スライド定義(JSON)から同じデザインの 1080x1350 の JPEG を生成します。Playwright は依存に含めていないため、インストール済みの環境で `NODE_PATH=$(npm root -g) node scripts/sns-images.js slides.json out/` のように実行します。
+11. **文字スライド画像 `scripts/sns-images.js`**: マイル術などの文字中心の投稿用に、スライド定義(JSON)から同じデザインの 1080x1350 の JPEG を生成します。Playwright は依存に含めていないため、インストール済みの環境で `NODE_PATH=$(npm root -g) node scripts/sns-images.js slides.json out/` のように実行します。
 
 ## セットアップ
 
