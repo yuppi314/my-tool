@@ -1,0 +1,16 @@
+{
+  "hook": { "text": "10月、行くなら\n**この方角**♨️", "image": "4.jpg", "sec": 1.5 },
+  "pace": "fast",
+  "cuts": [
+    { "image": "1.jpg", "telop": "旅先、いつも同じ…？",
+      "lines": [{ "who": "ハル", "text": "旅行先が\nいつも同じで…", "pos": "top-left" }] },
+    { "image": "2.jpg", "telop": "**吉方位**で選ぶ旅",
+      "lines": [{ "who": "ミチ先生", "text": "「吉方位」で\n選んでみない？", "pos": "top-right" }] },
+    { "image": "3.jpg", "telop": "二黒土星の10月は**南西**",
+      "lines": [{ "who": "ハル", "text": "私は…南西！", "pos": "top-left" },
+                { "who": "ミチ先生", "text": "東京からなら\n南紀白浜や徳島ね", "pos": "bottom-right" }] },
+    { "image": "4.jpg", "telop": "あなたの星は？",
+      "lines": [{ "who": "ハル", "text": "温泉と海、楽しみ〜！", "pos": "top-left" }] }
+  ],
+  "end": { "title": "あなたの星を\n**コメント**してね", "note": "10月の方角をお返しします🧭\n自宅からの方角は\nプロフィールの無料診断で", "sec": 2.5 }
+}
