@@ -189,7 +189,12 @@ async function main() {
   console.log([out, path.join(outDir, 'reel-cover.jpg')].join('\n'));
 }
 
-main().catch((err) => {
-  console.error(err.message);
-  process.exit(1);
-});
+// 方位盤は星別ショートリール(star-reel.js)でも使う
+module.exports = { wheelSvg };
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err.message);
+    process.exit(1);
+  });
+}
