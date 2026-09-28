@@ -37,7 +37,7 @@ const DESTINATIONS = [
   { name: '東京', lat: 35.681, lon: 139.767, region: 'domestic', airport: '羽田', hint: '明治神宮など都心の杜を巡り、最新の街で刺激を受ける旅に' },
   { name: '八丈島', lat: 33.109, lon: 139.791, region: 'domestic', airport: '八丈島', hint: '東京から飛行機ですぐの南の島。海と温泉でデトックス' },
   { name: '新潟', lat: 37.916, lon: 139.036, region: 'domestic', airport: '新潟', hint: 'お米とお酒、日本海の幸。佐渡へ足をのばすのもおすすめ' },
-  { name: '金沢・加賀', lat: 36.578, lon: 136.648, region: 'domestic', airport: '小松', hint: '兼六園と加賀温泉郷。金箔の街で金運アップの願掛けを' },
+  { name: '金沢・加賀', lat: 36.578, lon: 136.648, region: 'domestic', airport: '小松', hint: '兼六園と加賀温泉郷。金箔の街で金運アップを願う旅に' },
   { name: '富山', lat: 36.695, lon: 137.211, region: 'domestic', airport: '富山', hint: '立山連峰を望む絶景と、きときとの海の幸を味わう旅に' },
   { name: '名古屋・伊勢', hotelKeyword: '伊勢', lat: 35.170, lon: 136.882, region: 'domestic', airport: '中部', hint: '伊勢神宮へのお参りと熱田神宮。食べ歩きも楽しい旅に' },
   { name: '大阪・京都', lat: 34.702, lon: 135.496, region: 'domestic', airport: '伊丹', hint: '京都の寺社巡りと大阪の食。にぎやかな気をもらう旅に' },
