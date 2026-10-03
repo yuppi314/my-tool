@@ -1,0 +1,17 @@
+{
+ "hook": { "text": "五黄土星さん\n10月は**この方角**🧭", "image": "3.jpg", "sec": 1.5 },
+ "pace": "fast",
+ "cuts": [
+  { "image": "1.jpg", "telop": "先生の星は？",
+    "lines": [{ "who": "ハル", "text": "先生は何の星？", "pos": "top-left" },
+              { "who": "ミチ先生", "text": "私は五黄土星よ", "pos": "top-right" }] },
+  { "image": "2.jpg", "telop": "10月は**東と南西**",
+    "lines": [{ "who": "ミチ先生", "text": "10月は東と南西が\n吉方位なの", "pos": "top-right" },
+              { "who": "ハル", "text": "南西の徳島へ\n行きましょう！", "pos": "top-left" }] },
+  { "image": "3.jpg", "telop": "鳴門の渦潮🌊",
+    "lines": [{ "who": "ハル", "text": "迫力すごい〜！", "pos": "top-left" }] },
+  { "image": "4.jpg", "telop": "秋の祖谷へ🍁",
+    "lines": [{ "who": "ミチ先生", "text": "紅葉のかずら橋も\nきれいね", "pos": "top-right" }] }
+ ],
+ "end": { "title": "あなたの星を\n**コメント**してね", "note": "10月の方角をお伝えします🧭\n自宅から見た方角は\nプロフィールのリンクの\n無料診断でチェックしてね", "sec": 2.5 }
+}
