@@ -311,3 +311,8 @@ a.hotel-link {
   text-decoration: none;
 }
 a.hotel-link .pr-label { margin-left: 2px; }
+
+/* 公式LINE への誘導 */
+.line-card { border: 2px solid #06C755; }
+a.line-btn { display: block; text-align: center; background: #06C755; color: #fff; font-weight: 700; font-size: 1.1rem; padding: 14px 16px; border-radius: 999px; text-decoration: none; margin: 12px 0 6px; }
+a.line-btn:active { opacity: 0.85; }

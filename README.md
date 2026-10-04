@@ -19,7 +19,8 @@
 10. **星別ショートリール `scripts/star-reel.js`**: 1つの本命星だけを取り上げる約20秒の縦長リールです(画面8枚前後をクロスフェードでつなぐ)。フック → 星の特徴 → 方位盤 → 旅先を1か所ずつ(距離・マイルの目安・見どころ)→ 旅のポイント → 保存と無料診断への誘導、の構成で、吉方位がない月は「お休みの月」の過ごし方と次の最大吉方を表示します。5・6番目の引数にイラストを渡すと、最初と最後の画面に入ります。例: `NODE_PATH=$(npm root -g) node scripts/star-reel.js 2026-10-15 5 tokyo out/`
 11. **漫画リール `scripts/manga-reel.js`**: ChatGPT などで作った4コマの絵(吹き出し・文字なし)に、セリフの吹き出しとテロップを重ねて、和紙背景の縦長リール(1080x1920・MP4)にします。セリフは1つずつ表示し、秒数は文字数から自動で決めます。シナリオ JSON の形式はファイル先頭のコメント参照。例: `NODE_PATH=$(npm root -g) node scripts/manga-reel.js scenario.json out/`
 12. **リールの表紙 `scripts/reel-cover.js`**: リールのカバー画像(1080x1920)を和紙背景で作ります。プロフィールの一覧で切り取られる縦3:4の範囲に文字と絵を収めます。例: `NODE_PATH=$(npm root -g) node scripts/reel-cover.js out/cover.jpg "2026年10月の吉方位" "**七赤金星**さん\n10月は\n北西へ🧭"`
-13. **文字スライド画像 `scripts/sns-images.js`**: マイル術などの文字中心の投稿用に、スライド定義(JSON)から同じデザインの 1080x1350 の JPEG を生成します。Playwright は依存に含めていないため、インストール済みの環境で `NODE_PATH=$(npm root -g) node scripts/sns-images.js slides.json out/` のように実行します。
+13. **12か月の吉方位カレンダー `scripts/star-calendar.js`**: 公式LINEの登録特典用に、本命星ごとの12か月分の最大吉方を一覧にした画像(1080x1350)を9枚作ります。例: `NODE_PATH=$(npm root -g) node scripts/star-calendar.js 2026-10-15 out/`
+14. **文字スライド画像 `scripts/sns-images.js`**: マイル術などの文字中心の投稿用に、スライド定義(JSON)から同じデザインの 1080x1350 の JPEG を生成します。Playwright は依存に含めていないため、インストール済みの環境で `NODE_PATH=$(npm root -g) node scripts/sns-images.js slides.json out/` のように実行します。
 
 ## セットアップ
 
