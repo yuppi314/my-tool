@@ -169,22 +169,13 @@ async function shoot(browser, html, file, height) {
   fs.rmSync(htmlFile);
 }
 
-async function main() {
-  const [dateStr, starArg, outDir, handle] = process.argv.slice(2);
-  if (!dateStr || !starArg || !outDir) {
-    console.error('使い方: node scripts/night-reel.js <YYYY-MM-DD> <本命星1〜9> <出力ディレクトリ> [@アカウント名]');
-    process.exit(1);
-  }
-  const date = new Date(`${dateStr}T00:00:00`);
-  const id = Number(starArg);
+// 1つの本命星のリール・表紙・フィード画像を出力する(ブラウザは呼び出し側で起動して使い回す)
+async function renderStar(browser, date, id, outDir, handle) {
   const star = kyusei.getStar(id);
   const info = houi.getMonthInfo(date);
   const h = houi.getMonthlyHoui(id, date);
-
-  await prepareFonts();
   fs.mkdirSync(outDir, { recursive: true });
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'night-reel-'));
-  const browser = await chromium.launch();
   const list = scenes(info, star, h, handle);
   const frames = [];
   for (let i = 0; i < list.length; i++) {
@@ -193,7 +184,6 @@ async function main() {
     frames.push(f);
   }
   await shoot(browser, postHtml(info, star, h, handle), path.join(outDir, `night-post-${id}.jpg`), 1350);
-  await browser.close();
   fs.copyFileSync(frames[0], path.join(outDir, `night-reel-${id}-cover.jpg`));
 
   // 各画面を少しずつズームさせ(星空がゆっくり近づく動き)、クロスフェードでつなぐ
@@ -216,10 +206,26 @@ async function main() {
   args.push('-filter_complex', parts.join(';'), '-map', '[vout]', '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-movflags', '+faststart', mp4);
   execFileSync('ffmpeg', args, { stdio: 'ignore' });
   fs.rmSync(tmp, { recursive: true, force: true });
-  console.log(mp4);
+  return mp4;
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+async function main() {
+  const [dateStr, starArg, outDir, handle] = process.argv.slice(2);
+  if (!dateStr || !starArg || !outDir) {
+    console.error('使い方: node scripts/night-reel.js <YYYY-MM-DD> <本命星1〜9> <出力ディレクトリ> [@アカウント名]');
+    process.exit(1);
+  }
+  await prepareFonts();
+  const browser = await chromium.launch();
+  console.log(await renderStar(browser, new Date(`${dateStr}T00:00:00`), Number(starArg), outDir, handle));
+  await browser.close();
+}
+
+module.exports = { prepareFonts, renderStar, page, shoot, W, DIRECTION_LUCK, DISCLAIMER };
+
+if (require.main === module) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
