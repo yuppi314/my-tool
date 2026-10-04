@@ -1,10 +1,11 @@
 // 「夜空 × 金 × 明朝体」デザインの星別リール(1080x1920・約18秒・MP4)と、フィード用画像(1080x1350)を生成する。
 // 紺の星空の背景に金の輪と明朝体の文字で、占いアカウントらしい上品な見た目にする(和紙ベージュのシリーズとは別デザイン)。
-// 構成: フック → 星の性質 → 今月の最大吉方 → 旅先(最大2か所) → 吉方位旅のポイント → 保存とLINEへの誘導。
-// 使い方: node scripts/night-reel.js <基準日 YYYY-MM-DD> <本命星 1〜9> <出発地ID(例: tokyo)> <出力ディレクトリ> [@アカウント名]
+// 構成: フック → 星の性質 → 今月の最大吉方 → 方位ごとの運気 → 吉方位旅のポイント → 保存とLINEへの誘導。
+// 出発地は指定しない(方位は見る人の自宅で決まるため、具体的な旅先はLINEの無料診断で案内する)。
+// 使い方: node scripts/night-reel.js <基準日 YYYY-MM-DD> <本命星 1〜9> <出力ディレクトリ> [@アカウント名]
 // 出力: night-reel-<星>.mp4 / night-reel-<星>-cover.jpg / night-post-<星>.jpg
 // Playwright はリポジトリの依存に含めていないため、インストール済みのものを使う
-// (例: NODE_PATH=$(npm root -g) node scripts/night-reel.js 2026-10-15 8 tokyo out/ @secondlife_50s)。
+// (例: NODE_PATH=$(npm root -g) node scripts/night-reel.js 2026-10-15 8 out/ @secondlife_50s)。
 // 明朝体は初回だけ Google Fonts から Shippori Mincho B1 を ~/.cache/night-reel-fonts に保存する(ネットワーク接続が必要)。
 const fs = require('fs');
 const os = require('os');
@@ -13,7 +14,6 @@ const { execFileSync } = require('child_process');
 const { chromium } = require('playwright');
 const kyusei = require('../src/lib/kyusei');
 const houi = require('../src/lib/houi');
-const travel = require('../src/lib/travel');
 
 const W = 1080;
 const H = 1920;
@@ -94,9 +94,21 @@ function page(body, { h = H, ring = 900 } = {}) {
 <body>${starField(W, h)}${rings}${body}</body></html>`;
 }
 
+// 方位ごとに得られるとされる運気(後天定位盤でその方位に定位する星の象意から)
+const DIRECTION_LUCK = {
+  北: ['信頼', '愛情', '子宝'],
+  北東: ['変化', '貯蓄', '相続'],
+  東: ['発展', '行動力', '若さ'],
+  南東: ['良縁', '信用', '人間関係'],
+  南: ['名誉', '美', 'ひらめき'],
+  南西: ['家庭運', '安定', '勤勉'],
+  西: ['金運', '恋愛', '楽しみ'],
+  北西: ['仕事運', '引き立て', '出世'],
+};
+
 const DISCLAIMER = '※九星気学に基づく傾向です。方位はご自宅の場所で変わります';
 
-function scenes(info, star, h, origin, places, handle) {
+function scenes(info, star, h, handle) {
   const foot = handle ? `<div class="handle">${handle}</div>` : '';
   const blocked = !h.bestDirections.length;
   const list = [
@@ -117,11 +129,10 @@ function scenes(info, star, h, origin, places, handle) {
     list.push(page(`<div class="wrap"><div class="kicker">今月の最大吉方</div>
       <div class="dir">${h.bestDirections.join('・')}</div>
       <div class="lead">年盤・月盤の両方で吉となる\n力の強い方角です</div></div>${foot}`, { ring: 760 }));
-    places.forEach((d, i) => {
-      list.push(page(`<div class="wrap"><div class="kicker">${origin.name}から行くなら ${i + 1}</div>
-        <div class="card"><div class="name">${d.name}</div>
-        <div class="meta">${d.direction}・約${d.distanceKm.toLocaleString()}km<br>${d.miles}</div>
-        <div class="hint">${d.hint}</div></div></div>${foot}`, { ring: 0 }));
+    h.bestDirections.forEach((dir) => {
+      list.push(page(`<div class="wrap"><div class="kicker">${dir}の吉方位でいただける運気</div>
+        <div class="dir" style="font-size:150px">${dir}</div>
+        <div class="chips">${DIRECTION_LUCK[dir].map((k) => `<span class="chip">${k}</span>`).join('')}</div></div>${foot}`, { ring: 0 }));
     });
     list.push(page(`<div class="wrap"><div class="kicker">吉方位旅の心得</div>
       <div class="list">🌙 ${info.period}に出発<br>🌙 自宅から100km以上が目安<br>🌙 温泉と土地の食で気をいただく</div></div>${foot}`, { ring: 0 }));
@@ -132,14 +143,14 @@ function scenes(info, star, h, origin, places, handle) {
   return list;
 }
 
-function postHtml(info, star, h, origin, places, handle) {
+function postHtml(info, star, h, handle) {
   const PH = 1350;
   const blocked = !h.bestDirections.length;
   const body = blocked
     ? `<div class="dir" style="font-size:110px">${h.yearBlocked || h.monthBlocked ? '八方塞がり' : '最大吉方なし'}</div>
        <div class="lead" style="font-size:44px">整える月。次の吉方位旅の計画を</div>`
     : `<div class="dir" style="font-size:150px">${h.bestDirections.join('・')}</div>
-       <div class="lead" style="font-size:42px;margin-top:24px">${origin.name}からなら <span class="gold">${places.map((p) => p.name).join('・')}</span></div>`;
+       <div class="lead" style="font-size:40px;margin-top:20px;line-height:1.6">${h.bestDirections.map((d) => `${d}…<span class="gold">${DIRECTION_LUCK[d].join('・')}</span>`).join('<br>')}</div>`;
   return page(`<div class="wrap" style="padding:0 90px"><div class="kicker" style="font-size:34px">九星気学で見る ${info.label}の吉方位</div>
     <h1 style="font-size:96px;margin-top:36px"><em>${star.name}</em>さん</h1>${body}
     <div class="lead" style="font-size:34px;margin-top:40px;opacity:0.8">${info.period}</div></div>
@@ -159,9 +170,9 @@ async function shoot(browser, html, file, height) {
 }
 
 async function main() {
-  const [dateStr, starArg, originId, outDir, handle] = process.argv.slice(2);
-  if (!dateStr || !starArg || !originId || !outDir) {
-    console.error('使い方: node scripts/night-reel.js <YYYY-MM-DD> <本命星1〜9> <出発地ID> <出力ディレクトリ> [@アカウント名]');
+  const [dateStr, starArg, outDir, handle] = process.argv.slice(2);
+  if (!dateStr || !starArg || !outDir) {
+    console.error('使い方: node scripts/night-reel.js <YYYY-MM-DD> <本命星1〜9> <出力ディレクトリ> [@アカウント名]');
     process.exit(1);
   }
   const date = new Date(`${dateStr}T00:00:00`);
@@ -169,21 +180,19 @@ async function main() {
   const star = kyusei.getStar(id);
   const info = houi.getMonthInfo(date);
   const h = houi.getMonthlyHoui(id, date);
-  const origin = travel.getOrigin(originId);
-  const places = travel.recommend(origin, h.bestDirections, 2).filter((d) => d.region === 'domestic').slice(0, 2);
 
   await prepareFonts();
   fs.mkdirSync(outDir, { recursive: true });
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'night-reel-'));
   const browser = await chromium.launch();
-  const list = scenes(info, star, h, origin, places, handle);
+  const list = scenes(info, star, h, handle);
   const frames = [];
   for (let i = 0; i < list.length; i++) {
     const f = path.join(tmp, `s${i}.jpg`);
     await shoot(browser, list[i], f, H);
     frames.push(f);
   }
-  await shoot(browser, postHtml(info, star, h, origin, places, handle), path.join(outDir, `night-post-${id}.jpg`), 1350);
+  await shoot(browser, postHtml(info, star, h, handle), path.join(outDir, `night-post-${id}.jpg`), 1350);
   await browser.close();
   fs.copyFileSync(frames[0], path.join(outDir, `night-reel-${id}-cover.jpg`));
 
