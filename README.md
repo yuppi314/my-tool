@@ -18,7 +18,8 @@
 9. **リール動画 `scripts/sns-reel.js`**: 「自分の星で止めてね」形式の縦長動画(1080x1920・約24秒・MP4)を生成します。フック → 9つの本命星を2秒ずつ(最大吉方を方位盤で表示) → 無料診断への誘導、の構成です。動画のエンコードには optionalDependencies の `ffmpeg-static` を使います(サーバーのデプロイでダウンロードに失敗しても止まらないよう optional にしています)。例: `NODE_PATH=$(npm root -g) node scripts/sns-reel.js 2026-10-15 tokyo out/`(第4引数は背景: washi(既定・カルーセルと共通の和紙) / plain / sunrise / sky / wave)
 10. **星別ショートリール `scripts/star-reel.js`**: 1つの本命星だけを取り上げる約14秒の縦長リールです。フック「〇〇さん、10月はこの方角へ」→ 方位盤 → 旅先のヒント(距離・マイルの目安・見どころ)→ 保存と無料診断への誘導、の構成で、吉方位がない月は「お休みの月」の過ごし方と次の最大吉方を表示します。例: `NODE_PATH=$(npm root -g) node scripts/star-reel.js 2026-10-15 5 tokyo out/`
 11. **漫画リール `scripts/manga-reel.js`**: ChatGPT などで作った4コマの絵(吹き出し・文字なし)に、セリフの吹き出しとテロップを重ねて、和紙背景の縦長リール(1080x1920・MP4)にします。セリフは1つずつ表示し、秒数は文字数から自動で決めます。シナリオ JSON の形式はファイル先頭のコメント参照。例: `NODE_PATH=$(npm root -g) node scripts/manga-reel.js scenario.json out/`
-12. **文字スライド画像 `scripts/sns-images.js`**: マイル術などの文字中心の投稿用に、スライド定義(JSON)から同じデザインの 1080x1350 の JPEG を生成します。Playwright は依存に含めていないため、インストール済みの環境で `NODE_PATH=$(npm root -g) node scripts/sns-images.js slides.json out/` のように実行します。
+12. **リールの表紙 `scripts/reel-cover.js`**: リールのカバー画像(1080x1920)を和紙背景で作ります。プロフィールの一覧で切り取られる縦3:4の範囲に文字と絵を収めます。例: `NODE_PATH=$(npm root -g) node scripts/reel-cover.js out/cover.jpg "2026年10月の吉方位" "**七赤金星**さん\n10月は\n北西へ🧭"`
+13. **文字スライド画像 `scripts/sns-images.js`**: マイル術などの文字中心の投稿用に、スライド定義(JSON)から同じデザインの 1080x1350 の JPEG を生成します。Playwright は依存に含めていないため、インストール済みの環境で `NODE_PATH=$(npm root -g) node scripts/sns-images.js slides.json out/` のように実行します。
 
 ## セットアップ
 
