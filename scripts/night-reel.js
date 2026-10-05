@@ -88,10 +88,24 @@ function starField(w, h, seed = 7) {
   return `<svg class="stars" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${dots.join('')}</svg>`;
 }
 
-function page(body, { h = H, ring = 900 } = {}) {
+// 環境変数 NIGHT_CHARA にキャラクターの画像を指定すると、右下の隅に金の縁の丸で入れる(chara: false のページには入れない)。
+// 透明PNGならそのまま、背景つきの絵なら丸く切り抜いて見せる。アカウント名と注意書きはキャラクターに重ならないよう左に寄せる。
+function charaHtml(h) {
+  const img = process.env.NIGHT_CHARA;
+  if (!img) return '';
+  const size = h >= 1900 ? 300 : 230;
+  const bottom = h >= 1900 ? 130 : 30;
+  return `<style>.note { text-align: left; padding: 0 ${size + 50}px 0 60px; font-size: 21px; }
+  .handle { text-align: left; padding-left: 60px; }</style>
+<div style="position:absolute;right:36px;bottom:${bottom}px;width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;
+  border:5px solid #E8C872;box-shadow:0 0 30px rgba(232,200,114,0.45);background:#172256">
+  <img src="file://${path.resolve(img)}" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block"></div>`;
+}
+
+function page(body, { h = H, ring = 900, chara = true } = {}) {
   const rings = ring ? `<div class="ring" style="width:${ring}px;height:${ring}px"></div><div class="ring inner" style="width:${ring - 50}px;height:${ring - 50}px"></div>` : '';
   return `<!doctype html><html lang="ja"><head><meta charset="utf-8">${FONT}<style>:root{--h:${h}px}${CSS}</style></head>
-<body>${starField(W, h)}${rings}${body}</body></html>`;
+<body>${starField(W, h)}${rings}${body}${chara ? charaHtml(h) : ''}</body></html>`;
 }
 
 // 方位ごとに得られるとされる運気(後天定位盤でその方位に定位する星の象意から)

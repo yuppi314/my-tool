@@ -25,7 +25,7 @@ async function main() {
     const html = page(`<div class="wrap">
       <div style="font-size:200px;line-height:1">${esc(icon)}</div>
       <div style="font-size:${size}px;font-weight:800;color:#E8C872;margin-top:36px;letter-spacing:0.06em">${esc(label)}</div>
-    </div>`, { ring: 760 });
+    </div>`, { ring: 760, chara: false });
     const file = path.join(outDir, `highlight-${String(i + 1).padStart(2, '0')}.jpg`);
     await shoot(browser, html, file, 1920);
     console.log(file);

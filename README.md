@@ -17,7 +17,7 @@
 8. **方位マップ画像 `scripts/sns-map.js`**: 出発地から見た今月の最大吉方を日本地図上に塗り、方位にある旅先を番号で示す Instagram 用画像(1080x1350)を、本命星ごとに自動生成します(表紙・お休みの星のまとめ付き)。例: `NODE_PATH=$(npm root -g) node scripts/sns-map.js 2026-10-15 tokyo out/`
 9. **文字スライド画像 `scripts/sns-images.js`**: マイル術などの文字中心の投稿用に、スライド定義(JSON)から同じデザインの 1080x1350 の JPEG を生成します。Playwright は依存に含めていないため、インストール済みの環境で `NODE_PATH=$(npm root -g) node scripts/sns-images.js slides.json out/` のように実行します。
 
-10. **夜空デザインの月間素材 `scripts/night-month.js`**: 紺の星空 × 金 × 明朝体のデザインで、1か月分の投稿素材をまとめて出力します。9つの本命星それぞれのリール(MP4・約10〜17秒)とリール表紙・フィード画像、カルーセル1枚目の「9つの星の吉方位まとめ」、Instagram・Threads・LINEにそのまま貼れる文面(`captions.md`)です。出発地は指定せず、方位ごとの運気だけを見せ、具体的な旅先はLINEの無料診断に誘導します。例: `NODE_PATH=$(npm root -g) node scripts/night-month.js 2026-11-15 sns-out/night/2026-11 @secondlife_50s`(1つの星だけなら `scripts/night-reel.js 2026-11-15 4 out/`)。明朝体は初回だけ Google Fonts から `~/.cache/night-reel-fonts` に保存します。
+10. **夜空デザインの月間素材 `scripts/night-month.js`**: 紺の星空 × 金 × 明朝体のデザインで、1か月分の投稿素材をまとめて出力します。9つの本命星それぞれのリール(MP4・約10〜17秒)とリール表紙・フィード画像、カルーセル1枚目の「9つの星の吉方位まとめ」、Instagram・Threads・LINEにそのまま貼れる文面(`captions.md`)です。出発地は指定せず、方位ごとの運気だけを見せ、具体的な旅先はLINEの無料診断に誘導します。例: `NODE_PATH=$(npm root -g) node scripts/night-month.js 2026-11-15 sns-out/night/2026-11 @secondlife_50s`(1つの星だけなら `scripts/night-reel.js 2026-11-15 4 out/`)。明朝体は初回だけ Google Fonts から `~/.cache/night-reel-fonts` に保存します。環境変数 `NIGHT_CHARA=<キャラクター画像>` を付けると、リール・投稿画像・文字カルーセルの右下に金の縁の丸でキャラクターが入ります(カレンダー・ハイライト表紙には入れません)。
 11. **LINE特典の吉方位カレンダー `scripts/night-calendar.js`**: 本命星ごとの12か月の最大吉方を一覧にした画像9枚と、まとめたPDF(`calendar-all.pdf`)を出力します。例: `NODE_PATH=$(npm root -g) node scripts/night-calendar.js 2027-02-15 sns-out/night/calendar-2027 @secondlife_50s`
 
 ## セットアップ

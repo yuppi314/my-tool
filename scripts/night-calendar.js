@@ -43,7 +43,7 @@ function html(star, months, handle) {
   <div class="rows">${rows}</div>
   <div class="foot">年盤・月盤ともに吉の「最大吉方」です。方角はご自宅から見て判断します。<br>
   ※九星気学に基づく傾向です。旅先は公式LINEの無料診断で${handle ? ` ${handle}` : ''}</div>
-</div>`, { h: H, ring: 0 });
+</div>`, { h: H, ring: 0, chara: false });
 }
 
 async function main() {
