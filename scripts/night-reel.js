@@ -88,18 +88,31 @@ function starField(w, h, seed = 7) {
   return `<svg class="stars" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${dots.join('')}</svg>`;
 }
 
-// 環境変数 NIGHT_CHARA にキャラクターの画像を指定すると、右下の隅に金の縁の丸で入れる(chara: false のページには入れない)。
-// 透明PNGならそのまま、背景つきの絵なら丸く切り抜いて見せる。アカウント名と注意書きはキャラクターに重ならないよう左に寄せる。
+// 環境変数 NIGHT_CHARA にキャラクターの画像を指定すると、右下に入れる(chara: false のページには入れない)。
+// 既定は丸枠なしで、絵の縁を夜空になじむようにぼかして置く(背景つきの絵でも浮かない。透明PNGならそのまま見える)。
+// NIGHT_CHARA_STYLE=circle にすると、金の縁の丸の中に切り抜いて入れる。
+// アカウント名と注意書きはキャラクターに重ならないよう左に寄せる。
 function charaHtml(h) {
   const img = process.env.NIGHT_CHARA;
   if (!img) return '';
-  const size = h >= 1900 ? 300 : 230;
-  const bottom = h >= 1900 ? 130 : 30;
-  return `<style>.note { text-align: left; padding: 0 ${size + 50}px 0 60px; font-size: 21px; }
+  const tall = h >= 1900;
+  const src = `file://${path.resolve(img)}`;
+  if (process.env.NIGHT_CHARA_STYLE === 'circle') {
+    const size = tall ? 300 : 230;
+    const bottom = tall ? 130 : 30;
+    return `<style>.note { text-align: left; padding: 0 ${size + 50}px 0 60px; font-size: 21px; }
   .handle { text-align: left; padding-left: 60px; }</style>
 <div style="position:absolute;right:36px;bottom:${bottom}px;width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;
   border:5px solid #E8C872;box-shadow:0 0 30px rgba(232,200,114,0.45);background:#172256">
-  <img src="file://${path.resolve(img)}" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block"></div>`;
+  <img src="${src}" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block"></div>`;
+  }
+  const width = tall ? 400 : 300;
+  const bottom = tall ? 90 : 0;
+  const fade = 'radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%)';
+  return `<style>.note { text-align: left; padding: 0 ${width - 60}px 0 60px; font-size: 21px; white-space: nowrap; }
+  .handle { text-align: left; padding-left: 60px; }</style>
+<img src="${src}" style="position:absolute;right:10px;bottom:${bottom}px;width:${width}px;height:auto;display:block;
+  -webkit-mask-image:${fade};mask-image:${fade}">`;
 }
 
 function page(body, { h = H, ring = 900, chara = true } = {}) {
@@ -153,7 +166,7 @@ function scenes(info, star, h, handle) {
   }
   list.push(page(`<div class="wrap"><div class="kicker">保存して見返してね</div>
     <h1 style="font-size:84px">あなたの家から見た\n<em>本当の吉方位</em>は</h1>
-    <div class="lead">プロフィールの<span class="gold">公式LINE</span>で\n無料診断できます</div></div>${foot}<div class="note">${DISCLAIMER}</div>`));
+    <div class="lead">プロフィールのリンクの\n<span class="gold">無料診断</span>でチェックしてね</div></div>${foot}<div class="note">${DISCLAIMER}</div>`));
   return list;
 }
 
@@ -162,7 +175,7 @@ function postHtml(info, star, h, handle) {
   const blocked = !h.bestDirections.length;
   const body = blocked
     ? `<div class="dir" style="font-size:110px">${h.yearBlocked || h.monthBlocked ? '八方塞がり' : '最大吉方なし'}</div>
-       <div class="lead" style="font-size:44px">整える月。次の吉方位旅の計画を</div>`
+       <div class="lead" style="font-size:44px">整える月。次の吉方位旅を計画しましょう</div>`
     : `<div class="dir" style="font-size:150px">${h.bestDirections.join('・')}</div>
        <div class="lead" style="font-size:40px;margin-top:20px;line-height:1.6">${h.bestDirections.map((d) => `${d}…<span class="gold">${DIRECTION_LUCK[d].join('・')}</span>`).join('<br>')}</div>`;
   return page(`<div class="wrap" style="padding:0 90px"><div class="kicker" style="font-size:34px">九星気学で見る ${info.label}の吉方位</div>
