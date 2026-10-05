@@ -41,7 +41,7 @@ body { width: ${W}px; height: ${H}px; overflow: hidden; background: #FBF3E6; col
 .bubble { position: absolute; width: max-content; max-width: 760px; background: #fff; border: 5px solid #1B2A41; border-radius: 44px; padding: 26px 38px;
   font-size: 50px; font-weight: 800; line-height: 1.45; white-space: pre-line; box-shadow: 0 6px 0 rgba(27,42,65,0.15); }
 .bubble .who { display: inline-block; font-size: 30px; font-weight: 800; color: #fff; background: #1E5AA8; border-radius: 999px; padding: 2px 18px; margin-bottom: 8px; }
-.bubble.michi .who { background: #FF6B3D; }
+.bubble.guide .who { background: #FF6B3D; }
 .bubble::after { content: ""; position: absolute; width: 36px; height: 36px; background: #fff; border: 5px solid #1B2A41; border-top: 0; border-left: 0; }
 .top-left, .top-right { top: ${PANEL_TOP - 60}px; }
 .bottom-left, .bottom-right { top: auto; bottom: ${H - PANEL_TOP - PANEL - 60}px; }
@@ -72,7 +72,8 @@ function page(body) {
 
 function cutHtml(cut, imgUrl, shown, index, total, handle) {
   const bubbles = cut.lines.slice(0, shown).map((l) => {
-    const who = l.who === 'ミチ先生' || l.who === 'ミチ' ? 'michi' : '';
+    // 教わる役のハルさんは青、案内役(ハルさん以外)はオレンジの名札にする
+    const who = l.who === 'ハル' || l.who === 'ハルさん' ? '' : 'guide';
     return `<div class="bubble ${who} ${l.pos || 'top-left'}"><div class="who">${esc(l.who)}</div><br>${rich(l.text)}</div>`;
   }).join('');
   return page(`
