@@ -12,7 +12,7 @@ const { prepareFonts, page, shoot, DISCLAIMER } = require('./night-reel');
 const H = 1350;
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 // 「**強調**」を金色にする
-const rich = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<em>$1</em>');
+const rich = (s) => esc(s).replace(/\*\*([\s\S]+?)\*\*/g, '<em>$1</em>');
 
 const STYLE = `<style>
 .body { margin-top: 44px; width: 100%; text-align: left; }

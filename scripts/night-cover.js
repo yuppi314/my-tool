@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
 const { prepareFonts, page, shoot } = require('./night-reel');
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const rich = (s) => esc(s).replace(/\\n/g, '\n').replace(/\*\*(.+?)\*\*/g, '<em>$1</em>');
+const rich = (s) => esc(s).replace(/\\n/g, '\n').replace(/\*\*([\s\S]+?)\*\*/g, '<em>$1</em>');
 
 async function main() {
   const [out, kicker, title, img, handle] = process.argv.slice(2);
