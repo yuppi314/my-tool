@@ -12,6 +12,11 @@ const { prepareFonts, page, shoot, W } = require('./night-reel');
 
 const H = 1350;
 
+// 実務者の確認で直した期間表記(節入り日は年によって1日前後ずれるため)。キーは h.label
+const PERIOD_OVERRIDE = {
+  '2027年11月': '11/8〜12/6', // 2027年の立冬は11/8(2026-10-05 確認)
+};
+
 const STYLE = `<style>
 .cal { position: absolute; inset: 0; padding: 60px 80px; display: flex; flex-direction: column; align-items: center; }
 .rows { margin-top: 26px; width: 100%; border: 2px solid rgba(232,200,114,0.7); border-radius: 24px; padding: 6px 32px; background: rgba(11,18,51,0.85); }
@@ -57,7 +62,7 @@ async function main() {
     for (let i = 0; i < 12; i++) {
       // 各節月の15日は必ず節入り後
       const h = houi.getMonthlyHoui(id, new Date(start.calendarYear, start.setsuMonth - 1 + i, 15));
-      months.push({ label: h.label, period: h.period, best: h.bestDirections, blocked: h.yearBlocked || h.monthBlocked });
+      months.push({ label: h.label, period: PERIOD_OVERRIDE[h.label] || h.period, best: h.bestDirections, blocked: h.yearBlocked || h.monthBlocked });
     }
     const file = path.join(outDir, `calendar-${id}.jpg`);
     await shoot(browser, html(kyusei.getStar(id), months, handle), file, H);
