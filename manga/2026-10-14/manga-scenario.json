@@ -1,0 +1,16 @@
+{
+  "hook": { "text": "七赤金星さん\n10月は**北西**へ🧭", "image": "4.jpg", "sec": 1.5 },
+  "pace": "fast",
+  "cuts": [
+    { "image": "1.jpg", "telop": "仕事、がんばりたい…",
+      "lines": [{ "who": "ハル", "text": "最近、仕事で\n認めてほしくて…", "pos": "top-left" }] },
+    { "image": "2.jpg", "telop": "七赤金星の10月は",
+      "lines": [{ "who": "あかり", "text": "10月の最大吉方は\n**北西**よ", "pos": "top-right" },
+                { "who": "ハル", "text": "北西って\nどんな運？", "pos": "top-left" }] },
+    { "image": "3.jpg", "telop": "北西＝仕事運・引き立て",
+      "lines": [{ "who": "あかり", "text": "仕事運や\n引き立て運とされるの", "pos": "top-right" }] },
+    { "image": "4.jpg", "telop": "たとえば東京からなら金沢",
+      "lines": [{ "who": "ハル", "text": "北西の旅で\n運気を味方に！", "pos": "top-left" }] }
+  ],
+  "end": { "title": "あなたの星を\n**コメント**してね", "note": "10月の方角をお伝えします🧭\n自宅から見た方角は\nプロフィールのリンクの\n無料診断でチェックしてね", "sec": 2.5 }
+}
