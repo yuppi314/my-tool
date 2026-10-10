@@ -42,6 +42,11 @@ body { width: ${W}px; height: ${H}px; overflow: hidden; background: #FBF3E6; col
   font-size: 50px; font-weight: 800; line-height: 1.45; white-space: pre-line; box-shadow: 0 6px 0 rgba(27,42,65,0.15); }
 .bubble .who { display: inline-block; font-size: 30px; font-weight: 800; color: #fff; background: #1E5AA8; border-radius: 999px; padding: 2px 18px; margin-bottom: 8px; }
 .bubble.guide .who { background: #FF6B3D; }
+/* 名前は出さず、枠の色で話す人を見分ける(案内役=オレンジ、ハルさん=青) */
+.bubble.noname { border-color: #1E5AA8; }
+.bubble.noname.guide { border-color: #FF6B3D; }
+.bubble.noname.guide::after { border-color: #FF6B3D; }
+.bubble.noname:not(.guide)::after { border-color: #1E5AA8; }
 .bubble em { font-style: normal; color: #FF6B3D; }
 .bubble::after { content: ""; position: absolute; width: 36px; height: 36px; background: #fff; border: 5px solid #1B2A41; border-top: 0; border-left: 0; }
 .top-left, .top-right { top: ${PANEL_TOP - 60}px; }
@@ -71,11 +76,13 @@ function page(body) {
   return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${CSS}</style></head><body>${washiLayer(W, H, 'reel')}${body}</body></html>`;
 }
 
-function cutHtml(cut, imgUrl, shown, index, total, handle) {
+function cutHtml(cut, imgUrl, shown, index, total, handle, showNames) {
   const bubbles = cut.lines.slice(0, shown).map((l) => {
     // 教わる役のハルさんは青、案内役(ハルさん以外)はオレンジの名札にする
     const who = l.who === 'ハル' || l.who === 'ハルさん' ? '' : 'guide';
-    return `<div class="bubble ${who} ${l.pos || 'top-left'}"><div class="who">${esc(l.who)}</div><br>${rich(l.text)}</div>`;
+    // 吹き出しに名前は出さない(ユーザーの希望)。"showNames": true のときだけ名札を付ける
+    const label = showNames ? `<div class="who">${esc(l.who)}</div><br>` : '';
+    return `<div class="bubble ${who} ${showNames ? '' : 'noname'} ${l.pos || 'top-left'}">${label}${rich(l.text)}</div>`;
   }).join('');
   return page(`
 <div class="telop"><div>${rich(cut.telop || '')}</div></div>
@@ -141,7 +148,7 @@ async function main() {
     const steps = [{ shown: 0, sec: pace.blank }, ...lines.map((l, n) => ({ shown: n + 1, sec: readSec(l.text, pace) }))];
     const total = steps.reduce((a, s) => a + s.sec, 0);
     const k = cut.sec ? cut.sec / total : 1;
-    steps.forEach((s) => scenes.push({ html: cutHtml({ ...cut, lines }, url, s.shown, i, spec.cuts.length, handle), sec: s.sec * k }));
+    steps.forEach((s) => scenes.push({ html: cutHtml({ ...cut, lines }, url, s.shown, i, spec.cuts.length, handle, spec.showNames === true), sec: s.sec * k }));
   });
   if (spec.end) scenes.push({ html: endHtml(spec.end, handle), sec: spec.end.sec || END_SEC });
 
