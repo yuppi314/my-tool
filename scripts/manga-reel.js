@@ -42,6 +42,7 @@ body { width: ${W}px; height: ${H}px; overflow: hidden; background: #FBF3E6; col
   font-size: 50px; font-weight: 800; line-height: 1.45; white-space: pre-line; box-shadow: 0 6px 0 rgba(27,42,65,0.15); }
 .bubble .who { display: inline-block; font-size: 30px; font-weight: 800; color: #fff; background: #1E5AA8; border-radius: 999px; padding: 2px 18px; margin-bottom: 8px; }
 .bubble.guide .who { background: #FF6B3D; }
+.bubble em { font-style: normal; color: #FF6B3D; }
 .bubble::after { content: ""; position: absolute; width: 36px; height: 36px; background: #fff; border: 5px solid #1B2A41; border-top: 0; border-left: 0; }
 .top-left, .top-right { top: ${PANEL_TOP - 60}px; }
 .bottom-left, .bottom-right { top: auto; bottom: ${H - PANEL_TOP - PANEL - 60}px; }
