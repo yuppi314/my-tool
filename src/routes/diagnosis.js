@@ -7,6 +7,7 @@ const { geocode, toOrigin } = require('../lib/geocode');
 const { getActiveSubscription, hasPremiumAccess } = require('../lib/access');
 const affiliates = require('../data/affiliates');
 const { paymentsEnabled } = require('../lib/payments');
+const { syncLead } = require('../lib/leadSync');
 
 const router = express.Router();
 
@@ -67,6 +68,7 @@ router.post('/diagnosis', (req, res) => {
 
   if (email) {
     db.prepare(`INSERT INTO leads (email, name, birthdate) VALUES (?, ?, ?)`).run(email, name || null, birthdate);
+    syncLead({ diagnosisId: id, email, name, birthdate, star: profile.honmeiId, origin });
   }
 
   // 結果ページのURLにも本命星と丸めた地点を載せ、DBが消えても(無料プランの再起動など)無料結果を再表示できるようにする

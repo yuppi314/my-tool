@@ -292,3 +292,6 @@ footer.legal a { color: var(--text-dim); }
 .brand { display: inline-block; font-size: 0.85rem; font-weight: 700; color: #fff; background: var(--accent-soft); border-radius: 999px; padding: 4px 16px; margin-bottom: 10px; text-decoration: none; }
 .back-link { text-align: center; }
 .coming-soon { font-size: 0.9rem; color: var(--text-dim); }
+
+/* 法的ページで事業者情報が未設定の項目(環境変数 OPERATOR_* を設定すると消える) */
+.unset { color: #c0392b; font-weight: bold; }

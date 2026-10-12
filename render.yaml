@@ -19,3 +19,19 @@ services:
         value: 480
       - key: ADMIN_TOKEN
         sync: false
+      - key: OPERATOR_NAME
+        sync: false
+      - key: OPERATOR_REPRESENTATIVE
+        sync: false
+      - key: OPERATOR_ADDRESS
+        sync: false
+      - key: OPERATOR_PHONE
+        sync: false
+      - key: OPERATOR_EMAIL
+        sync: false
+      - key: LEGAL_ENACTED_DATE
+        sync: false
+      - key: LEADS_WEBHOOK_URL
+        sync: false
+      - key: LEADS_WEBHOOK_SECRET
+        sync: false
