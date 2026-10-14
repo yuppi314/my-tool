@@ -72,8 +72,52 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 // 「**強調**」だけオレンジにする
 const rich = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<em>$1</em>');
 
+// 夜空テーマ("theme": "night"): 紺のグラデーションと星。文字は白、強調は金色にする
+const NIGHT_CSS = `
+body { background: linear-gradient(180deg, #16225C 0%, #0A0F2E 100%); color: #F5F0E6; font-family: "Shippori Mincho B1", "Noto Serif CJK JP", serif; }
+.telop em, h1 em { color: #E8C872; }
+.panel { border-color: #E8C872; background: #E8C872; box-shadow: 0 0 40px rgba(232,200,114,0.35); }
+.count, .handle { color: #C8CCDE; }
+.bubble { color: #1B2A41; font-family: "Hiragino Sans", "Noto Sans CJK JP", sans-serif; }
+.tip-kicker { display: inline-block; font-size: 40px; color: #E8C872; border-top: 2px solid #E8C872; border-bottom: 2px solid #E8C872; padding: 10px 30px; }
+.tip-ring { position: absolute; left: 120px; top: 520px; width: 840px; height: 840px; border-radius: 50%; border: 4px solid #E8C872; box-shadow: inset 0 0 0 22px transparent, 0 0 0 1px rgba(232,200,114,0.2); }
+`;
+let THEME = 'washi';
+// 明朝体(night-reel.js が ~/.cache/night-reel-fonts に取得したもの)があれば埋め込む
+function nightFontCss() {
+  const dir = path.join(os.homedir(), '.cache', 'night-reel-fonts');
+  return [['500', 'ShipporiMinchoB1-500.ttf'], ['800', 'ShipporiMinchoB1-800.ttf']].map(([w, f]) => {
+    const file = path.join(dir, f);
+    if (!fs.existsSync(file)) return '';
+    return `@font-face{font-family:"Shippori Mincho B1";font-weight:${w};src:url(data:font/ttf;base64,${fs.readFileSync(file).toString('base64')})}`;
+  }).join('');
+}
+let FONT_CSS = '';
+function starField() {
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32);
+  const dots = Array.from({ length: 220 }, () => {
+    const x = rnd() * W, y = rnd() * H, r = rnd() < 0.8 ? 1 : 2, o = 0.4 + rnd() * 0.6;
+    return `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r}" fill="#fff" opacity="${o.toFixed(2)}"/>`;
+  }).join('');
+  return `<svg width="${W}" height="${H}" style="position:absolute;top:0;left:0">${dots}</svg>`;
+}
 function page(body) {
+  if (THEME === 'night') {
+    return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${FONT_CSS}${CSS}${NIGHT_CSS}</style></head><body>${starField()}${body}</body></html>`;
+  }
   return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${CSS}</style></head><body>${washiLayer(W, H, 'reel')}${body}</body></html>`;
+}
+
+// アドバイスの画面("tips": [{ "kicker": "北西への旅", "title": "格式のある\n神社仏閣へ", "note": "…" }])
+function tipHtml(tip, handle) {
+  return page(`<div class="tip-ring"></div>
+<div class="center" style="text-align:center;align-items:center">
+  <div class="tip-kicker">${esc(tip.kicker || '')}</div>
+  <h1 style="font-size:84px;margin-top:60px">${rich(tip.title)}</h1>
+  <div class="lead" style="font-size:44px">${rich(tip.note || '')}</div>
+</div>
+<div class="handle">${esc(handle)}</div>`);
 }
 
 function cutHtml(cut, imgUrl, shown, index, total, handle, showNames) {
@@ -124,6 +168,8 @@ async function main() {
     process.exit(1);
   }
   const spec = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  THEME = spec.theme || 'washi';
+  if (THEME === 'night') FONT_CSS = nightFontCss();
   const handle = spec.handle || '@secondlife_50s';
   const base = path.dirname(path.resolve(jsonPath));
   const imgUrl = (p) => {
@@ -150,6 +196,7 @@ async function main() {
     const k = cut.sec ? cut.sec / total : 1;
     steps.forEach((s) => scenes.push({ html: cutHtml({ ...cut, lines }, url, s.shown, i, spec.cuts.length, handle, spec.showNames === true), sec: s.sec * k }));
   });
+  (spec.tips || []).forEach((t) => scenes.push({ html: tipHtml(t, handle), sec: t.sec || 2.2 }));
   if (spec.end) scenes.push({ html: endHtml(spec.end, handle), sec: spec.end.sec || END_SEC });
 
   const browser = await chromium.launch();
