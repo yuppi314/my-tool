@@ -44,7 +44,8 @@ async function init() {
     if (data.subscribed) setupCancel(data.cancelAtPeriodEnd);
   } else {
     statusLine.textContent = `${data.star.name}のあなたの、今月の吉方位とおすすめ旅先です。`;
-    document.getElementById('locked-card').style.display = 'block';
+    // 12か月カレンダーは公式LINEのプレゼントにしたため、有料の案内は出さない
+    // document.getElementById('locked-card').style.display = 'block';
     if (!data.paymentsEnabled) {
       document.getElementById('coming-soon').style.display = 'block';
       document.getElementById('subscribe-btn').style.display = 'none';
