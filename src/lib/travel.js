@@ -85,7 +85,17 @@ function isInJapan(lat, lon) {
   return Number.isFinite(lat) && Number.isFinite(lon) && lat >= 20 && lat <= 46 && lon >= 122 && lon <= 154;
 }
 
+function getDestination(name) {
+  return DESTINATIONS.find((d) => d.name === name) || null;
+}
+
+function listDestinations() {
+  return DESTINATIONS.map(({ name, region }) => ({ name, region }));
+}
+
 module.exports = {
+  getDestination,
+  listDestinations,
   MIN_DISTANCE_KM,
   distanceKm,
   bearingDeg,

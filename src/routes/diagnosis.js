@@ -70,7 +70,7 @@ router.post('/diagnosis', (req, res) => {
   }
 
   // 結果ページのURLにも本命星と丸めた地点を載せ、DBが消えても(無料プランの再起動など)無料結果を再表示できるようにする
-  res.json({ id, s: profile.honmeiId, lat: origin.lat, lon: origin.lon, o: origin.name });
+  res.json({ id, s: profile.honmeiId, m: profile.getsumeiId, lat: origin.lat, lon: origin.lon, o: origin.name });
 });
 
 // 無料結果: 今月の吉方位と、方位ごとのおすすめ旅先(上位3件)
@@ -91,7 +91,7 @@ router.get('/diagnosis/:id', (req, res) => {
       subscribed: false,
       cancelAtPeriodEnd: false,
       ...common,
-      ...content.buildFreeResult(content.profileFromStar(star), origin),
+      ...content.buildFreeResult(content.profileFromStar(star, Number(req.query.m)), origin),
     });
   }
 
@@ -105,6 +105,45 @@ router.get('/diagnosis/:id', (req, res) => {
     ...common,
     ...content.buildFreeResult(profile, originOf(row)),
   });
+});
+
+// 旅の計画: URL の本命星(s)・月命星(m)・地点(lat/lon/o)から計算する(DB には保存しない)
+function profileAndOrigin(q) {
+  const star = Number(q.s);
+  const origin = toOrigin(q.o, q.lat, q.lon);
+  if (!Number.isInteger(star) || star < 1 || star > 9 || !origin) return null;
+  return { profile: content.profileFromStar(star, Number(q.m)), origin };
+}
+
+router.get('/destinations', (req, res) => res.json({ destinations: travel.listDestinations() }));
+
+// 出かける日が決まっている → その日に行くとよい方位と旅先
+router.get('/plan/date', (req, res) => {
+  const po = profileAndOrigin(req.query);
+  if (!po) return res.status(400).json({ error: '診断結果のページから使ってください。' });
+  if (!isValidDateStr(req.query.date)) return res.status(400).json({ error: '日付を選んでください。' });
+  const [y, m, d] = req.query.date.split('-').map(Number);
+  res.json(content.planByDate(po.profile, po.origin, new Date(y, m - 1, d)));
+});
+
+// 行きたい場所がある → いつ行くとよいか(旅先の一覧から選ぶか、国内の地名を検索)
+router.get('/plan/place', async (req, res) => {
+  const po = profileAndOrigin(req.query);
+  if (!po) return res.status(400).json({ error: '診断結果のページから使ってください。' });
+  let place = req.query.dest ? travel.getDestination(String(req.query.dest)) : null;
+  const q = String(req.query.q || '').trim();
+  if (!place && q) {
+    if (q.length > 100) return res.status(400).json({ error: '場所の名前が長すぎます。' });
+    try {
+      const g = await geocode(q);
+      if (g) place = { name: q, lat: g.lat, lon: g.lon };
+    } catch (err) {
+      console.error('geocode error:', err.message);
+      return res.status(502).json({ error: '場所の検索に失敗しました。一覧から選ぶか、時間をおいて試してください。' });
+    }
+  }
+  if (!place) return res.status(404).json({ error: '場所が見つかりませんでした。市区町村名や観光地の名前で試してください。' });
+  res.json(content.planByPlace(po.profile, po.origin, place));
 });
 
 // 12ヶ月の吉方位カレンダー(有料会員限定)

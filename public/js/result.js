@@ -17,7 +17,7 @@ if (!diagnosisId) {
 
 async function init() {
   // URLの本命星・地点も渡し、サーバーに記録が残っていなくても無料結果を表示できるようにする
-  const query = new URLSearchParams({ s: params.get('s') || '', lat: params.get('lat') || '', lon: params.get('lon') || '', o: params.get('o') || '' });
+  const query = new URLSearchParams({ s: params.get('s') || '', m: params.get('m') || '', lat: params.get('lat') || '', lon: params.get('lon') || '', o: params.get('o') || '' });
   const res = await fetch(`/api/diagnosis/${encodeURIComponent(diagnosisId)}?${query}`);
   const data = await res.json();
   if (!res.ok) {
@@ -31,7 +31,9 @@ async function init() {
   document.getElementById('r-color').textContent = data.star.color || '';
   document.getElementById('r-keywords').innerHTML = (data.star.keyword || '').split('・')
     .map((k) => `<span class="chip">${escapeHtml(k)}</span>`).join('');
+  renderGetsumei(data.getsumei);
   renderToday(data.today);
+  setupPlan();
   renderCompatible(data.compatible || []);
 
   renderMonth(data.month);
@@ -56,6 +58,90 @@ async function init() {
 
 function luckRow(d) {
   return `<div class="luck-row"><span class="dest-dir">${escapeHtml(d.direction)}</span><span>${escapeHtml(d.luck)}の運気とされます</span></div>`;
+}
+
+function renderGetsumei(g) {
+  if (!g) return;
+  document.getElementById('getsumei-box').style.display = 'block';
+  document.getElementById('g-star').textContent = g.name;
+  document.getElementById('g-keywords').innerHTML = g.keyword.split('・').map((k) => `<span class="chip">${escapeHtml(k)}</span>`).join('');
+  document.getElementById('g-note').textContent = g.note;
+}
+
+// ===== 旅の計画(出かける日から / 行きたい場所から) =====
+const LINE_URL = 'https://lin.ee/v27SJz85';
+function planQuery(extra) {
+  return new URLSearchParams({ s: params.get('s') || '', m: params.get('m') || '', lat: params.get('lat') || '',
+    lon: params.get('lon') || '', o: params.get('o') || '', ...extra });
+}
+async function fetchPlan(path, extra) {
+  const err = document.getElementById('plan-error');
+  err.textContent = '';
+  const res = await fetch(`/api/plan/${path}?${planQuery(extra)}`);
+  const data = await res.json();
+  if (!res.ok) { err.textContent = data.error || '調べられませんでした。'; return null; }
+  return data;
+}
+function renderPlanDate(d) {
+  let html = `<div class="plan-head">${escapeHtml(d.dateLabel)} は「${escapeHtml(d.monthLabel)}(${escapeHtml(d.period)})」の期間です</div>`;
+  if (d.blocked || !d.best.length) {
+    html += `<p>${escapeHtml(d.message)}</p>`;
+  } else {
+    html += '<p class="sub-label">この期間の最大吉方(◎はその日も吉の方角)</p>';
+    html += d.best.map((b) => `<div class="luck-row"><span class="dest-dir">${escapeHtml(b.direction)}</span><span>${b.dayGood ? '◎ ' : ''}${escapeHtml(b.luck)}の運気とされます</span></div>`).join('');
+    if (d.destinations.length) html += '<div class="sub-label" style="margin-top:12px;">ご自宅から行ける旅先</div>' + d.destinations.map(destinationHtml).join('');
+  }
+  if (!d.dayBlocked && d.dayDirections.length) {
+    html += `<p class="board-legend">その日だけで見た吉方位(日帰りの目安): ${d.dayDirections.map((x) => escapeHtml(x.direction)).join('・')}</p>`;
+  }
+  document.getElementById('plan-date-result').innerHTML = html;
+}
+function renderPlanPlace(p) {
+  let html = `<div class="plan-head">${escapeHtml(p.place)} は、ご自宅から <span class="dest-dir">${escapeHtml(p.direction)}</span> 約${p.distanceKm.toLocaleString()}km</div>`;
+  html += `<p class="sub-label">${escapeHtml(p.direction)}は「${escapeHtml(p.luck)}」の運気とされる方角です。</p>`;
+  if (p.tooClose) html += '<p class="sub-label">※吉方位旅は、ご自宅から100km以上離れた場所が目安とされます。</p>';
+  if (p.months.length) {
+    html += `<p>この先${p.freeMonths}か月で行くといい時期</p>` + p.months.map((m) =>
+      `<div class="luck-row"><span class="dest-dir">◎</span><span><strong>${escapeHtml(m.label)}</strong>(${escapeHtml(m.period)})</span></div>`).join('');
+  } else {
+    html += `<p>この先${p.freeMonths}か月は、${escapeHtml(p.direction)}が最大吉方になる月はありません。</p>`;
+  }
+  if (p.moreCount) {
+    html += `<div class="more-box">この先12か月では、ほかに<strong>${p.moreCount}回</strong>チャンスがあります🌙<br>12か月ぶんは、公式LINEのプレゼント「吉方位カレンダー」でチェックしてね<a class="line-btn" href="${LINE_URL}" target="_blank" rel="noopener">LINEで受け取る（無料）</a></div>`;
+  } else if (!p.months.length) {
+    html += '<p class="sub-label">この先1年は、この方角に吉方位が巡りません。ほかの旅先も調べてみてね。</p>';
+  }
+  document.getElementById('plan-place-result').innerHTML = html;
+}
+async function setupPlan() {
+  document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('active', x === t));
+    document.getElementById('tab-date').style.display = t.dataset.tab === 'date' ? 'block' : 'none';
+    document.getElementById('tab-place').style.display = t.dataset.tab === 'place' ? 'block' : 'none';
+  }));
+  const dateInput = document.getElementById('plan-date');
+  const today = new Date();
+  dateInput.min = today.toISOString().slice(0, 10);
+  document.getElementById('plan-date-btn').addEventListener('click', async () => {
+    if (!dateInput.value) { document.getElementById('plan-error').textContent = '日付を選んでください。'; return; }
+    const d = await fetchPlan('date', { date: dateInput.value });
+    if (d) renderPlanDate(d);
+  });
+  const sel = document.getElementById('plan-dest');
+  try {
+    const list = await (await fetch('/api/destinations')).json();
+    const opt = (r, label) => `<optgroup label="${label}">${list.destinations.filter((x) => x.region === r).map((x) => `<option>${escapeHtml(x.name)}</option>`).join('')}</optgroup>`;
+    sel.innerHTML += opt('domestic', '国内') + opt('overseas', '海外');
+  } catch (e) { /* 一覧が取れなくても地名検索は使える */ }
+  const runPlace = async () => {
+    const dest = sel.value;
+    const q = document.getElementById('plan-q').value.trim();
+    if (!dest && !q) { document.getElementById('plan-error').textContent = '旅先を選ぶか、地名を入力してください。'; return; }
+    const p = await fetchPlan('place', dest ? { dest } : { q });
+    if (p) renderPlanPlace(p);
+  };
+  sel.addEventListener('change', () => { document.getElementById('plan-q').value = ''; if (sel.value) runPlace(); });
+  document.getElementById('plan-place-btn').addEventListener('click', () => { sel.value = ''; runPlace(); });
 }
 
 function renderToday(today) {
