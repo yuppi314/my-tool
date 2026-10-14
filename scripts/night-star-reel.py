@@ -1,5 +1,5 @@
 # 星別リール(1080x1920・約20秒)を作る。夜空デザイン。答えだけでなく、過ごし方のアドバイス画面も入れる。
-# 画面: 問いかけ → 答え → (方角の意味 or 八方塞がりの説明) → アドバイス3つ → 吉方位旅の心得 / 次の最大吉方 → 毎朝の案内 → まとめ(end.png)
+# 画面: 問いかけ → 答え → (方角の意味 or 八方塞がりの説明) → アドバイス3つ → 吉方位旅の心得 / 次の最大吉方 → 毎朝の案内 → まとめ(end.png) → フォローしてね
 # 使い方: python3 scripts/night-star-reel.py <基準日 YYYY-MM-DD> <星 1〜9> <出力.mp4> <end.png> <sns-images の character/v2> <ffmpeg のパス>
 # 吉方位は src/lib/houi.js の計算結果を node で読み出して使う。
 import json, os, random, subprocess, sys, tempfile
@@ -94,6 +94,14 @@ def screen(kick, draw, pose, seed, cdir):
     return im
 
 
+def follow_frame(work, cdir):
+    # 最後に付ける「フォローしてね」の画面(scripts/follow_end.py)。sns-images の backgrounds/ があれば水彩の夜空にする
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import follow_end
+    sky = os.path.join(cdir, '..', '..', 'backgrounds', 'night-sky-src.png')
+    return follow_end.make('night', os.path.join(work, 'follow.png'), cdir, sky if os.path.exists(sky) else None)
+
+
 def main():
     ds, star, out, end, cdir, ffmpeg = sys.argv[1:7]
     r = json.loads(subprocess.check_output(['node', '-e', JS, ds, star], cwd=ROOT))
@@ -147,6 +155,8 @@ def main():
         durs.append(sec)
     files.append(end)
     durs.append(2.6)
+    files.append(follow_frame(work, cdir))
+    durs.append(2.4)
     x = 0.3
     args = [ffmpeg, '-loglevel', 'error', '-y']
     for f, dur in zip(files, durs):

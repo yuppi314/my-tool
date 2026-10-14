@@ -1,5 +1,5 @@
 # 日曜用「9つの星まとめ」リール(1080x1920・約22秒)を作る。夜空デザイン・カルーセルとは別の縦長の画面。
-# 星ごとに「◯◯さんの吉方位は…?」→「答え(方角と運気)」の2画面で見せ、最後にまとめ画面(end.png)を出す。
+# 星ごとに「◯◯さんの吉方位は…?」→「答え(方角と運気)」の2画面で見せ、最後にまとめ画面(end.png)と「フォローしてね」の画面を出す。
 # 表紙は方角を出さない「あなたの星は?」の画面にする(方角は動画を見てのお楽しみにするため)。
 # 使い方: python3 scripts/night-all9-reel.py <基準日 YYYY-MM-DD> <end.png> <出力.mp4> <表紙.jpg> <キャラ画像フォルダ character/v2> <ffmpeg のパス>
 # end.png は night-reel.js の動画の最後の画面(「あなたの家から見た本当の吉方位は…」)を ffmpeg で取り出したもの。
@@ -93,6 +93,14 @@ def screen(chara_path, counter, draw_center, seed):
     return im
 
 
+def follow_frame(work, cdir):
+    # 最後に付ける「フォローしてね」の画面(scripts/follow_end.py)。sns-images の backgrounds/ があれば水彩の夜空にする
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import follow_end
+    sky = os.path.join(cdir, '..', '..', 'backgrounds', 'night-sky-src.png')
+    return follow_end.make('night', os.path.join(work, 'follow.png'), cdir, sky if os.path.exists(sky) else None)
+
+
 def main():
     global LABEL
     date, end, out, cover, cdir, ffmpeg = sys.argv[1:7]
@@ -152,6 +160,8 @@ def main():
         add(screen(pose(p), cnt, a, 30 + i), 1.6)
     frames.append(end)
     durs.append(2.6)
+    frames.append(follow_frame(work, cdir))
+    durs.append(2.4)
 
     x = 0.25
     args = [ffmpeg, '-loglevel', 'error', '-y']
