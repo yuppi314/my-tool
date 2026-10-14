@@ -316,3 +316,50 @@ a.hotel-link .pr-label { margin-left: 2px; }
 .line-card { border: 2px solid #06C755; }
 a.line-btn { display: block; text-align: center; background: #06C755; color: #fff; font-weight: 700; font-size: 1.1rem; padding: 14px 16px; border-radius: 999px; text-decoration: none; margin: 12px 0 6px; }
 a.line-btn:active { opacity: 0.85; }
+
+/* ===== 夜空テーマ(Instagram の投稿とおそろい) ===== */
+:root {
+  --bg: #0B1236; --bg-alt: #1B2A6B; --accent: #E8C872; --accent-soft: #F3DC9A;
+  --text: #F5F0E6; --text-dim: #C8CCDE; --card: rgba(23, 33, 90, 0.92); --field: #1F2A66;
+  --border: rgba(232, 200, 114, 0.35);
+}
+body {
+  font-family: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  background: radial-gradient(1200px 600px at 50% -10%, #24357F 0%, transparent 60%), linear-gradient(180deg, #16225C, #0A0F2E 900px) fixed;
+  background-color: #0A0F2E;
+}
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0.55;
+  background-image: radial-gradient(1px 1px at 20% 30%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 70% 20%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 40% 70%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 85% 60%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 10% 85%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 60% 45%, #E8C872 50%, transparent 51%);
+  background-size: 300px 300px;
+}
+.wrap { position: relative; }
+header.hero h1 { color: var(--accent); line-height: 1.5; letter-spacing: 0.04em; }
+.card { box-shadow: 0 0 30px rgba(232, 200, 114, 0.08); }
+input, select { color: var(--text); border-color: var(--border); }
+button.primary { background: linear-gradient(90deg, #E8C872, #F3DC9A); color: #1B2A41; }
+.brand { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+.houi-cell.best { background: rgba(232, 200, 114, 0.18); }
+.houi-cell.bad .mark { color: #FF9C9C; }
+.dest-dir { color: #1B2A41 !important; }
+.kicker { display: inline-block; font-size: 0.85rem; color: var(--accent); border-top: 1px solid var(--accent); border-bottom: 1px solid var(--accent); padding: 2px 14px; letter-spacing: 0.08em; }
+.star-card { text-align: center; }
+.star-name { font-size: 2.4rem; font-weight: 800; color: var(--accent); margin: 10px 0 6px; letter-spacing: 0.08em; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0; }
+.chip { border: 1px solid var(--accent); color: var(--accent-soft); border-radius: 999px; padding: 2px 14px; font-size: 0.9rem; }
+.star-card .summary-text { text-align: left; }
+.luck-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.luck-row:last-child { border-bottom: 0; }
+.compat { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.compat:last-child { border-bottom: 0; }
+.compat .chips { justify-content: flex-start; }
+.feature-list { list-style: none; padding: 0; margin: 12px 0 0; }
+.feature-list li { display: flex; gap: 14px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.feature-list li:last-child { border-bottom: 0; }
+.feature-list li > span { font-size: 1.6rem; line-height: 1.4; }
+.share-card { border: 1px solid var(--accent); }
+a.share-btn { display: block; text-align: center; border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 12px; text-decoration: none; font-weight: 700; margin-top: 12px; }
+footer.legal { color: var(--text-dim); }
+.luck-row .dest-dir, .dest-head .dest-dir { white-space: nowrap; flex-shrink: 0; min-width: 3.2em; text-align: center; }
