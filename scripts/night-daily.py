@@ -1,6 +1,7 @@
 # 毎日の「今日の吉方位」画像(ストーリーズ・リール用 1080x1920 と フィード用 1080x1350)を作る。夜空デザイン。
 # 吉方位は src/lib/nichiban.js(日盤)の計算結果を node で読み出して使う。
-# 使い方: python3 scripts/night-daily.py <日付 YYYY-MM-DD> <出力フォルダ> <sns-images の character/v2 フォルダ>
+# 使い方: python3 scripts/night-daily.py <日付 YYYY-MM-DD> <出力フォルダ> <sns-images の character/v2 フォルダ> [背景画像]
+# 背景画像(sns-images の backgrounds/night-sky-src.png など)を渡すと水彩の夜空を使い、省略すると描いた星空になる
 # 出力: daily-story.jpg(1080x1920)・daily-post.jpg(1080x1350)・caption.txt
 # 必要: Pillow、~/.cache/night-reel-fonts/ の明朝体(night-reel.js を一度動かすと入る)
 import datetime, json, os, random, subprocess, sys
@@ -27,7 +28,19 @@ def font(size, bold=True):
     return ImageFont.truetype(F8 if bold else F5, size)
 
 
-def background(w, h, seed):
+def photo_background(w, h, path):
+    # 横幅に合わせて拡大し、天の川の見える下側を使う。文字が読めるよう紺を薄く重ねる
+    src = Image.open(path).convert('RGB')
+    sc = max(w / src.width, h / src.height)
+    src = src.resize((round(src.width * sc), round(src.height * sc)), Image.LANCZOS)
+    x, y = (src.width - w) // 2, src.height - h
+    im = src.crop((x, y, x + w, y + h))
+    return Image.blend(im, Image.new('RGB', (w, h), (10, 16, 52)), 0.35)
+
+
+def background(w, h, seed, path=None):
+    if path:
+        return photo_background(w, h, path)
     im = Image.new('RGB', (w, h))
     d = ImageDraw.Draw(im)
     for y in range(h):
@@ -57,14 +70,19 @@ def chara(im, path, width):
     im.paste(c, (im.width - width - 10, im.height - c.height - 40), c)
 
 
-def render(w, h, data, date, cdir, top, row_h, size):
-    im = background(w, h, int(date.strftime('%Y%m%d')))
+def render(w, h, data, date, cdir, top, row_h, size, bg=None):
+    im = background(w, h, int(date.strftime('%Y%m%d')), bg)
     d = ImageDraw.Draw(im)
     label = f'{date.month}月{date.day}日({WEEK[date.weekday()]})'
     centered(d, w, top, '今日の吉方位', 44, fill=GOLD, bold=False)
     centered(d, w, top + 64, label, size + 30)
     centered(d, w, top + 64 + size + 74, '日帰り・お散歩の方角の目安です', 32, fill=SOFT, bold=False)
     y = top + 64 + size + 150
+    if bg:
+        # 天の川の上でも読めるよう、表の後ろに半透明の紺を敷く
+        m = Image.new('L', (w, h), 0)
+        ImageDraw.Draw(m).rounded_rectangle([50, y - 34, w - 50, y + row_h * 9 + 6], radius=28, fill=150)
+        im.paste(Image.new('RGB', (w, h), (8, 12, 40)), (0, 0), m)
     d.line([(80, y - 14), (w - 80, y - 14)], fill=(150, 130, 80), width=1)
     for r in data['rows']:
         d.text((90, y), r['name'], font=font(size - 4), fill=WHITE)
@@ -85,11 +103,12 @@ def render(w, h, data, date, cdir, top, row_h, size):
 
 def main():
     ds, out, cdir = sys.argv[1:4]
+    bg = sys.argv[4] if len(sys.argv) > 4 else None
     date = datetime.date.fromisoformat(ds)
     data = json.loads(subprocess.check_output(['node', '-e', JS, ds], cwd=ROOT))
     os.makedirs(out, exist_ok=True)
-    render(1080, 1920, data, date, cdir, 170, 112, 54).save(os.path.join(out, 'daily-story.jpg'), quality=92)
-    render(1080, 1350, data, date, cdir, 60, 84, 46).save(os.path.join(out, 'daily-post.jpg'), quality=92)
+    render(1080, 1920, data, date, cdir, 170, 112, 54, bg).save(os.path.join(out, 'daily-story.jpg'), quality=92)
+    render(1080, 1350, data, date, cdir, 60, 84, 46, bg).save(os.path.join(out, 'daily-post.jpg'), quality=92)
     label = f'{date.month}月{date.day}日({WEEK[date.weekday()]})'
     lines = []
     for r in data['rows']:
