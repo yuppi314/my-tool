@@ -18,6 +18,12 @@
       <div class="star-name" id="r-star"></div>
       <div class="chips" id="r-keywords"></div>
       <p class="summary-text" id="r-trait"></p>
+      <div class="getsumei" id="getsumei-box" style="display:none;">
+        <div class="kicker">あなたの月命星</div>
+        <div class="star-name small" id="g-star"></div>
+        <div class="chips" id="g-keywords"></div>
+        <p class="summary-text" id="g-note"></p>
+      </div>
       <div class="result-grid">
         <div class="stat-box"><div class="label">ラッキーカラー</div><div class="value" id="r-color"></div></div>
         <div class="stat-box"><div class="label">出発地</div><div class="value" id="r-origin"></div></div>
@@ -45,6 +51,32 @@
       <p class="summary-text">あなたの星の<strong>「12か月の吉方位カレンダー」</strong>を無料で差し上げます。この先1年、いつ・どの方角に行くといいかが一覧でわかるので、マイルの特典航空券を早めに予約したい方にもおすすめです。毎月の吉方位もLINEでお届けします。</p>
       <a class="line-btn" href="https://lin.ee/v27SJz85" target="_blank" rel="noopener">LINEで受け取る（無料）</a>
       <p class="board-legend">登録後、トークにご自分の星（例：五黄土星）を送ってください。</p>
+    </div>
+
+    <div class="card plan-card">
+      <div class="kicker">旅の計画に使ってね</div>
+      <div class="tabs">
+        <button type="button" class="tab active" data-tab="date">📅 出かける日</button>
+        <button type="button" class="tab" data-tab="place">📍 行きたい場所</button>
+      </div>
+      <div class="tab-body" id="tab-date">
+        <p class="sub-label">出かける日が決まっていたら、その日に行くといい方角と旅先がわかります。</p>
+        <div class="address-row">
+          <input type="date" id="plan-date" />
+          <button type="button" class="secondary" id="plan-date-btn">調べる</button>
+        </div>
+        <div id="plan-date-result"></div>
+      </div>
+      <div class="tab-body" id="tab-place" style="display:none;">
+        <p class="sub-label">行きたい場所があれば、ご自宅から見た方角と、いつ行くといいかがわかります。</p>
+        <select id="plan-dest"><option value="">旅先の一覧から選ぶ</option></select>
+        <div class="address-row" style="margin-top:10px;">
+          <input type="text" id="plan-q" placeholder="または地名を入力(例: 箱根、軽井沢)" />
+          <button type="button" class="secondary" id="plan-place-btn">調べる</button>
+        </div>
+        <div id="plan-place-result"></div>
+      </div>
+      <p class="error-text" id="plan-error"></p>
     </div>
 
     <div class="card">

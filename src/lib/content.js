@@ -44,12 +44,30 @@ function todayInJst(now = new Date()) {
   return new Date(jst.getUTCFullYear(), jst.getUTCMonth(), jst.getUTCDate());
 }
 
-function computeProfile(dateStr) {
-  return profileFromStar(kyusei.getHonmeiStarId(new Date(dateStr)));
+// 月命星: 生まれた節月の月盤の中宮星。心の奥の性質や、身近な人に見せる素顔を表すとされる
+function getGetsumeiId(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return houi.getMonthInfo(new Date(y, m - 1, d)).monthCenter;
 }
 
-function profileFromStar(honmeiId) {
-  return { honmeiId, star: kyusei.getStar(honmeiId) };
+function computeProfile(dateStr) {
+  return profileFromStar(kyusei.getHonmeiStarId(new Date(dateStr)), getGetsumeiId(dateStr));
+}
+
+function profileFromStar(honmeiId, getsumeiId) {
+  const valid = Number.isInteger(getsumeiId) && getsumeiId >= 1 && getsumeiId <= 9;
+  return { honmeiId, star: kyusei.getStar(honmeiId), getsumeiId: valid ? getsumeiId : null };
+}
+
+function getsumeiInfo(profile) {
+  if (!profile.getsumeiId) return null;
+  const g = kyusei.getStar(profile.getsumeiId);
+  return {
+    id: g.id, name: g.name, keyword: g.keyword, trait: g.trait,
+    note: profile.getsumeiId === profile.honmeiId
+      ? '本命星と月命星が同じ星。表の顔も心の奥も同じ性質で、その星らしさがはっきり出やすいとされます。'
+      : `表の顔は${profile.star.name}、心の奥や、家族など身近な人に見せる素顔は${g.name}の性質とされます。`,
+  };
 }
 
 // 今日の属する節月から数えて i ヶ月後の節月に含まれる日付(各月15日は必ず節入り後)
@@ -103,11 +121,51 @@ function monthMessage(month) {
   return `今月の最大吉方は「${month.bestDirections.join('・')}」。年盤・月盤の両方で吉となる、効果が大きいとされる方位です。`;
 }
 
+// 出かける日が決まっている人向け: その日の属する節月の最大吉方と旅先、その日(日盤)でも吉の方位
+function planByDate(profile, origin, date) {
+  const month = buildMonth(profile, origin, date, 2);
+  const day = buildToday(profile.honmeiId, date);
+  const dayGood = new Set(day.directions.map((d) => d.direction));
+  return {
+    dateLabel: day.label,
+    monthLabel: month.label,
+    period: month.period,
+    blocked: month.yearBlocked || month.monthBlocked,
+    best: month.bestDirections.map((d) => ({ direction: d, luck: DIRECTION_LUCK[d], dayGood: dayGood.has(d) })),
+    dayBlocked: day.blocked,
+    dayDirections: day.directions,
+    destinations: month.destinations,
+    message: monthMessage(month),
+  };
+}
+
+// 行きたい場所がある人向け: 自宅から見たその場所の方位と、この先12か月で最大吉方になる月
+function planByPlace(profile, origin, place, from = todayInJst(), freeMonths = 3) {
+  const km = Math.round(travel.distanceKm(origin, place));
+  const direction = travel.sectorOf(travel.bearingDeg(origin, place));
+  const months = [];
+  for (let i = 0; i < 12; i++) {
+    const h = houi.getMonthlyHoui(profile.honmeiId, monthDate(from, i));
+    if (h.bestDirections.includes(direction)) months.push({ index: i, label: h.label, period: h.period });
+  }
+  return {
+    place: place.name,
+    direction,
+    luck: DIRECTION_LUCK[direction],
+    distanceKm: km,
+    tooClose: km < travel.MIN_DISTANCE_KM,
+    months: months.filter((m) => m.index < freeMonths),
+    moreCount: months.filter((m) => m.index >= freeMonths).length,
+    freeMonths,
+  };
+}
+
 function buildFreeResult(profile, origin, date = todayInJst()) {
   const month = buildMonth(profile, origin, date, 3);
   return {
     star: { id: profile.star.id, name: profile.star.name, element: profile.star.element, keyword: profile.star.keyword,
       color: profile.star.color, trait: profile.star.trait },
+    getsumei: getsumeiInfo(profile),
     today: buildToday(profile.honmeiId, date),
     compatible: buildCompatible(profile.honmeiId),
     origin: origin.name,
@@ -135,6 +193,9 @@ function buildCalendar(profile, origin, date = todayInJst()) {
 }
 
 module.exports = {
+  planByDate,
+  planByPlace,
+  getGetsumeiId,
   todayInJst,
   computeProfile,
   profileFromStar,

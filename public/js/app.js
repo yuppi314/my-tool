@@ -111,7 +111,7 @@ form.addEventListener('submit', async (e) => {
       submitBtn.disabled = false;
       return;
     }
-    const params = new URLSearchParams({ id: data.id, s: data.s, lat: data.lat, lon: data.lon, o: data.o });
+    const params = new URLSearchParams({ id: data.id, s: data.s, m: data.m || '', lat: data.lat, lon: data.lon, o: data.o });
     window.location.href = `/result.html?${params}`;
   } catch (err) {
     errorEl.textContent = '通信エラーが発生しました。';
