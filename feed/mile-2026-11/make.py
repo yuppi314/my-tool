@@ -3,26 +3,34 @@ import os, random, sys
 from PIL import Image, ImageDraw, ImageFont
 W,H=1080,1350
 F8='/root/.cache/night-reel-fonts/ShipporiMinchoB1-800.ttf'; F5='/root/.cache/night-reel-fonts/ShipporiMinchoB1-500.ttf'
-GOLD,WHITE,SOFT,NAVY=(232,200,114),(245,240,230),(200,204,222),(27,42,90)
+# マイル・旅のシリーズは「昼の空」テーマ(星のシリーズの夜空と区別する)
+NAVY=(27,42,90); GOLD=(232,108,52); WHITE=NAVY; SOFT=(70,90,125); CARD=(255,255,255); LINE=(150,195,230)
 C,OUT=sys.argv[1:3]
 f=lambda s,b=True: ImageFont.truetype(F8 if b else F5,s)
+def cloud(d,x,y,w):
+    for dx,dy,r in [(0,0,.30),(.28,-.12,.36),(.62,0,.28),(.36,.08,.32)]:
+        d.ellipse([x+dx*w-r*w,y+dy*w-r*w*.7,x+dx*w+r*w,y+dy*w+r*w*.7],fill=(255,255,255))
+def plane(d,x,y,s):
+    # 小さな飛行機と点線の航路
+    for k in range(6): d.ellipse([x-170+k*26,y+30-k*5-3,x-170+k*26+8,y+30-k*5+5],fill=(255,255,255))
+    d.polygon([(x,y),(x+s,y-s*.18),(x+s*1.1,y),(x+s,y+s*.18)],fill=(255,255,255))
+    d.polygon([(x+s*.45,y),(x+s*.25,y-s*.55),(x+s*.4,y-s*.55),(x+s*.7,y)],fill=(255,255,255))
+    d.polygon([(x+s*.45,y),(x+s*.25,y+s*.55),(x+s*.4,y+s*.55),(x+s*.7,y)],fill=(255,255,255))
 def bg(seed):
     im=Image.new('RGB',(W,H)); d=ImageDraw.Draw(im)
     for y in range(H):
-        t=y/H; d.line([(0,y),(W,y)],fill=tuple(int(a+(b-a)*t) for a,b in zip((22,34,92),(9,14,44))))
-    r=random.Random(seed)
-    for _ in range(200):
-        x,y,s,a=r.randrange(W),r.randrange(H),r.choice([1,1,2,2,3]),r.randint(110,255); d.ellipse([x-s/2,y-s/2,x+s/2,y+s/2],fill=(a,a,int(a*.9)))
-    for x,y,s in [(100,170,18),(985,130,14),(1000,640,16)]:
-        d.polygon([(x,y-s),(x+s*.25,y),(x,y+s),(x-s*.25,y)],fill=GOLD); d.polygon([(x-s,y),(x,y-s*.25),(x+s,y),(x,y+s*.25)],fill=GOLD)
+        t=y/H; d.line([(0,y),(W,y)],fill=tuple(int(a+(b-a)*t) for a,b in zip((120,190,240),(235,246,255))))
+    # 雲は文字の少ない左右のはしに置く
+    for x,y,w in [(-120,300,230),(960,760,220),(-110,1150,200)]: cloud(d,x,y,w)
+    plane(d,900,70,95)
     return im,d
 def ctr(d,y,t,size,col=WHITE,b=True):
     ft=f(size,b)
     for i,line in enumerate(t.split('\n')):
         d.text(((W-d.textlength(line,font=ft))/2,y+i*size*1.38),line,font=ft,fill=col)
 def kicker(d,y,t):
-    ft=f(38,False); w=d.textlength(t,font=ft)
-    d.line([(W/2-w/2-30,y-10),(W/2+w/2+30,y-10)],fill=GOLD,width=2); d.text(((W-w)/2,y),t,font=ft,fill=GOLD); d.line([(W/2-w/2-30,y+58),(W/2+w/2+30,y+58)],fill=GOLD,width=2)
+    ft=f(36,False); w=d.textlength(t,font=ft)
+    d.rounded_rectangle([W/2-w/2-34,y-8,W/2+w/2+34,y+56],radius=32,fill=GOLD); d.text(((W-w)/2,y),t,font=ft,fill=(255,255,255))
 def chara(im,pose,wd=250):
     c=Image.open(os.path.join(C,pose+'.png')).convert('RGBA'); c=c.resize((wd,round(c.height*wd/c.width)))
     a=c.getchannel('A'); fade=Image.new('L',c.size,255); fd=ImageDraw.Draw(fade)
@@ -33,9 +41,9 @@ def foot(d,t=None):
     if t:
         for j,line in enumerate(t.split('\n')): d.text((60,H-170+j*44),line,font=f(30,False),fill=SOFT)
 def card(d,y,h,title,body,tsize=50,bsize=38):
-    d.rounded_rectangle([70,y,W-70,y+h],radius=24,outline=GOLD,width=2,fill=(28,40,100))
+    d.rounded_rectangle([70,y,W-70,y+h],radius=24,outline=LINE,width=3,fill=CARD)
     d.text((110,y+28),title,font=f(tsize),fill=GOLD)
-    for j,line in enumerate(body.split('\n')): d.text((110,y+40+tsize+j*bsize*1.45),line,font=f(bsize,False),fill=WHITE)
+    for j,line in enumerate(body.split('\n')): d.text((110,y+40+tsize+j*bsize*1.45),line,font=f(bsize,False),fill=NAVY)
 n=1
 def save(im,name):
     global n; im.save(f'{OUT}/{n}_{name}.jpg',quality=92); n+=1
@@ -43,7 +51,7 @@ def save(im,name):
 im,d=bg(1); kicker(d,140,'2026年11月(11/7〜12/6)')
 ctr(d,270,'片道',64,WHITE,False); ctr(d,360,'7,500マイル',130,GOLD); ctr(d,540,'で行ける',64,WHITE,False)
 ctr(d,660,'11月の吉方位の旅',86)
-d.rounded_rectangle([200,880,880,980],radius=50,fill=GOLD); ctr(d,903,'あなたの星はどの方角？',46,NAVY)
+d.rounded_rectangle([200,880,880,980],radius=50,fill=GOLD); ctr(d,903,'あなたの星はどの方角？',46,(255,255,255))
 ctr(d,1040,'→ 横にめくってね',38,SOFT,False)
 chara(im,'pose-point-you',300); foot(d); save(im,'表紙')
 # 2 星ごとの最大吉方
@@ -51,7 +59,7 @@ im,d=bg(2); kicker(d,110,'11月の最大吉方')
 rows=[('二黒土星','東'),('四緑木星','西'),('五黄土星','東・北西'),('七赤金星','東')]
 y=230
 for nm,dr in rows:
-    d.line([(110,y+92),(W-110,y+92)],fill=(90,90,140),width=1)
+    d.rounded_rectangle([90,y-6,W-90,y+96],radius=20,fill=CARD,outline=LINE,width=2)
     d.text((130,y+10),nm,font=f(56),fill=WHITE); w=d.textlength(dr,font=f(64)); d.text((W-130-w,y+4),dr,font=f(64),fill=GOLD); y+=118
 ctr(d,y+40,'お休みの星（遠出より整える月）',40,GOLD,False)
 ctr(d,y+110,'一白水星・八白土星…八方塞がり\n三碧木星・六白金星・九紫火星…最大吉方なし',36,SOFT,False)
