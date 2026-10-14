@@ -7,7 +7,7 @@ F8='/root/.cache/night-reel-fonts/ShipporiMinchoB1-800.ttf'; F5='/root/.cache/ni
 NAVY=(27,42,90); GOLD=(232,108,52); WHITE=NAVY; SOFT=(70,90,125); CARD=(255,255,255); LINE=(150,195,230)
 C,OUT=sys.argv[1:3]
 f=lambda s,b=True: ImageFont.truetype(F8 if b else F5,s)
-BG=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','bgsrc')
+BG=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..','backgrounds')
 def sky():
     # 水彩の昼空(縦長)を横1080に拡大し、上(飛行機)と下(雲)をつなぐ
     s=Image.open(os.path.join(BG,'day-sky-src.png')).convert('RGB'); s=s.resize((W,round(s.height*W/s.width)),Image.LANCZOS)
