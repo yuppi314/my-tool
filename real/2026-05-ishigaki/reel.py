@@ -64,10 +64,10 @@ def big(ov,y,t,size,col=WHT,sc=NAVY,sw=6):
     d=ImageDraw.Draw(ov)
     for i,line in enumerate(t.split('\n')):
         ft=f(size); d.text(((W-d.textlength(line,font=ft))/2,y+i*size*1.3),line,font=ft,fill=col,stroke_width=sw,stroke_fill=sc)
-# 1 つかみ(本人が海で笑っている写真)
-ov=E(); pill(ov,250,'2026年5月'); big(ov,350,'知らずに行った\n石垣島',96); big(ov,620,'実は…',110,ORG,WHT,8); handle(ov)
-cover=cover_crop(P('beach-yuko.jpg'),0.5,0.55,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/ishigaki-reel-cover.jpg',quality=92)
-photo_seg(cover_crop(P('beach-yuko.jpg'),0.5,0.55),ov,2.8)
+# 1 つかみ(本人のばんざいの写真・うしろ姿)。文字は岩の上
+ov=E(); pill(ov,1180,'2026年5月'); big(ov,1280,'知らずに行った\n石垣島',96); big(ov,1540,'実は…',110,ORG,WHT,8); handle(ov)
+cover=cover_crop(P('banzai.jpg'),0.5,0.42,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/ishigaki-reel-cover.jpg',quality=92)
+photo_seg(cover_crop(P('banzai.jpg'),0.5,0.42),ov,2.8)
 # 2 海の動画
 ov=panel_text([('大好きな石垣島へ',60,NAVY,True),('2026年5月20日〜23日',40,SOFT,False)],1380); handle(ov)
 video_seg(os.path.join(SRC,'IMG_1092.mov'),0,ov,3.2)
@@ -80,16 +80,15 @@ photo_seg(cover_crop(P('water.jpg')),ov,2.4,False)
 # 5 日本最南端の碑
 ov=panel_text([('日本最南端の',46,SOFT,False),('波照間島まで',64,NAVY,True)],1380); handle(ov)
 photo_seg(cover_crop(P('hateruma.jpg'),0.5,0.5),ov,2.6)
-# 6 カヤック(同行の方の顔はぼかす)
-k=P('kayak.jpg'); k=blur_boxes(k,[(1100,700,1330,900),(1630,700,1810,870)])
+# 6 マングローブ(人の写っていない写真)
 ov=panel_text([('マングローブを',46,SOFT,False),('カヤックで探検',62,NAVY,True)],1380); handle(ov)
-photo_seg(cover_crop(k,0.565,0.5),ov,2.8)
+photo_seg(cover_crop(P('mangrove.jpg'),0.45,0.5),ov,2.8)
 # 7 八重山そば
 ov=panel_text([('ソーキそばも',46,SOFT,False),('しみる〜',66,NAVY,True)],1420); handle(ov)
 photo_seg(cover_crop(P('soba.jpg'),0.5,0.45),ov,2.4)
-# 8 ばんざいの写真
+# 8 砂浜の動画
 ov=E(); big(ov,330,'最高の旅！',100); big(ov,520,'…と思ったら',64); handle(ov)
-photo_seg(cover_crop(P('banzai.jpg'),0.5,0.45),ov,2.6,False)
+video_seg(os.path.join(SRC,'IMG_1142.mov'),0,ov,2.8)
 # 9 答え(昼の空)
 im=sky().convert('RGBA'); ov=panel_text([('あとで九星気学で調べたら',44,SOFT,False),('まさかの',56,NAVY,True),('本命殺…！',120,ORG,True),('',20,NAVY,False),('5月の南西には、',42,NAVY,False),('私の星(二黒土星)が',42,NAVY,False),('回っていました',42,NAVY,False)],330)
 pill(ov,250,'答え合わせ'); chara(ov,'pose-idea',280); handle(ov); im.alpha_composite(ov)
@@ -98,9 +97,10 @@ photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),4.0)
 im=sky().convert('RGBA'); ov=panel_text([('本命殺とは？',64,ORG,True),('',16,NAVY,False),('無理をすると',46,NAVY,False),('疲れが出やすい、とされる方角',46,NAVY,False),('',16,NAVY,False),('しかも5月は',46,NAVY,False),('どの方角にも最大吉方がない月',46,NAVY,True)],380)
 chara(ov,'pose-point-up',260); handle(ov); im.alpha_composite(ov)
 photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),4.2)
-# 11 砂浜の動画: 時期で変わる
-ov=panel_text([('同じ南西でも',50,NAVY,False),('行く時期で変わる',66,ORG,True),('最大吉方は 7月・9月・10月',44,NAVY,False)],1250); handle(ov)
-video_seg(os.path.join(SRC,'IMG_1142.mov'),0,ov,3.0)
+# 11 時期で変わる
+im=sky().convert('RGBA'); ov=panel_text([('同じ南西でも',56,NAVY,False),('行く時期で',80,ORG,True),('変わる',80,ORG,True),('',16,NAVY,False),('私の南西の最大吉方は',44,NAVY,False),('7月・9月・10月',64,NAVY,True)],380)
+chara(ov,'pose-compass',280); handle(ov); im.alpha_composite(ov)
+photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),3.4)
 # 12 リベンジ
 im=sky().convert('RGBA'); ov=panel_text([('だから次は',50,SOFT,False),('時期を選んで',64,NAVY,True),('10月、同じ南西の',50,NAVY,False),('ダナンへ',110,ORG,True),('リベンジ旅に行ってきます',46,NAVY,False)],380)
 chara(ov,'pose-cheer',280); handle(ov); im.alpha_composite(ov)
