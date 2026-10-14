@@ -92,8 +92,6 @@ form.addEventListener('submit', async (e) => {
   errorEl.textContent = '';
 
   const birthdate = document.getElementById('birthdate').value;
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
 
   if (!birthdate || !selectedOrigin) {
     errorEl.textContent = '生年月日と、お住まい(住所・現在地・都市のいずれか)を入力してください。';
@@ -105,7 +103,7 @@ form.addEventListener('submit', async (e) => {
     const res = await fetch('/api/diagnosis', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ birthdate, name, email, ...selectedOrigin }),
+      body: JSON.stringify({ birthdate, ...selectedOrigin }),
     });
     const data = await res.json();
     if (!res.ok) {
