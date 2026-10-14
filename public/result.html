@@ -13,12 +13,22 @@
       <p id="status-line"></p>
     </header>
 
-    <div class="card">
+    <div class="card star-card">
+      <div class="kicker">あなたの本命星</div>
+      <div class="star-name" id="r-star"></div>
+      <div class="chips" id="r-keywords"></div>
+      <p class="summary-text" id="r-trait"></p>
       <div class="result-grid">
-        <div class="stat-box"><div class="label">本命星</div><div class="value" id="r-star"></div></div>
+        <div class="stat-box"><div class="label">ラッキーカラー</div><div class="value" id="r-color"></div></div>
         <div class="stat-box"><div class="label">出発地</div><div class="value" id="r-origin"></div></div>
       </div>
-      <div class="summary-text" id="r-summary"></div>
+    </div>
+
+    <div class="card today-card">
+      <div class="kicker">今日の吉方位</div>
+      <div class="section-title" style="margin-top:4px;" id="t-label"></div>
+      <div id="t-list"></div>
+      <p class="board-legend">日帰りのお出かけやお散歩の方角の目安です。毎朝 Instagram のストーリーズでもお届けしています。</p>
     </div>
 
     <div class="card">
@@ -27,12 +37,32 @@
       <div class="houi-board" id="m-board"></div>
       <p class="board-legend">◎ 最大吉方(年盤・月盤とも吉) / 星は月盤の回座星</p>
       <div class="summary-text" id="m-message"></div>
+      <div id="m-luck"></div>
     </div>
 
     <div class="card">
       <div class="section-title" style="margin-top:0;">今月のおすすめ旅先</div>
       <div id="dest-list"></div>
       <p class="board-legend">必要マイルは特典航空券の目安です。時期・航空会社・空席で変わるため、予約前に各社サイトでご確認ください。</p>
+    </div>
+
+    <div class="card">
+      <div class="kicker">あなたと相性のいい星</div>
+      <div id="c-list"></div>
+      <p class="board-legend">家族や友だちの星も、生年月日を入れて診断してみてね。</p>
+    </div>
+
+    <div class="card share-card">
+      <div class="section-title" style="margin-top:0;">📸 結果をシェアしてね</div>
+      <p class="summary-text">この画面をスクリーンショットして、Instagram のストーリーズで <strong>@secondlife_50s</strong> をつけてシェアしてくれたら、うれしいです。あなたの星の旅のアドバイスをお返事します🌙</p>
+      <a class="share-btn" href="https://www.instagram.com/secondlife_50s/" target="_blank" rel="noopener">Instagram を見る</a>
+    </div>
+
+    <div class="card line-card">
+      <div class="section-title" style="margin-top:0;">🎁 LINE登録でプレゼント</div>
+      <p class="summary-text">あなたの星の<strong>「12か月の吉方位カレンダー」</strong>を差し上げます。毎月の吉方位もLINEでお届けします。</p>
+      <a class="line-btn" href="https://lin.ee/v27SJz85" target="_blank" rel="noopener">LINEで受け取る（無料）</a>
+      <p class="board-legend">登録後、トークにご自分の星（例：五黄土星）を送ってください。</p>
     </div>
 
     <div class="card" id="affiliate-card" style="display:none;">

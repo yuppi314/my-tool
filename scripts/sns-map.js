@@ -1,6 +1,7 @@
 // Instagram 用「方位マップ」画像(1080x1350 の JPEG)を生成する。
 // 出発地から見た今月の最大吉方を日本地図上に塗り、方位にある旅先を番号で示す。
-// 使い方: node scripts/sns-map.js <基準日 YYYY-MM-DD> <出発地ID(例: tokyo)> <出力ディレクトリ>
+// 使い方: node scripts/sns-map.js <基準日 YYYY-MM-DD> <出発地ID(例: tokyo)> <出力ディレクトリ> [washi|plain]
+// 背景は既定で「生成りの和紙」(scripts/washi-bg.js)。plain で従来の無地。
 // 出力: cover.jpg(表紙) / star-N.jpg(最大吉方がある本命星ごと) / rest.jpg(吉方位がない星のまとめ)
 // Playwright はリポジトリの依存に含めていないため、インストール済みのものを使う
 // (例: NODE_PATH=$(npm root -g) node scripts/sns-map.js 2026-10-15 tokyo out/)。
@@ -13,6 +14,7 @@ const kyusei = require('../src/lib/kyusei');
 const houi = require('../src/lib/houi');
 const travel = require('../src/lib/travel');
 const { DESTINATIONS } = require('../src/data/places');
+const { washiLayer } = require('./washi-bg');
 
 const W = 1080;
 const H = 1350;
@@ -46,8 +48,12 @@ small { font-size: 24px; color: #6B7A90; }
 .list .row { font-size: 38px; }
 `;
 
-function page(body) {
-  return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${CSS}</style></head><body>${body}</body></html>`;
+let theme = 'washi';
+
+// kind は背景の飾りの配置(cover / map / rest)
+function page(body, kind) {
+  const bg = theme === 'washi' ? washiLayer(W, H, kind) : '';
+  return `<!doctype html><html lang="ja"><head><meta charset="utf-8"><style>${CSS}</style></head><body>${bg}${body}</body></html>`;
 }
 
 function destPoint(name) {
@@ -136,18 +142,25 @@ function starMapHtml(h, star, origin, dests) {
   <div class="kicker">${h.label}(${h.period})の最大吉方</div>
   <h1><em>${star.name}</em>さん<br>${origin.name}から行くなら</h1>
 </header>
-<div class="panel">${rows}<div class="note">年盤・月盤ともに吉の方位 / 自宅から100km以上 / マイルで行ける旅先</div></div>`);
+<div class="panel">${rows}<div class="note">年盤・月盤ともに吉の方位 / 自宅から100km以上 / マイルで行ける旅先</div></div>`, 'map');
 }
 
-function coverHtml(info, origin, bestStars) {
+// 表紙: 答えは見せずに「自分の星は何枚目？」でめくってもらう(フック)
+function coverHtml(info, origin, bestStars, restStars) {
+  const restPage = bestStars.length + 2;
+  const index = [
+    ...bestStars.map((s, i) => ({ name: s.name, page: i + 2 })),
+    ...restStars.map((s) => ({ name: s.name, page: restPage })),
+  ];
   return page(`
 <div class="center">
   <div><span class="kicker">${info.label}(${info.period})</span></div>
-  <h1>${origin.name}から行く<br><em style="font-style:normal;color:#FF6B3D">今月の吉方位旅</em></h1>
-  <p>9つの本命星ごとに、年盤・月盤の両方で吉となる「最大吉方」と、マイルで行ける旅先を地図にしました。</p>
-  <div class="list">${bestStars.map((s) => `<div class="row"><span class="pill">${s.name}</span><span>${s.directions.join('・')}</span></div>`).join('')}</div>
-  <p style="font-size:32px;color:#6B7A90">自分の星のページを保存してね →</p>
-</div>`);
+  <h1 style="font-size:96px">50代、${info.setsuMonth}月に<br>行くなら<em style="font-style:normal;color:#FF6B3D">この方角</em></h1>
+  <p>年盤・月盤の両方で吉の「最大吉方」と、マイルで行ける旅先を、9つの星ごとに地図にしました。</p>
+  <div class="list" style="display:grid;grid-template-columns:1fr 1fr;gap:14px 28px">${index.map((s) => `<div class="row" style="font-size:32px"><span class="pill">${s.name}</span><span>${s.page}枚目</span></div>`).join('')}</div>
+  <p style="font-size:34px;color:#1E5AA8;font-weight:700">あなたの星は何枚目？ めくってね →</p>
+  <p style="font-size:28px;color:#6B7A90;margin-top:12px">${origin.name}から出かける場合の例</p>
+</div>`, 'cover');
 }
 
 function restHtml(info, restStars) {
@@ -157,14 +170,15 @@ function restHtml(info, restStars) {
   <h1>今月は<br><em style="font-style:normal;color:#1E5AA8">お休みの星</em></h1>
   <div class="list">${restStars.map((s) => `<div class="row"><span class="pill" style="background:#1E5AA8">${s.name}</span><span>${s.reason}</span></div>`).join('')}</div>
   <p>無理に遠出せず、次の吉方位に向けてマイルを貯める月に。</p>
-</div>`);
+</div>`, 'rest');
 }
 
 async function main() {
-  const [dateStr, originId, outDir] = process.argv.slice(2);
+  const [dateStr, originId, outDir, themeArg] = process.argv.slice(2);
+  if (themeArg) theme = themeArg;
   const origin = originId && travel.getOrigin(originId);
   if (!dateStr || !origin || !outDir) {
-    console.error('使い方: node scripts/sns-map.js <YYYY-MM-DD> <出発地ID> <出力ディレクトリ>');
+    console.error('使い方: node scripts/sns-map.js <YYYY-MM-DD> <出発地ID> <出力ディレクトリ> [washi|plain]');
     process.exit(1);
   }
   const date = new Date(`${dateStr}T00:00:00`);
@@ -195,7 +209,7 @@ async function main() {
       files.push(await render(starMapHtml(h, star, origin, travel.recommend(origin, h.bestDirections, 3)), `star-${id}.jpg`));
     }
   }
-  files.unshift(await render(coverHtml(info, origin, bestStars), 'cover.jpg'));
+  files.unshift(await render(coverHtml(info, origin, bestStars, restStars), 'cover.jpg'));
   if (restStars.length) files.push(await render(restHtml(info, restStars), 'rest.jpg'));
   await browser.close();
   console.log(files.join('\n'));

@@ -27,7 +27,12 @@ async function init() {
 
   document.getElementById('r-star').textContent = data.star.name;
   document.getElementById('r-origin').textContent = data.origin;
-  document.getElementById('r-summary').textContent = data.summary;
+  document.getElementById('r-trait').textContent = data.star.trait || data.summary;
+  document.getElementById('r-color').textContent = data.star.color || '';
+  document.getElementById('r-keywords').innerHTML = (data.star.keyword || '').split('・')
+    .map((k) => `<span class="chip">${escapeHtml(k)}</span>`).join('');
+  renderToday(data.today);
+  renderCompatible(data.compatible || []);
 
   renderMonth(data.month);
   renderDestinations(data.month, data.nextBestMonth);
@@ -48,10 +53,37 @@ async function init() {
   }
 }
 
+function luckRow(d) {
+  return `<div class="luck-row"><span class="dest-dir">${escapeHtml(d.direction)}</span><span>${escapeHtml(d.luck)}の運気とされます</span></div>`;
+}
+
+function renderToday(today) {
+  if (!today) return;
+  document.getElementById('t-label').textContent = today.label;
+  const el = document.getElementById('t-list');
+  if (today.blocked) {
+    el.innerHTML = '<p>今日は八方塞がり。ゆっくり過ごして、次のお出かけの計画を立てる日にしましょう☕</p>';
+  } else if (!today.directions.length) {
+    el.innerHTML = '<p>今日は吉方位がありません。近所でのんびり過ごす日にしましょう。</p>';
+  } else {
+    el.innerHTML = today.directions.map(luckRow).join('');
+  }
+}
+
+function renderCompatible(groups) {
+  document.getElementById('c-list').innerHTML = groups.map((g) => `
+    <div class="compat">
+      <strong>${escapeHtml(g.title)}</strong>
+      <div class="chips">${g.stars.map((s) => `<span class="chip">${escapeHtml(s)}</span>`).join('')}</div>
+      <p class="sub-label">${escapeHtml(g.note)}</p>
+    </div>`).join('');
+}
+
 function renderMonth(month) {
   document.getElementById('m-period').textContent = `${month.label}(${month.period})`;
   document.getElementById('m-centers').textContent = `年盤: ${month.yearCenter}中宮 / 月盤: ${month.monthCenter}中宮`;
   document.getElementById('m-message').textContent = month.message;
+  document.getElementById('m-luck').innerHTML = (month.bestLuck || []).map(luckRow).join('');
 
   const byDir = Object.fromEntries(month.directions.map((d) => [d.direction, d]));
   document.getElementById('m-board').innerHTML = BOARD_LAYOUT.map((dir) => {
@@ -71,6 +103,7 @@ function destinationHtml(d) {
       <div class="dest-head"><span class="dest-dir">${escapeHtml(d.direction)}</span><strong>${escapeHtml(d.name)}</strong></div>
       <div class="dest-meta">約${d.distanceKm.toLocaleString()}km・${escapeHtml(d.airport)}空港・${escapeHtml(d.miles)}</div>
       <p class="dest-hint">${escapeHtml(d.hint)}</p>
+      ${d.hotelUrl ? `<a class="hotel-link" href="${escapeHtml(d.hotelUrl)}" target="_blank" rel="sponsored noopener">${escapeHtml(d.name.split('・')[0])}周辺の宿を探す(楽天トラベル)<span class="pr-label">PR</span></a>` : ''}
     </div>`;
 }
 

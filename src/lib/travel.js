@@ -1,5 +1,6 @@
 // 自宅から見た旅先の方位・距離を計算し、吉方位の旅先を選ぶ
 const { ORIGINS, DESTINATIONS, MILE_BANDS } = require('../data/places');
+const { hotelSearchUrl } = require('../data/affiliates');
 
 // 吉方位旅は一般に自宅から100km以上離れた場所が効果的とされる
 const MIN_DISTANCE_KM = 100;
@@ -59,6 +60,8 @@ function destinationsFrom(origin) {
       direction: sectorOf(bearingDeg(origin, dest)),
       distanceKm: Math.round(km),
       miles: mileLabel(dest.region, km),
+      // 国内の旅先だけ、周辺の宿を探すリンクを付ける(検索語は旅先名の最初の地名か、個別指定)
+      hotelUrl: dest.region === 'domestic' ? hotelSearchUrl(dest.hotelKeyword || dest.name.split('・')[0]) : null,
     };
   })
     .filter((d) => d.distanceKm >= MIN_DISTANCE_KM)
