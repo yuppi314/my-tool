@@ -1,7 +1,7 @@
 # 「知らずに行った石垣島、実は…」リール(本人の旅の写真・動画 + 昼の空テーマの文字)
 # 使い方: python3 reel.py <素材フォルダ> <character/v2> <backgrounds> <出力フォルダ> <ffmpeg>
 import os, subprocess, sys
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps, ImageEnhance
 W,H=1080,1920; FPS=30
 F8='/root/.cache/night-reel-fonts/ShipporiMinchoB1-800.ttf'; F5='/root/.cache/night-reel-fonts/ShipporiMinchoB1-500.ttf'
 NAVY=(27,42,90); ORG=(232,108,52); WHT=(255,255,255); SOFT=(70,90,125)
@@ -53,42 +53,43 @@ def photo_seg(img,ov,sec,zoom_in=True):
     segs.append((f'{OUT}/seg{n:02d}.mp4',sec))
 def video_seg(path,ss,ov,sec):
     n=len(segs)+1; ovp=f'{OUT}/o{n:02d}.png'; ov.save(ovp)
-    tm="zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p,eq=saturation=1.25:contrast=1.05"
+    tm="zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p,eq=saturation=1.45:contrast=1.08:brightness=0.03"
     run(['-ss',str(ss),'-t',str(sec),'-i',path,'-i',ovp,'-filter_complex',
          f"[0:v]{tm},scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS}[bg];[bg][1:v]overlay=0:0,format=yuv420p[v]",
          '-map','[v]','-an','-c:v','libx264','-preset','veryfast','-crf','20',f'{OUT}/seg{n:02d}.mp4'])
     segs.append((f'{OUT}/seg{n:02d}.mp4',sec))
-P=lambda k: Image.open(os.path.join(SRC,k)).convert('RGB')
+def pop(im):
+    # 南の島らしく、明るく鮮やかに(くすみを取って、少しあたたかく)
+    im=ImageOps.autocontrast(im,cutoff=1)
+    im=ImageEnhance.Color(im).enhance(1.35); im=ImageEnhance.Brightness(im).enhance(1.06); im=ImageEnhance.Contrast(im).enhance(1.06)
+    r,g,b=im.split(); r=r.point(lambda v:min(255,int(v*1.03))); return Image.merge('RGB',(r,g,b))
+P=lambda k: pop(Image.open(os.path.join(SRC,k)).convert('RGB'))
 E=lambda: Image.new('RGBA',(W,H),(0,0,0,0))
 def big(ov,y,t,size,col=WHT,sc=NAVY,sw=6):
     d=ImageDraw.Draw(ov)
     for i,line in enumerate(t.split('\n')):
         ft=f(size); d.text(((W-d.textlength(line,font=ft))/2,y+i*size*1.3),line,font=ft,fill=col,stroke_width=sw,stroke_fill=sc)
-# 1 つかみ(本人のばんざいの写真・うしろ姿)。文字は岩の上
-ov=E(); pill(ov,1180,'2026年5月'); big(ov,1280,'知らずに行った\n石垣島',96); big(ov,1540,'実は…',110,ORG,WHT,8); handle(ov)
-cover=cover_crop(P('banzai.jpg'),0.5,0.42,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/ishigaki-reel-cover.jpg',quality=92)
-photo_seg(cover_crop(P('banzai.jpg'),0.5,0.42),ov,2.8)
+# 1 つかみ: いちばん明るい砂浜の動画
+ov=E(); pill(ov,330,'2026年5月'); big(ov,430,'知らずに行った\n石垣島',96); big(ov,690,'実は…',110,ORG,WHT,8); handle(ov)
+video_seg(os.path.join(SRC,'IMG_1142.mov'),0,ov,2.8)
 # 2 海の動画
 ov=panel_text([('大好きな石垣島へ',60,NAVY,True),('2026年5月20日〜23日',40,SOFT,False)],1380); handle(ov)
-video_seg(os.path.join(SRC,'IMG_1092.mov'),0,ov,3.2)
-# 3 空港
-ov=panel_text([('鎌ケ谷から見ると',44,SOFT,False),('南西',110,ORG,True),('約2,000km',44,NAVY,False)],1200); handle(ov)
-photo_seg(cover_crop(P('airport.jpg'),0.55,0.5),ov,3.0)
-# 4 透明な海
-ov=panel_text([('海の透明度に感動…',58,NAVY,True)],1450); handle(ov)
-photo_seg(cover_crop(P('water.jpg')),ov,2.4,False)
-# 5 日本最南端の碑
+video_seg(os.path.join(SRC,'IMG_1092.mov'),0,ov,3.0)
+# 3 透明な海 + 方角
+ov=panel_text([('自宅から見ると',44,SOFT,False),('南西',110,ORG,True),('約2,000km',44,NAVY,False)],1180); handle(ov)
+photo_seg(cover_crop(Image.open(os.path.join(SRC,'water-bright.jpg')).convert('RGB')),ov,2.8,False)
+# 4 日本最南端の碑
 ov=panel_text([('日本最南端の',46,SOFT,False),('波照間島まで',64,NAVY,True)],1380); handle(ov)
 photo_seg(cover_crop(P('hateruma.jpg'),0.5,0.5),ov,2.6)
-# 6 マングローブ(人の写っていない写真)
+# 5 マングローブ
 ov=panel_text([('マングローブを',46,SOFT,False),('カヤックで探検',62,NAVY,True)],1380); handle(ov)
-photo_seg(cover_crop(P('mangrove.jpg'),0.45,0.5),ov,2.8)
-# 7 八重山そば
+photo_seg(cover_crop(P('mangrove.jpg'),0.45,0.5),ov,2.6)
+# 6 ソーキそば
 ov=panel_text([('ソーキそばも',46,SOFT,False),('しみる〜',66,NAVY,True)],1420); handle(ov)
 photo_seg(cover_crop(P('soba.jpg'),0.5,0.45),ov,2.4)
-# 8 砂浜の動画
+# 7 本人のばんざい
 ov=E(); big(ov,330,'最高の旅！',100); big(ov,520,'…と思ったら',64); handle(ov)
-video_seg(os.path.join(SRC,'IMG_1142.mov'),0,ov,2.8)
+photo_seg(cover_crop(P('banzai.jpg'),0.5,0.42),ov,2.8,False)
 # 9 答え(昼の空)
 im=sky().convert('RGBA'); ov=panel_text([('あとで九星気学で調べたら',44,SOFT,False),('まさかの',56,NAVY,True),('本命殺…！',120,ORG,True),('',20,NAVY,False),('5月の南西には、',42,NAVY,False),('私の星(二黒土星)が',42,NAVY,False),('回っていました',42,NAVY,False)],330)
 pill(ov,250,'答え合わせ'); chara(ov,'pose-idea',280); handle(ov); im.alpha_composite(ov)
