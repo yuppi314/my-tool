@@ -9,7 +9,8 @@
 //   "cuts": [
 //     { "image": "1.png", "telop": "いつも同じ旅先…", "lines": [{ "who": "ハル", "text": "旅行先がいつも同じで…", "pos": "top-left" }] }
 //   ],
-//   "end": { "title": "あなたの家から見た\n吉方位は", "em": "無料診断", "sub": "で" , "note": "プロフィールのリンクから🧭", "sec": 3 }
+//   "end": { "title": "あなたの家から見た\n吉方位は", "em": "無料診断", "sub": "で" , "note": "プロフィールのリンクから🧭", "sec": 3 },
+//   "follow": "follow.png"  // 最後の「フォローしてね」の画面(python3 scripts/follow_end.py night follow.png <character/v2> で作る)
 // }
 // pos は top-left / top-right / bottom-left / bottom-right(コマの角に吹き出しを置く)。sec を省くと文字数から自動で決める。
 // 出力: manga-reel.mp4 / manga-reel-cover.jpg
@@ -198,6 +199,8 @@ async function main() {
   });
   (spec.tips || []).forEach((t) => scenes.push({ html: tipHtml(t, handle), sec: t.sec || 2.2 }));
   if (spec.end) scenes.push({ html: endHtml(spec.end, handle), sec: spec.end.sec || END_SEC });
+  // 最後の「フォローしてね」の画面(scripts/follow_end.py で作った画像)
+  if (spec.follow) scenes.push({ html: `<body style="margin:0"><img src="${imgUrl(spec.follow)}" style="display:block;width:${W}px;height:${H}px"></body>`, sec: 2.4 });
 
   const browser = await chromium.launch();
   const tab = await browser.newPage({ viewport: { width: W, height: H } });

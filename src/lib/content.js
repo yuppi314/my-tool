@@ -160,6 +160,77 @@ function planByPlace(profile, origin, place, from = todayInJst(), freeMonths = 3
   };
 }
 
+// 凶方位の名前ごとのやさしい説明(断定しない)
+const REASON_NOTE = {
+  五黄殺: '物事がとどこおりやすいとされる方角',
+  暗剣殺: '思いがけないことが起きやすいとされる方角',
+  本命殺: '無理をすると疲れが出やすいとされる方角',
+  本命的殺: '判断がぶれやすいとされる方角',
+  歳破: 'その年は、物事がこわれやすいとされる方角',
+  月破: 'その月は、物事がこわれやすいとされる方角',
+  破: 'その日は、物事がこわれやすいとされる方角',
+};
+// 方角ごとの「旅先でやるといいこと」(すすめ方の例)
+const DIRECTION_TODO = {
+  北: ['温泉や水辺でゆったり過ごす', '大切な人と静かな時間を', '夜の星空や川沿いをお散歩'],
+  北東: ['山や高台から景色をながめる', 'これからのお金の計画をノートに書く', 'ご先祖や実家に感謝を伝える'],
+  東: ['早起きして朝日を浴びる', '新しいことを1つ始めてみる', '音楽やライブを楽しむ'],
+  南東: ['縁結びの神社にお参りする', '友人とゆっくりおしゃべり', '風の気持ちいい高原や海辺を歩く'],
+  南: ['美術館や美しい景色を見に行く', 'おしゃれをして出かける', '夜景や光のきれいな場所へ'],
+  南西: ['土地のごはんをゆっくり味わう', '家族とのんびり過ごす', '陶器や土ものの器をお土産に'],
+  西: ['ご当地グルメを楽しむ', '夕日のきれいな場所へ', '気の合う人とにぎやかに'],
+  北西: ['格式のある神社仏閣にお参りする', '少し良いホテルで背すじを伸ばす', 'がんばった自分にごほうびを'],
+};
+const COMMON_TODO = ['その土地のものを食べる', '温泉や水辺でゆっくりする', '旅の写真やメモを残す'];
+const REST_TODO = ['予定を詰めこまず、のんびり過ごす', '早めに寝て、体を休める', '温泉に入って、ゆっくり整える', '無理な運転や長い歩きは控えめに', '次の吉方位旅の計画を立てる'];
+
+// 日にちと行き先が決まっている人向け: その日・その場所の吉凶と、旅先でやるといいこと
+function planTrip(profile, origin, place, date) {
+  const km = Math.round(travel.distanceKm(origin, place));
+  const direction = travel.sectorOf(travel.bearingDeg(origin, place));
+  const month = houi.getMonthlyHoui(profile.honmeiId, date);
+  const m = month.directions.find((d) => d.direction === direction);
+  const day = nichiban.getDailyHoui(profile.honmeiId, date);
+  const dd = day.directions.find((d) => d.direction === direction);
+  const dayReasons = (dd.reasons || []).map((r) => (r === '破' ? '日破' : r));
+  const blocked = month.yearBlocked || month.monthBlocked;
+  const near = km < travel.MIN_DISTANCE_KM;
+  const reasons = [...new Set(m.reasons)];
+  let level;
+  if (near) level = dd.good ? 'good' : (dayReasons.length ? 'caution' : 'normal');
+  else if (blocked) level = 'rest';
+  else if (m.best) level = 'best';
+  else if (reasons.length) level = 'caution';
+  else if (m.monthGood) level = 'good';
+  else level = 'normal';
+  const TITLE = {
+    best: '◎ 最大吉方の旅です', good: '○ 吉方位の旅です', normal: '△ 吉でも凶でもない、ふつうの方角です',
+    caution: '△ 気をつけたい方角です', rest: '△ 今は「八方塞がり」の時期です',
+  };
+  let message;
+  if (level === 'best') message = `年盤・月盤の両方で「${direction}」が吉です。${DIRECTION_LUCK[direction]}の運気をいただける旅とされます。`;
+  else if (level === 'good') message = near ? 'ご自宅から近い場所なので、その日の吉方位(日盤)で見ています。日帰りのお出かけにいい日です。' : `月盤で「${direction}」が吉です。年盤では最大吉方ではないので、楽しむ旅として出かけましょう。`;
+  else if (level === 'caution') message = '楽しみな旅なら、無理をせず「のんびり休む旅」にするのがおすすめです。';
+  else if (level === 'rest') message = 'あなたの星が真ん中に入る、動くより整える時期とされます。行くなら、ゆっくり休む旅に。';
+  else message = '大きな心配はありません。旅そのものを楽しんでください。';
+  const cautions = (near ? dayReasons : reasons).map((r) => ({ name: r, note: REASON_NOTE[r] || '' }));
+  const todo = level === 'best' || level === 'good' ? [...DIRECTION_TODO[direction], ...COMMON_TODO]
+    : level === 'normal' ? COMMON_TODO : REST_TODO;
+  // この方角が次に最大吉方になる月(12か月先まで)
+  let next = null;
+  for (let i = 0; i < 12 && !next; i++) {
+    const h = houi.getMonthlyHoui(profile.honmeiId, monthDate(date, i));
+    if (h.bestDirections.includes(direction) && h.label !== month.label) next = { label: h.label, period: h.period };
+  }
+  return {
+    place: place.name, direction, luck: DIRECTION_LUCK[direction], distanceKm: km, near,
+    dateLabel: buildToday(profile.honmeiId, date).label, monthLabel: month.label, period: month.period,
+    level, title: TITLE[level], message, cautions, todo,
+    year: m.yearGood, month: m.monthGood, day: dd.good,
+    next: level === 'best' ? null : next,
+  };
+}
+
 function buildFreeResult(profile, origin, date = todayInJst()) {
   const month = buildMonth(profile, origin, date, 3);
   return {
@@ -195,6 +266,7 @@ function buildCalendar(profile, origin, date = todayInJst()) {
 module.exports = {
   planByDate,
   planByPlace,
+  planTrip,
   getGetsumeiId,
   todayInJst,
   computeProfile,

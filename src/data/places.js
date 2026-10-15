@@ -68,6 +68,7 @@ const DESTINATIONS = [
   { name: '高雄', lat: 22.627, lon: 120.301, region: 'overseas', airport: '高雄', hint: '南国の港町でのんびり。台湾南部のおおらかな空気を満喫' },
   { name: '香港', lat: 22.320, lon: 114.169, region: 'overseas', airport: '香港', hint: '風水の街・香港で、黄大仙など開運スポットを巡る旅に' },
   { name: '上海', lat: 31.230, lon: 121.474, region: 'overseas', airport: '浦東', hint: '近未来的な街並みと古い庭園。変化と刺激の旅に' },
+  { name: 'ダナン・ホイアン', lat: 16.054, lon: 108.202, region: 'overseas', airport: 'ダナン', hint: 'ビーチと黄色い古い町並み。のんびり整える旅に' },
   { name: 'バンコク', lat: 13.756, lon: 100.502, region: 'overseas', airport: 'スワンナプーム', hint: '寺院巡りとマッサージ。エネルギーチャージの旅に' },
   { name: 'シンガポール', lat: 1.352, lon: 103.820, region: 'overseas', airport: 'チャンギ', hint: '風水を取り入れた街づくりで知られる都市。金運を願う旅に' },
   { name: 'セブ島', lat: 10.316, lon: 123.891, region: 'overseas', airport: 'マクタン・セブ', hint: '南国リゾートの海で、心のデトックスをする旅に' },

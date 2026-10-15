@@ -372,3 +372,11 @@ footer.legal { color: var(--text-dim); }
 .plan-head { font-weight: 700; color: var(--accent-soft); margin: 14px 0 6px; line-height: 1.7; }
 .more-box { margin-top: 14px; padding: 14px; border-radius: 14px; border: 1px solid #06C755; font-size: 0.95rem; }
 #plan-dest { width: 100%; }
+
+.tab { font-size: 0.85rem; padding: 10px 4px; }
+.trip-verdict { margin: 10px 0; padding: 12px 14px; border-radius: 14px; font-weight: 700; font-size: 1.05rem; text-align: center; }
+.trip-best { background: rgba(232, 200, 114, 0.22); border: 1px solid var(--accent); color: var(--accent-soft); }
+.trip-good { background: rgba(232, 200, 114, 0.12); border: 1px solid var(--accent); }
+.trip-normal { border: 1px solid var(--border); }
+.trip-caution, .trip-rest { border: 1px solid #c98a8a; background: rgba(201, 138, 138, 0.12); }
+.todo-list { margin: 6px 0 12px; padding-left: 1.3em; line-height: 1.9; }

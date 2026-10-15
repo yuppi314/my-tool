@@ -126,24 +126,42 @@ router.get('/plan/date', (req, res) => {
   res.json(content.planByDate(po.profile, po.origin, new Date(y, m - 1, d)));
 });
 
-// 行きたい場所がある → いつ行くとよいか(旅先の一覧から選ぶか、国内の地名を検索)
-router.get('/plan/place', async (req, res) => {
-  const po = profileAndOrigin(req.query);
-  if (!po) return res.status(400).json({ error: '診断結果のページから使ってください。' });
-  let place = req.query.dest ? travel.getDestination(String(req.query.dest)) : null;
-  const q = String(req.query.q || '').trim();
+// 旅先の一覧から選ぶか、国内の地名を検索して場所を決める
+async function findPlace(query) {
+  let place = query.dest ? travel.getDestination(String(query.dest)) : null;
+  const q = String(query.q || '').trim();
   if (!place && q) {
-    if (q.length > 100) return res.status(400).json({ error: '場所の名前が長すぎます。' });
+    if (q.length > 100) return { error: '場所の名前が長すぎます。', status: 400 };
     try {
       const g = await geocode(q);
       if (g) place = { name: q, lat: g.lat, lon: g.lon };
     } catch (err) {
       console.error('geocode error:', err.message);
-      return res.status(502).json({ error: '場所の検索に失敗しました。一覧から選ぶか、時間をおいて試してください。' });
+      return { error: '場所の検索に失敗しました。一覧から選ぶか、時間をおいて試してください。', status: 502 };
     }
   }
-  if (!place) return res.status(404).json({ error: '場所が見つかりませんでした。市区町村名や観光地の名前で試してください。' });
-  res.json(content.planByPlace(po.profile, po.origin, place));
+  if (!place) return { error: '場所が見つかりませんでした。市区町村名や観光地の名前で試してください。', status: 404 };
+  return { place };
+}
+
+// 行きたい場所がある → いつ行くとよいか
+router.get('/plan/place', async (req, res) => {
+  const po = profileAndOrigin(req.query);
+  if (!po) return res.status(400).json({ error: '診断結果のページから使ってください。' });
+  const f = await findPlace(req.query);
+  if (f.error) return res.status(f.status).json({ error: f.error });
+  res.json(content.planByPlace(po.profile, po.origin, f.place));
+});
+
+// 日にちと行き先が決まっている → その旅の吉凶と、旅先でやるといいこと
+router.get('/plan/trip', async (req, res) => {
+  const po = profileAndOrigin(req.query);
+  if (!po) return res.status(400).json({ error: '診断結果のページから使ってください。' });
+  if (!isValidDateStr(req.query.date)) return res.status(400).json({ error: '出かける日を選んでください。' });
+  const f = await findPlace(req.query);
+  if (f.error) return res.status(f.status).json({ error: f.error });
+  const [y, m, d] = req.query.date.split('-').map(Number);
+  res.json(content.planTrip(po.profile, po.origin, f.place, new Date(y, m - 1, d)));
 });
 
 // 12ヶ月の吉方位カレンダー(有料会員限定)
