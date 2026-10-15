@@ -26,7 +26,7 @@ def panel_text(lines,y,align='c',pad=46,alpha=225):
     d.rounded_rectangle([60,y,W-60,y+ph],radius=36,fill=(255,255,255,alpha))
     yy=y+pad
     for (t,s,col,b),hh in zip(lines,hs):
-        ft=f(s,b); d.text(((W-d.textlength(t,font=ft))/2,yy),t,font=ft,fill=col); yy+=hh
+        ft=f(s,b); d.text(((W-d.textlength(t,font=ft))/2,yy),t,font=ft,fill=col,stroke_width=(4 if alpha<200 else 0),stroke_fill=(255,255,255)); yy+=hh
     return ov
 def pill(ov,y,t,size=40):
     d=ImageDraw.Draw(ov); ft=f(size,False); w=d.textlength(t,font=ft)
@@ -74,32 +74,32 @@ ov=E(); pill(ov,1150,'2026年5月'); big(ov,1240,'知らずに行った\n石垣�
 cover=cover_crop(P('d1380.jpg'),0.5,0.5,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/ishigaki-reel-cover.jpg',quality=92)
 photo_seg(cover_crop(P('d1380.jpg'),0.5,0.5),ov,2.8)
 # 2 飛行機の窓から石垣の海
-ov=panel_text([('大好きな石垣島へ',60,NAVY,True),('2026年5月20日〜23日',40,SOFT,False)],1380); handle(ov)
+ov=panel_text([('大好きな石垣島へ',60,NAVY,True),('2026年5月20日〜23日',40,SOFT,False)],1380,alpha=110); handle(ov)
 photo_seg(cover_crop(P('d1067.jpg'),0.5,0.4),ov,2.6)
 # 3 川平湾 + 方角
-ov=panel_text([('自宅から見ると',44,SOFT,False),('南西',110,ORG,True),('約2,000km',44,NAVY,False)],1180); handle(ov)
+ov=panel_text([('自宅から見ると',44,SOFT,False),('南西',110,ORG,True),('約2,000km',44,NAVY,False)],1180,alpha=110); handle(ov)
 photo_seg(cover_crop(P('d1293.jpg'),0.5,0.5),ov,2.8,False)
 # 4 グラスボート
-ov=panel_text([('川平湾の',46,SOFT,False),('グラスボートへ',64,NAVY,True)],1400); handle(ov)
+ov=panel_text([('川平湾の',46,SOFT,False),('グラスボートへ',64,NAVY,True)],1400,alpha=110); handle(ov)
 photo_seg(cover_crop(P('d1294.jpg'),0.45,0.5),ov,2.3)
 # 5 波照間の砂浜(動画)
-ov=panel_text([('日本最南端の',46,SOFT,False),('波照間島まで',64,NAVY,True)],1380); handle(ov)
+ov=panel_text([('日本最南端の',46,SOFT,False),('波照間島まで',64,NAVY,True)],1380,alpha=110); handle(ov)
 video_seg(os.path.join(SRC,'IMG_1142.mov'),0,ov,2.8)
 # 6 木のトンネル
-ov=panel_text([('木のトンネルを',46,SOFT,False),('ぬけると…',64,NAVY,True)],1400); handle(ov)
+ov=panel_text([('木のトンネルを',46,SOFT,False),('ぬけると…',64,NAVY,True)],1400,alpha=110); handle(ov)
 photo_seg(cover_crop(P('d1306.jpg'),0.5,0.5),ov,2.2)
 # 7 マングローブ
-ov=panel_text([('マングローブを',46,SOFT,False),('カヤックで探検',62,NAVY,True)],1400); handle(ov)
+ov=panel_text([('マングローブを',46,SOFT,False),('カヤックで探検',62,NAVY,True)],1400,alpha=110); handle(ov)
 photo_seg(cover_crop(P('d1247.jpg'),0.5,0.5),ov,2.3)
 # 8 島ねこ
-ov=panel_text([('島ねこにも',46,SOFT,False),('会えました',64,NAVY,True)],1400); handle(ov)
+ov=panel_text([('島ねこにも',46,SOFT,False),('会えました',64,NAVY,True)],1400,alpha=110); handle(ov)
 photo_seg(cover_crop(P('d1110.jpg'),0.55,0.6),ov,2.0)
 # 9 島ごはん
-ov=panel_text([('もずく、ゴーヤー…',46,SOFT,False),('島ごはんも最高',62,NAVY,True)],1400); handle(ov)
+ov=panel_text([('もずく、ゴーヤー…',46,SOFT,False),('島ごはんも最高',62,NAVY,True)],1400,alpha=110); handle(ov)
 photo_seg(cover_crop(P('d1129.jpg'),0.5,0.5),ov,2.2)
 # 10 本人の笑顔
 ov=E(); big(ov,300,'最高の旅！',100); big(ov,490,'…と思ったら',64); handle(ov)
-photo_seg(cover_crop(P('d1386.jpg'),0.5,0.55),ov,2.8,False)
+photo_seg(cover_crop(blur_boxes(P('d1386.jpg'),[(565,400,700,560)]),0.5,0.55),ov,2.8,False)
 # 9 答え(昼の空)
 im=sky().convert('RGBA'); ov=panel_text([('あとで九星気学で調べたら',44,SOFT,False),('まさかの',56,NAVY,True),('本命殺…！',120,ORG,True),('',20,NAVY,False),('5月の南西には、',42,NAVY,False),('私の星(二黒土星)が',42,NAVY,False),('回っていました',42,NAVY,False)],330)
 pill(ov,250,'答え合わせ'); chara(ov,'pose-idea',280); handle(ov); im.alpha_composite(ov)
