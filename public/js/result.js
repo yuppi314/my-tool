@@ -113,15 +113,36 @@ function renderPlanPlace(p) {
   }
   document.getElementById('plan-place-result').innerHTML = html;
 }
+function renderPlanTrip(t) {
+  let html = `<div class="plan-head">${escapeHtml(t.dateLabel)}に ${escapeHtml(t.place)} へ<br>ご自宅から <span class="dest-dir">${escapeHtml(t.direction)}</span> 約${t.distanceKm.toLocaleString()}km</div>`;
+  html += `<div class="trip-verdict trip-${escapeHtml(t.level)}">${escapeHtml(t.title)}</div>`;
+  html += `<p>${escapeHtml(t.message)}</p>`;
+  if (t.near) html += '<p class="board-legend">※ご自宅から100km未満の近い場所なので、その日の吉方位(日盤)で見ています。</p>';
+  else html += `<p class="board-legend">${escapeHtml(t.monthLabel)}(${escapeHtml(t.period)})の期間で見ています。年盤 ${t.year ? '○' : '×'}・月盤 ${t.month ? '○' : '×'}・その日 ${t.day ? '○' : '×'}</p>`;
+  if (t.cautions.length) {
+    html += '<div class="sub-label" style="margin-top:12px;">気をつけたいこと</div>' + t.cautions.map((c) =>
+      `<div class="luck-row"><span class="dest-dir">${escapeHtml(c.name)}</span><span>${escapeHtml(c.note)}</span></div>`).join('');
+  }
+  html += `<div class="sub-label" style="margin-top:12px;">${t.level === 'caution' || t.level === 'rest' ? 'こう過ごすのがおすすめ' : '旅先でやるといいこと'}</div>`;
+  html += '<ul class="todo-list">' + t.todo.map((x) => `<li>${escapeHtml(x)}</li>`).join('') + '</ul>';
+  if (t.level !== 'best') {
+    html += t.next
+      ? `<p class="sub-label">${escapeHtml(t.place)}が最大吉方になるのは <strong>${escapeHtml(t.next.label)}</strong>(${escapeHtml(t.next.period)})です。</p>`
+      : `<p class="sub-label">この先1年は、${escapeHtml(t.direction)}が最大吉方になる月はありません。</p>`;
+  }
+  document.getElementById('plan-trip-result').innerHTML = html;
+}
 async function setupPlan() {
   document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('active', x === t));
     document.getElementById('tab-date').style.display = t.dataset.tab === 'date' ? 'block' : 'none';
     document.getElementById('tab-place').style.display = t.dataset.tab === 'place' ? 'block' : 'none';
+    document.getElementById('tab-trip').style.display = t.dataset.tab === 'trip' ? 'block' : 'none';
   }));
   const dateInput = document.getElementById('plan-date');
   const today = new Date();
   dateInput.min = today.toISOString().slice(0, 10);
+  document.getElementById('trip-date').min = dateInput.min;
   document.getElementById('plan-date-btn').addEventListener('click', async () => {
     if (!dateInput.value) { document.getElementById('plan-error').textContent = '日付を選んでください。'; return; }
     const d = await fetchPlan('date', { date: dateInput.value });
@@ -132,6 +153,7 @@ async function setupPlan() {
     const list = await (await fetch('/api/destinations')).json();
     const opt = (r, label) => `<optgroup label="${label}">${list.destinations.filter((x) => x.region === r).map((x) => `<option>${escapeHtml(x.name)}</option>`).join('')}</optgroup>`;
     sel.innerHTML += opt('domestic', '国内') + opt('overseas', '海外');
+    document.getElementById('trip-dest').innerHTML += opt('domestic', '国内') + opt('overseas', '海外');
   } catch (e) { /* 一覧が取れなくても地名検索は使える */ }
   const runPlace = async () => {
     const dest = sel.value;
@@ -142,6 +164,18 @@ async function setupPlan() {
   };
   sel.addEventListener('change', () => { document.getElementById('plan-q').value = ''; if (sel.value) runPlace(); });
   document.getElementById('plan-place-btn').addEventListener('click', () => { sel.value = ''; runPlace(); });
+  const tripSel = document.getElementById('trip-dest');
+  const runTrip = async () => {
+    const date = document.getElementById('trip-date').value;
+    const dest = tripSel.value;
+    const q = document.getElementById('trip-q').value.trim();
+    if (!date) { document.getElementById('plan-error').textContent = '出かける日を選んでください。'; return; }
+    if (!dest && !q) { document.getElementById('plan-error').textContent = '旅先を選ぶか、地名を入力してください。'; return; }
+    const t = await fetchPlan('trip', dest ? { date, dest } : { date, q });
+    if (t) renderPlanTrip(t);
+  };
+  tripSel.addEventListener('change', () => { document.getElementById('trip-q').value = ''; });
+  document.getElementById('trip-btn').addEventListener('click', runTrip);
 }
 
 function renderToday(today) {

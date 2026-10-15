@@ -58,6 +58,7 @@
       <div class="tabs">
         <button type="button" class="tab active" data-tab="date">📅 出かける日</button>
         <button type="button" class="tab" data-tab="place">📍 行きたい場所</button>
+        <button type="button" class="tab" data-tab="trip">🧳 日にち＋行き先</button>
       </div>
       <div class="tab-body" id="tab-date">
         <p class="sub-label">出かける日が決まっていたら、その日に行くといい方角と旅先がわかります。</p>
@@ -75,6 +76,16 @@
           <button type="button" class="secondary" id="plan-place-btn">調べる</button>
         </div>
         <div id="plan-place-result"></div>
+      </div>
+      <div class="tab-body" id="tab-trip" style="display:none;">
+        <p class="sub-label">出かける日と行き先が決まっていたら、その旅が吉方位かどうかと、旅先でやるといいことがわかります。</p>
+        <input type="date" id="trip-date" />
+        <select id="trip-dest" style="margin-top:10px;"><option value="">旅先の一覧から選ぶ</option></select>
+        <div class="address-row" style="margin-top:10px;">
+          <input type="text" id="trip-q" placeholder="または地名を入力(例: 箱根、軽井沢)" />
+          <button type="button" class="secondary" id="trip-btn">調べる</button>
+        </div>
+        <div id="plan-trip-result"></div>
       </div>
       <p class="error-text" id="plan-error"></p>
     </div>
