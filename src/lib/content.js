@@ -70,6 +70,37 @@ function getsumeiInfo(profile) {
   };
 }
 
+// 傾斜宮: 月命星を中宮に置いた盤で、本命星が入る宮。本命星と月命星が同じときは中宮傾斜とする
+const KEISHA = {
+  北: { name: '坎宮傾斜', yomi: 'かんきゅうけいしゃ', words: '思慮深さ・柔軟さ・人の心に寄り添う力',
+    text: '人の気持ちを深く感じとり、相手に合わせてしなやかに動ける本質があると言われています。ひとりで考える時間が、あなたを整えてくれます。' },
+  北東: { name: '艮宮傾斜', yomi: 'ごんきゅうけいしゃ', words: '粘り強さ・変化を力にする・蓄える力',
+    text: 'コツコツ積み重ね、人生の節目で大きく流れを変える力があると言われています。変化のときこそ、あなたの本領が出やすいでしょう。' },
+  東: { name: '震宮傾斜', yomi: 'しんきゅうけいしゃ', words: '行動力・明るさ・新しいことへの挑戦',
+    text: '思い立ったらすぐ動ける、明るく前向きな本質があると言われています。新しい場所や初めてのことが、あなたを元気にしてくれます。' },
+  南東: { name: '巽宮傾斜', yomi: 'そんきゅうけいしゃ', words: '調和・ご縁・信頼される力',
+    text: '人と人をつなぎ、まわりと調和しながら物事を進める本質があると言われています。ご縁を大切にするほど、運が広がりやすいでしょう。' },
+  南: { name: '離宮傾斜', yomi: 'りきゅうけいしゃ', words: 'ひらめき・美意識・華やかさ',
+    text: '感性が豊かで、美しいものやひらめきを形にする本質があると言われています。好きなものに囲まれると、魅力がいっそう輝きます。' },
+  南西: { name: '坤宮傾斜', yomi: 'こんきゅうけいしゃ', words: '支える力・まじめさ・家庭的なあたたかさ',
+    text: 'まわりの人を支え、地道に努力を続けられる本質があると言われています。誰かの役に立てたとき、あなたの心も満たされやすいでしょう。' },
+  西: { name: '兌宮傾斜', yomi: 'だきゅうけいしゃ', words: '楽しむ力・社交性・会話上手',
+    text: '人生を楽しみ、まわりを明るくする本質があると言われています。おいしい食事やおしゃべりの時間が、あなたの運気を整えてくれます。' },
+  北西: { name: '乾宮傾斜', yomi: 'けんきゅうけいしゃ', words: '目標に向かう力・責任感・リーダーシップ',
+    text: '高い目標に向かって努力を続け、人を引っぱっていく本質があると言われています。少し背すじの伸びる場所が、あなたに力をくれます。' },
+  中央: { name: '中宮傾斜', yomi: 'ちゅうぐうけいしゃ', words: '芯の強さ・存在感・まとめる力',
+    text: '表の顔と心の奥が同じ星なので、その星らしさがまっすぐ出る、芯の強い本質があると言われています。' },
+};
+function keishaInfo(profile) {
+  if (!profile.getsumeiId) return null;
+  let palace = '中央';
+  if (profile.getsumeiId !== profile.honmeiId) {
+    const board = houi.buildBoard(profile.getsumeiId);
+    palace = Object.keys(board).find((d) => board[d] === profile.honmeiId);
+  }
+  return { palace, ...KEISHA[palace] };
+}
+
 // 今日の属する節月から数えて i ヶ月後の節月に含まれる日付(各月15日は必ず節入り後)
 function monthDate(from, i) {
   const info = houi.getMonthInfo(from);
@@ -237,6 +268,7 @@ function buildFreeResult(profile, origin, date = todayInJst()) {
     star: { id: profile.star.id, name: profile.star.name, element: profile.star.element, keyword: profile.star.keyword,
       color: profile.star.color, trait: profile.star.trait },
     getsumei: getsumeiInfo(profile),
+    keisha: keishaInfo(profile),
     today: buildToday(profile.honmeiId, date),
     compatible: buildCompatible(profile.honmeiId),
     origin: origin.name,

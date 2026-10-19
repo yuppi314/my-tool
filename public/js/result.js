@@ -32,6 +32,7 @@ async function init() {
   document.getElementById('r-keywords').innerHTML = (data.star.keyword || '').split('・')
     .map((k) => `<span class="chip">${escapeHtml(k)}</span>`).join('');
   renderGetsumei(data.getsumei);
+  renderKeisha(data.keisha);
   renderToday(data.today);
   setupPlan();
   renderCompatible(data.compatible || []);
@@ -67,6 +68,15 @@ function renderGetsumei(g) {
   document.getElementById('g-star').textContent = g.name;
   document.getElementById('g-keywords').innerHTML = g.keyword.split('・').map((k) => `<span class="chip">${escapeHtml(k)}</span>`).join('');
   document.getElementById('g-note').textContent = g.note;
+}
+
+function renderKeisha(k) {
+  if (!k) return;
+  document.getElementById('keisha-box').style.display = 'block';
+  document.getElementById('k-name').textContent = k.name;
+  document.getElementById('k-yomi').textContent = `(${k.yomi})`;
+  document.getElementById('k-words').textContent = k.words;
+  document.getElementById('k-text').textContent = k.text;
 }
 
 // ===== 旅の計画(出かける日から / 行きたい場所から) =====

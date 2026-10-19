@@ -79,6 +79,7 @@
     // 月命星・ラッキーカラー・今月の最大吉方
     const rows = [];
     if (data.getsumei) rows.push(['心の奥(月命星)', data.getsumei.name]);
+    if (data.keisha) rows.push(['本当の自分', data.keisha.name]);
     if (data.star.color) rows.push(['ラッキーカラー', data.star.color]);
     const best = (data.month && data.month.bestDirections) || [];
     rows.push([`${data.month ? data.month.label.replace(/^\d+年/, '') : '今月'}の最大吉方`, best.length ? best.join('・') : 'お休みの月']);
@@ -93,7 +94,7 @@
 
     // 案内役のキャラクター
     const akari = await loadImage('/img/akari.png');
-    if (akari) ctx.drawImage(akari, W - 400, H - 560, 360, 360);
+    if (akari) ctx.drawImage(akari, W - 370, H - 440, 330, 330);
 
     // 誘導
     const cy = boxY + rowH * rows.length + 150;
