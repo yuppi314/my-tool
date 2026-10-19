@@ -39,6 +39,7 @@ async function init() {
   renderMonth(data.month);
   renderDestinations(data.month, data.nextBestMonth);
   renderAffiliates(data.affiliates);
+  if (window.setupShareCard) window.setupShareCard(data);
 
   if (data.paid) {
     statusLine.innerHTML = 'ご利用ありがとうございます <span class="badge">会員</span>';

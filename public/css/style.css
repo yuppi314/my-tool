@@ -380,3 +380,5 @@ footer.legal { color: var(--text-dim); }
 .trip-normal { border: 1px solid var(--border); }
 .trip-caution, .trip-rest { border: 1px solid #c98a8a; background: rgba(201, 138, 138, 0.12); }
 .todo-list { margin: 6px 0 12px; padding-left: 1.3em; line-height: 1.9; }
+#share-make { margin-top: 12px; }
+.share-img { display: block; width: 70%; max-width: 320px; margin: 14px auto 10px; border-radius: 16px; border: 1px solid var(--border); }
