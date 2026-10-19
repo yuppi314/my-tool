@@ -215,7 +215,11 @@ function renderMonth(month) {
   document.getElementById('m-period').textContent = `${month.label}(${month.period})`;
   document.getElementById('m-centers').textContent = `年盤: ${month.yearCenter}中宮 / 月盤: ${month.monthCenter}中宮`;
   document.getElementById('m-message').textContent = month.message;
-  document.getElementById('m-luck').innerHTML = (month.bestLuck || []).map(luckRow).join('');
+  const goodHead = (month.goodLuck || []).length ? '<p class="sub-label" style="margin-top:12px;">○ 月の吉方位(数日の旅やお出かけの目安)</p>' : '';
+  const bestHead = (month.bestLuck || []).length ? '<p class="sub-label" style="margin-top:12px;">◎ 最大吉方</p>' : '';
+  document.getElementById('m-luck').innerHTML = bestHead + (month.bestLuck || []).map(luckRow).join('')
+    + goodHead + (month.goodLuck || []).map(luckRow).join('');
+  const goodSet = new Set(month.goodDirections || []);
 
   const byDir = Object.fromEntries(month.directions.map((d) => [d.direction, d]));
   document.getElementById('m-board').innerHTML = BOARD_LAYOUT.map((dir) => {
@@ -223,8 +227,8 @@ function renderMonth(month) {
       return `<div class="houi-cell center"><div class="dir">中宮</div><div class="star">${escapeHtml(month.monthCenter)}</div></div>`;
     }
     const d = byDir[dir];
-    const cls = d.best ? 'best' : d.reasons.length ? 'bad' : '';
-    const mark = d.best ? '◎' : d.reasons.length ? d.reasons.join('・') : '';
+    const cls = d.best ? 'best' : goodSet.has(dir) ? 'good' : d.reasons.length ? 'bad' : '';
+    const mark = d.best ? '◎' : goodSet.has(dir) ? '○' : d.reasons.length ? d.reasons.join('・') : '';
     return `<div class="houi-cell ${cls}"><div class="dir">${dir}</div><div class="star">${escapeHtml(d.monthStar)}</div><div class="mark">${escapeHtml(mark)}</div></div>`;
   }).join('');
 }
@@ -247,6 +251,12 @@ function renderDestinations(month, nextBestMonth) {
   }
   if (month.bestDirections.length) {
     el.innerHTML = '<p>吉方位はありますが、お住まいの地域からその方位にある登録済みの旅先がありません。</p>';
+    return;
+  }
+  if ((month.goodDestinations || []).length) {
+    el.innerHTML = '<p class="sub-label">今月は最大吉方がないため、「月の吉方位」にある旅先をご紹介します。</p>'
+      + month.goodDestinations.map(destinationHtml).join('')
+      + (nextBestMonth ? `<p class="sub-label" style="margin-top:10px;">次の最大吉方は ${escapeHtml(nextBestMonth.label)}(${escapeHtml(nextBestMonth.period)})の「${escapeHtml(nextBestMonth.bestDirections.join('・'))}」です。</p>` : '');
     return;
   }
   el.innerHTML = nextBestMonth

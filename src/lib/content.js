@@ -127,6 +127,8 @@ function buildMonth(profile, origin, date, perDirection) {
       monthStar: starName(d.monthStar),
     })),
     bestDirections: h.bestDirections,
+    // 月の吉方位: 月盤で吉で、年盤・月盤のどちらにも凶(五黄殺・本命殺・破など)がない方位(最大吉方は除く)
+    goodDirections: (h.yearBlocked || h.monthBlocked) ? [] : h.directions.filter((d) => d.monthGood && !d.best && d.reasons.length === 0).map((d) => d.direction),
     destinations: travel.recommend(origin, h.bestDirections, perDirection),
   };
 }
@@ -146,10 +148,14 @@ function monthMessage(month) {
   if (month.monthBlocked || month.yearBlocked) {
     return 'あなたの本命星が中宮に入る「八方塞がり」の時期のため、今月は吉方位がありません。遠出は控えめにして、次の吉方位旅の計画を立てるのに向いています。';
   }
+  const good = month.goodDirections && month.goodDirections.length
+    ? `また「${month.goodDirections.join('・')}」は、月盤で吉となる「月の吉方位」です。数日の旅やお出かけの目安になります。` : '';
   if (!month.bestDirections.length) {
-    return '今月は年盤・月盤の両方で吉となる方位(最大吉方)がありません。次に最大吉方が巡る月に向けて、マイルを貯めておきましょう。';
+    return good
+      ? `今月は年盤・月盤の両方で吉となる方位(最大吉方)はありません。${good.replace(/^また/, 'ただし')}`
+      : '今月は年盤・月盤の両方で吉となる方位(最大吉方)がありません。次に最大吉方が巡る月に向けて、マイルを貯めておきましょう。';
   }
-  return `今月の最大吉方は「${month.bestDirections.join('・')}」。年盤・月盤の両方で吉となる、効果が大きいとされる方位です。`;
+  return `今月の最大吉方は「${month.bestDirections.join('・')}」。年盤・月盤の両方で吉となる、効果が大きいとされる方位です。${good}`;
 }
 
 // 出かける日が決まっている人向け: その日の属する節月の最大吉方と旅先、その日(日盤)でも吉の方位
@@ -274,7 +280,9 @@ function buildFreeResult(profile, origin, date = todayInJst()) {
     origin: origin.name,
     summary: `${profile.star.name}(${profile.star.keyword})のあなた。${profile.star.trait}`,
     month: { ...month, message: monthMessage(month),
-      bestLuck: month.bestDirections.map((d) => ({ direction: d, luck: DIRECTION_LUCK[d] })) },
+      bestLuck: month.bestDirections.map((d) => ({ direction: d, luck: DIRECTION_LUCK[d] })),
+      goodLuck: month.goodDirections.map((d) => ({ direction: d, luck: DIRECTION_LUCK[d] })),
+      goodDestinations: month.bestDirections.length ? [] : travel.recommend(origin, month.goodDirections, 2) },
     nextBestMonth: month.bestDirections.length ? null : findNextBestMonth(profile, origin, date),
   };
 }

@@ -383,3 +383,5 @@ footer.legal { color: var(--text-dim); }
 #share-make { margin-top: 12px; }
 .share-img { display: block; width: 70%; max-width: 320px; margin: 14px auto 10px; border-radius: 16px; border: 1px solid var(--border); }
 .kantei-card { border: 1px solid var(--accent); }
+.houi-cell.good { border-color: var(--accent); }
+.houi-cell.good .mark { color: var(--accent); font-size: 0.95rem; }
