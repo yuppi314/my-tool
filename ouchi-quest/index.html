@@ -263,9 +263,9 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
   const fmtTime = t => { const d = new Date(t); return `${d.getHours()}:${pad(d.getMinutes())}`; };
 
   // ---------- store: shared db when available, this-browser storage otherwise ----------
-  const COLS = ["quests", "logs", "rewards", "redemptions"];
-  const data = { quests: [], logs: [], rewards: [], redemptions: [] };
-  let db = null, me = "local", isOwner = true, canWrite = true, shared = false, userApi = null;
+  const COLS = ["quests", "logs", "rewards", "redemptions", "players"];
+  const data = { quests: [], logs: [], rewards: [], redemptions: [], players: [] };
+  let db = null, me = "local", isAdmin = true, activePlayer = null, ownerAcct = true, canWrite = true, shared = false, userApi = null;
   const names = {};
 
   const local = {
@@ -322,7 +322,23 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
       (q.repeat === "daily" && dayKey(l.at) === dayKey(now)) ||
       (q.repeat === "weekly" && weekKey(l.at) === weekKey(now))));
   }
-  const nameOf = id => id === me ? "あなた" : (names[id] || "家族");
+  // Players: when a family registers players, one account can be shared by several people
+  // (e.g. a child without their own account) who pick "who's playing" on this device.
+  const playersMode = () => data.players.length > 0;
+  const who = () => playersMode() ? activePlayer : me;
+  const isPlayer = id => data.players.some(p => p.id === id);
+  const canPlay = () => canWrite && (!playersMode() || isPlayer(activePlayer));
+  const nameOf = id => {
+    const p = data.players.find(p => p.id === id); if (p) return p.name;
+    if (id === "parent") return "おうちの人";
+    return id === me ? "あなた" : (names[id] || "家族");
+  };
+  function choosePlayer(id) {
+    activePlayer = id; thankOpen = null; confirmReward = null;
+    try { localStorage.setItem("ouchi-quest-player", id || ""); } catch {}
+    if (id !== "parent" && tab === "admin") tab = "quest";
+    render(); maybeShowGift();
+  }
 
   // ---------- UI state ----------
   let tab = "quest", areaFilter = "all", confirmReward = null, thankOpen = null;
@@ -340,13 +356,28 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
   }
 
   function draw() {
-    const s = statsFor(me);
-    $("#mode").textContent = !shared ? "この端末だけに保存中" : isOwner ? "おうちの人モード" : "プレイヤーモード";
-    $("#adminTab").hidden = !isOwner;
-    if (tab === "admin" && !isOwner) tab = "quest";
+    if (playersMode() && activePlayer && activePlayer !== "parent" && !isPlayer(activePlayer)) activePlayer = null;
+    const s = statsFor(who());
+    // in players mode the 管理 tab only shows while "おうちの人" is selected, so kids on a shared device don't land in it
+    const adminVisible = isAdmin && (!playersMode() || activePlayer === "parent");
+    $("#mode").textContent = !shared ? "この端末だけに保存中" : adminVisible ? "おうちの人モード" : "プレイヤーモード";
+    $("#adminTab").hidden = !adminVisible;
+    if (tab === "admin" && !adminVisible) tab = "quest";
 
     // status
-    const st = $("#status"); st.replaceChildren(
+    const st = $("#status");
+    if (playersMode() && !isPlayer(activePlayer)) {
+      st.replaceChildren(
+        el("h2", { style: "font-size:18px" }, activePlayer === "parent" ? "みんなの様子" : "だれがあそぶ？"),
+        activePlayer === "parent"
+          ? el("div", { class: "list" }, data.players.map(p => { const ps = statsFor(p.id);
+              return el("div", { class: "manage-item" }, el("b", {}, p.name), el("span", { class: "small" }, `Lv${ps.lv}・連続${ps.streak}日・`, el("span", { class: "pixel", style: "color:var(--coin)" }, ps.coins), "コイン")); }))
+          : el("div", { class: "small muted" }, "自分の名前をタップしてね"),
+        el("div", { class: "chips" },
+          [...data.players].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)).map(p => el("button", { class: "btn primary", onclick: () => choosePlayer(p.id) }, p.name)),
+          activePlayer === "parent" ? null : el("button", { class: "btn", onclick: () => choosePlayer("parent") }, "おうちの人")));
+    } else st.replaceChildren(
+      playersMode() ? el("div", { class: "sec-head" }, el("h2", { style: "font-size:20px" }, `${nameOf(activePlayer)}のステータス`), el("button", { class: "btn ghost small", onclick: () => choosePlayer(null) }, "交代する")) : null,
       el("div", { class: "status-row" },
         el("div", { class: "lv", "aria-label": `レベル${s.lv}` }, el("small", {}, "Lv"), el("b", {}, s.lv)),
         el("div", { class: "who" },
@@ -371,13 +402,13 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
 
     // tabs
     const pendingCount = data.redemptions.filter(r => r.status === "requested").length;
-    const unthanked = data.logs.filter(l => !l.thanks && !l.gift && l.by !== me).length;
+    const unthanked = data.logs.filter(l => !l.thanks && !l.gift && l.by !== who()).length;
     $("#tabs").querySelectorAll("button").forEach(b => {
       b.setAttribute("aria-selected", String(b.dataset.tab === tab));
       const base = { quest: "クエスト", shop: "ごほうび", log: "きろく", admin: "管理" }[b.dataset.tab];
       b.replaceChildren(base);
-      if (isOwner && b.dataset.tab === "log" && unthanked) b.append(el("span", { class: "dot" }, unthanked));
-      if (isOwner && b.dataset.tab === "admin" && pendingCount) b.append(el("span", { class: "dot" }, pendingCount));
+      if (adminVisible && b.dataset.tab === "log" && unthanked) b.append(el("span", { class: "dot" }, unthanked));
+      if (adminVisible && b.dataset.tab === "admin" && pendingCount) b.append(el("span", { class: "dot" }, pendingCount));
     });
     for (const k of ["quest", "shop", "log", "admin"]) $("#panel-" + k).hidden = k !== tab;
 
@@ -387,7 +418,7 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
   const DUE = { today: "今日中", week: "今週中", "": "いつでも" };
   function questCard(q) {
     const done = doneNow(q);
-    const canCancel = q.requestedBy && !done && canWrite && (q.requestedBy === me || isOwner);
+    const canCancel = q.requestedBy && !done && canWrite && (q.requestedBy === who() || isAdmin);
     return el("div", { class: "quest" + (done ? " done" : "") },
       q.requestedBy ? el("div", { class: "req" }, `${nameOf(q.requestedBy)}からのおねがい`, q.due ? `・${DUE[q.due]}` : "") : null,
       el("div", { class: "title" }, q.title),
@@ -398,7 +429,7 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
         q.minutes ? el("span", {}, `約${q.minutes}分`) : null,
         q.requestedBy ? null : el("span", {}, REPEAT[q.repeat] || ""),
         canCancel ? el("button", { class: "cancel", onclick: () => guard(store.del("quests", q.id)) }, "取り下げる") : null),
-      el("button", { class: "go", style: `grid-row:1 / span ${2 + !!q.requestedBy + !!q.note}`, disabled: done || !canWrite, onclick: () => complete(q) }, done ? "クリア済" : "やった！"));
+      el("button", { class: "go", style: `grid-row:1 / span ${2 + !!q.requestedBy + !!q.note}`, disabled: done || !canPlay(), onclick: () => complete(q) }, done ? "クリア済" : "やった！"));
   }
 
   // anyone in the family can drop in a one-off request in a single line
@@ -408,7 +439,7 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
       e.preventDefault(); const f = e.target;
       const title = f.rqtitle.value.trim(); if (!title) { f.rqtitle.focus(); return; }
       const note = f.rqnote.value.trim();
-      guard(store.set("quests", uid(), { title, note, area: f.rqarea.value, points: +f.rqpoints.value || 10, minutes: 0, repeat: "once", due: f.rqdue.value, requestedBy: me, active: true, createdAt: Date.now() }));
+      guard(store.set("quests", uid(), { title, note, area: f.rqarea.value, points: +f.rqpoints.value || 10, minutes: 0, repeat: "once", due: f.rqdue.value, requestedBy: who() || "parent", active: true, createdAt: Date.now() }));
       f.rqtitle.value = ""; f.rqnote.value = "";
       toast("おねがいを入れました");
     } },
@@ -447,8 +478,8 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
     if (!regular.length) {
       p.append(el("div", { class: "empty" },
         el("b", {}, "まだクエストがありません"),
-        el("div", { class: "small" }, isOwner ? "おすすめのクエストとごほうびをまとめて追加するか、管理タブから自分で作れます。" : "おうちの人がクエストを追加すると、ここに並びます。"),
-        isOwner && canWrite ? el("button", { class: "btn primary", onclick: addStarter }, "おすすめセットを追加") : null));
+        el("div", { class: "small" }, isAdmin ? "おすすめのクエストとごほうびをまとめて追加するか、管理タブから自分で作れます。" : "おうちの人がクエストを追加すると、ここに並びます。"),
+        isAdmin && canWrite ? el("button", { class: "btn primary", onclick: addStarter }, "おすすめセットを追加") : null));
       return;
     }
     const open = regular.filter(q => !doneNow(q));
@@ -472,10 +503,10 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
 
   function renderShop() {
     const p = $("#panel-shop"); p.replaceChildren();
-    const coins = statsFor(me).coins;
+    const coins = statsFor(who()).coins;
     p.append(el("div", { class: "sec-head" }, el("h3", {}, "コインでごほうびと交換"), el("span", { class: "small muted" }, "所持 ", el("span", { class: "pixel", style: "color:var(--coin)" }, coins), " コイン")));
     if (!data.rewards.length) {
-      p.append(el("div", { class: "empty" }, el("b", {}, "ごほうびはまだありません"), el("div", { class: "small" }, isOwner ? "管理タブから追加できます。" : "おうちの人に、ほしいごほうびをリクエストしてみましょう。")));
+      p.append(el("div", { class: "empty" }, el("b", {}, "ごほうびはまだありません"), el("div", { class: "small" }, isAdmin ? "管理タブから追加できます。" : "おうちの人に、ほしいごほうびをリクエストしてみましょう。")));
     }
     p.append(el("div", { class: "list" }, [...data.rewards].sort((a, b) => a.cost - b.cost).map(r => {
       const short = coins < r.cost;
@@ -485,9 +516,9 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
           ? el("div", { class: "confirm" }, `${r.cost}コイン使いますか？`,
               el("button", { class: "btn primary", onclick: () => redeem(r) }, "交換する"),
               el("button", { class: "btn ghost", onclick: () => { confirmReward = null; render(); } }, "やめる"))
-          : el("button", { class: "btn primary", disabled: short || !canWrite, onclick: () => { confirmReward = r.id; render(); } }, el("span", { class: "pixel" }, r.cost), " で交換"));
+          : el("button", { class: "btn primary", disabled: short || !canPlay(), onclick: () => { confirmReward = r.id; render(); } }, el("span", { class: "pixel" }, r.cost), " で交換"));
     })));
-    const mine = data.redemptions.filter(r => r.by === me).sort((a, b) => b.at - a.at);
+    const mine = data.redemptions.filter(r => r.by === who()).sort((a, b) => b.at - a.at);
     if (mine.length) {
       p.append(el("h3", { style: "font-size:15px;margin-top:6px" }, "交換したもの"));
       p.append(el("div", { class: "card" }, mine.map(r => el("div", { class: "manage-item" },
@@ -498,10 +529,10 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
 
   function renderLog() {
     const p = $("#panel-log"); p.replaceChildren();
-    const s = statsFor(me);
+    const s = statsFor(who());
     p.append(el("div", { class: "sec-head" }, el("h3", {}, "バッジ"), el("span", { class: "small muted" }, `${BADGES.filter(b => b.ok(s)).length} / ${BADGES.length}`)));
     p.append(el("div", { class: "badges" }, BADGES.map(b => el("div", { class: "badge" + (b.ok(s) ? "" : " off") }, el("div", { class: "bn" }, b.name), el("div", { class: "bd" }, b.desc)))));
-    p.append(el("div", { class: "sec-head", style: "margin-top:8px" }, el("h3", {}, "家族のきろく"), isOwner ? el("span", { class: "small muted" }, "ありがとうを送るとボーナス +" + THANKS_BONUS) : null));
+    p.append(el("div", { class: "sec-head", style: "margin-top:8px" }, el("h3", {}, "家族のきろく"), isAdmin ? el("span", { class: "small muted" }, "ありがとうを送るとボーナス +" + THANKS_BONUS) : null));
     const logs = [...data.logs].sort((a, b) => b.at - a.at).slice(0, 60);
     if (!logs.length) { p.append(el("div", { class: "empty" }, el("div", { class: "small" }, "クエストをクリアすると、ここに記録が残ります。"))); return; }
     let last = "";
@@ -509,7 +540,7 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
     for (const l of logs) {
       const k = dayKey(l.at);
       if (k !== last) { list.append(el("div", { class: "day-label" }, fmtDay(k))); last = k; }
-      const canThank = !l.thanks && !l.gift && l.by !== me && canWrite;
+      const canThank = !l.thanks && !l.gift && l.by !== who() && canWrite;
       list.append(el("div", { class: "log" },
         el("div", { class: "log-top" },
           l.gift ? el("span", {}, el("b", {}, nameOf(l.by)), " がプレゼントを開封") : el("span", {}, el("b", {}, nameOf(l.by)), " が ", el("b", {}, l.title), " をクリア"),
@@ -535,7 +566,21 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
       : el("div", { class: "small muted" }, "準備待ちのごほうびはありません。"));
 
     // players
-    const players = [...new Set(data.logs.map(l => l.by))].filter(x => x !== me);
+    // players who share this account
+    p.append(el("form", { class: "add", onsubmit: e => {
+      e.preventDefault(); const f = e.target; const name = f.pname.value.trim(); if (!name) return;
+      guard(store.set("players", "p_" + uid(), { name, createdAt: Date.now() }));
+      f.pname.value = ""; toast(`${name}さんを追加しました`);
+    } },
+      el("h3", { style: "font-size:16px" }, "プレイヤー（この端末で交代して遊ぶ人）"),
+      el("div", { class: "small muted" }, "お子さんなど、自分のアカウントを持たない人を登録します。登録すると、開いたときに「だれがあそぶ？」を選ぶ画面になります。"),
+      data.players.length ? el("div", {}, data.players.map(pl => el("div", { class: "manage-item" }, el("b", {}, pl.name),
+        el("button", { class: "btn ghost small", type: "button", onclick: () => guard(store.del("players", pl.id)) }, "削除")))) : null,
+      el("div", { class: "quick-line" },
+        el("input", { id: "pname", name: "pname", placeholder: "例：ゆうと", maxlength: "12", "aria-label": "プレイヤーの名前", autocomplete: "off" }),
+        el("button", { class: "btn primary", type: "submit", disabled: !canWrite }, "追加"))));
+
+    const players = playersMode() ? data.players.map(pl => pl.id) : [...new Set(data.logs.map(l => l.by))].filter(x => x !== me);
     if (players.length) {
       p.append(el("h3", { style: "font-size:17px" }, "プレイヤーの様子"));
       p.append(el("div", { class: "card" }, players.map(id => { const s = statsFor(id); const wk = s.logs.filter(l => weekKey(l.at) === weekKey(Date.now())).length;
@@ -601,23 +646,24 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
   // ---------- actions ----------
   async function complete(q) {
     if (doneNow(q)) return;
-    const before = statsFor(me).lv;
-    const log = { questId: q.id, title: q.title, area: q.area, points: q.points, by: me, at: Date.now() };
+    if (!canPlay()) return;
+    const before = statsFor(who()).lv;
+    const log = { questId: q.id, title: q.title, area: q.area, points: q.points, by: who(), at: Date.now() };
     const id = uid();
     if (db) data.logs = data.logs.concat({ ...log, id }); // show it right away; the snapshot confirms
     await guard(store.set("logs", id, log));
-    const after = statsFor(me);
+    const after = statsFor(who());
     celebrate(q, after, after.lv > before);
   }
   function thank(l, text) {
     thankOpen = null;
-    guard(store.update("logs", l.id, { thanks: text, thankedBy: me, thankedAt: Date.now(), bonus: THANKS_BONUS }));
+    guard(store.update("logs", l.id, { thanks: text, thankedBy: playersMode() ? (who() || "parent") : me, thankedAt: Date.now(), bonus: THANKS_BONUS }));
     toast("ありがとうを送りました");
   }
   function redeem(r) {
     confirmReward = null;
-    if (statsFor(me).coins < r.cost) return;
-    guard(store.set("redemptions", uid(), { rewardId: r.id, title: r.title, cost: r.cost, by: me, at: Date.now(), status: "requested" }));
+    if (!canPlay() || statsFor(who()).coins < r.cost) return;
+    guard(store.set("redemptions", uid(), { rewardId: r.id, title: r.title, cost: r.cost, by: who(), at: Date.now(), status: "requested" }));
     toast(`「${r.title}」と交換しました`);
   }
   async function addStarter() {
@@ -633,12 +679,18 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
     else { gift = body; try { localStorage.setItem("ouchi-quest-gift", JSON.stringify(body)); } catch {} toast("メッセージを保存しました"); render(); }
   }
   function maybeShowGift() {
-    if (!isOwner && gift && giftSeen === false && !giftShown) showGift(false, gift);
+    if (!gift || giftShown) return;
+    // the account holder (e.g. a friend you gave this to) gets it once, then each player on first pick
+    if (!ownerAcct && giftSeen === false) showGift(false, gift, true);
+    else if (playersMode()) {
+      const pl = data.players.find(p => p.id === activePlayer);
+      if (pl && !pl.giftOpened) showGift(false, { ...gift, to: gift.to || `${pl.name}へ` });
+    }
   }
-  function showGift(preview, g) {
+  function showGift(preview, g, forAccount) {
     giftShown = true;
     const o = $("#overlay");
-    const close = () => { o.replaceChildren(); render(); };
+    const close = () => { o.replaceChildren(); giftShown = false; render(); };
     const stage = el("div", { class: "gift-stage" });
     const box = el("button", { class: "box", "aria-label": "プレゼントをひらく" }, el("span", { class: "body" }), el("span", { class: "rib-v" }), el("span", { class: "lid" }), el("span", { class: "bow" }));
     stage.append(
@@ -649,11 +701,12 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
     box.addEventListener("click", async () => {
       box.classList.add("open"); box.disabled = true;
       const hint = $("#giftHint"); if (hint) hint.remove();
-      if (!preview && db) {
-        giftSeen = true;
-        guard(db.doc(`data/users/${me}/profile`).set({ giftOpened: Date.now() }));
-        if (g.bonus > 0 && !data.logs.some(l => l.id === "gift-" + me))
-          await guard(store.set("logs", "gift-" + me, { questId: "gift", title: "プレゼント開封ボーナス", area: "other", points: g.bonus, by: me, at: Date.now(), gift: true }));
+      if (!preview) {
+        const pid = forAccount ? (playersMode() ? null : me) : who();
+        if (forAccount) { giftSeen = true; if (db) guard(db.doc(`data/users/${me}/profile`).set({ giftOpened: Date.now() })); }
+        else guard(store.update("players", pid, { giftOpened: Date.now() }));
+        if (pid && g.bonus > 0 && !data.logs.some(l => l.id === "gift-" + pid))
+          await guard(store.set("logs", "gift-" + pid, { questId: "gift", title: "プレゼント開封ボーナス", area: "other", points: g.bonus, by: pid, at: Date.now(), gift: true }));
       }
       setTimeout(() => stage.append(el("div", { class: "letter" },
         g.to ? el("div", { class: "to" }, g.to) : null,
@@ -700,6 +753,7 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
   const saved = local.load();
   if (saved) COLS.forEach(c => data[c] = saved[c] || []);
   try { gift = JSON.parse(localStorage.getItem("ouchi-quest-gift") || "null"); } catch {}
+  try { activePlayer = localStorage.getItem("ouchi-quest-player") || null; } catch {}
   render();
 
   (async () => {
@@ -711,7 +765,8 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
     const id = u ? await u.id() : null;
     if (!id) return;
     db = dbNs; me = id; shared = true;
-    isOwner = u ? await u.isOwner() : false;
+    ownerAcct = u ? await u.isOwner() : false;
+    isAdmin = ownerAcct || (u ? await u.canEdit() : false);
     const w = u ? await u.can("data.write") : null;
     canWrite = w !== false;
     COLS.forEach(c => data[c] = []);
@@ -720,6 +775,7 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
       data[c] = snap.docs.map(d => ({ ...d.data(), id: d.id }));
       resolveNames();
       render();
+      if (c === "players") maybeShowGift();
     }, () => {}));
     db.doc("settings/gift").onSnapshot(d => { gift = d.exists ? d.data() : null; maybeShowGift(); render(); }, () => {});
     try { const prof = await db.doc(`data/users/${me}/profile`).get(); giftSeen = !!(prof.exists && prof.data().giftOpened); }
@@ -730,7 +786,7 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
   async function resolveNames() {
     if (!userApi) return;
     const ids = [...new Set([...data.logs.flatMap(l => [l.by, l.thankedBy]), ...data.redemptions.map(r => r.by), ...data.quests.map(q => q.requestedBy)].filter(Boolean))];
-    const missing = ids.filter(i => !(i in names) && i !== me);
+    const missing = ids.filter(i => !(i in names) && i !== me && i !== "parent" && !i.startsWith("p_"));
     if (!missing.length) return;
     const ps = await userApi.profiles(missing);
     let changed = false;
