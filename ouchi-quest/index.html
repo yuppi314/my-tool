@@ -139,6 +139,18 @@ form.add { background: var(--surface); border: 1px solid var(--line); border-rad
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; }
 .empty { text-align: center; padding: 22px 14px; border: 2px dashed var(--line); border-radius: var(--radius); color: var(--muted); display: grid; gap: 10px; justify-items: center; }
 
+/* quick request */
+form.quick { background: var(--surface); border: 2px solid var(--fg); border-radius: var(--radius); padding: 12px; display: grid; gap: 8px; }
+form.quick h3 { font-size: 15px; }
+.quick-line { display: flex; gap: 8px; }
+.quick-line input { flex: 1; min-width: 0; font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; }
+.quick-opts { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--muted); }
+.quick-opts select { font: inherit; font-size: 13px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 99px; padding: 3px 8px; }
+.quick-opts .sep { width: 1px; height: 16px; background: var(--line); margin: 0 2px; }
+.req { grid-column: 1; font-size: 12px; color: var(--heart); font-weight: 700; }
+.req-note { grid-column: 1; font-size: 13px; color: var(--muted); }
+.cancel { background: none; border: 0; padding: 0; font-size: 12px; color: var(--muted); text-decoration: underline; }
+
 /* celebration */
 .pop { position: fixed; inset: 0; display: grid; place-items: center; z-index: 50; background: color-mix(in srgb, var(--bg) 70%, transparent); padding: 24px; }
 .pop-card { background: var(--surface); border: 3px solid var(--fg); box-shadow: 6px 6px 0 var(--fg); border-radius: 18px; padding: 22px 26px; text-align: center; display: grid; gap: 6px; max-width: 340px; animation: bounce .5s ease; }
@@ -288,7 +300,18 @@ form.add { background: var(--surface); border: 1px solid var(--line); border-rad
   let tab = "quest", areaFilter = "all", confirmReward = null, thankOpen = null;
   try { const t = localStorage.getItem("ouchi-quest-tab"); if (t) tab = t; } catch {}
 
+  // keep half-typed text, choices and focus when a live update redraws the panel
   function render() {
+    const kept = {}; let focusId = null, sel = null;
+    document.querySelectorAll("section.panel input[id], section.panel select[id]").forEach(i => kept[i.id] = i.value);
+    const a = document.activeElement;
+    if (a && a.id && a.closest && a.closest("section.panel")) { focusId = a.id; try { sel = [a.selectionStart, a.selectionEnd]; } catch {} }
+    draw();
+    for (const [id, v] of Object.entries(kept)) { const i = document.getElementById(id); if (i) i.value = v; }
+    if (focusId) { const i = document.getElementById(focusId); if (i) { i.focus(); try { if (sel && sel[0] != null) i.setSelectionRange(sel[0], sel[1]); } catch {} } }
+  }
+
+  function draw() {
     const s = statsFor(me);
     $("#mode").textContent = !shared ? "この端末だけに保存中" : isOwner ? "おうちの人モード" : "プレイヤーモード";
     $("#adminTab").hidden = !isOwner;
@@ -333,29 +356,74 @@ form.add { background: var(--surface); border: 1px solid var(--line); border-rad
     ({ quest: renderQuests, shop: renderShop, log: renderLog, admin: renderAdmin })[tab]();
   }
 
+  const DUE = { today: "今日中", week: "今週中", "": "いつでも" };
   function questCard(q) {
     const done = doneNow(q);
+    const canCancel = q.requestedBy && !done && canWrite && (q.requestedBy === me || isOwner);
     return el("div", { class: "quest" + (done ? " done" : "") },
+      q.requestedBy ? el("div", { class: "req" }, `${nameOf(q.requestedBy)}からのおねがい`, q.due ? `・${DUE[q.due]}` : "") : null,
       el("div", { class: "title" }, q.title),
+      q.note ? el("div", { class: "req-note" }, q.note) : null,
       el("div", { class: "meta" },
         el("span", { class: "area", style: `--area:${(AREAS[q.area] || AREAS.other).color}` }, (AREAS[q.area] || AREAS.other).label),
         el("span", { class: "reward-pill" }, `+${q.points}`),
         q.minutes ? el("span", {}, `約${q.minutes}分`) : null,
-        el("span", {}, REPEAT[q.repeat] || "")),
-      el("button", { class: "go", disabled: done || !canWrite, onclick: () => complete(q) }, done ? "クリア済" : "やった！"));
+        q.requestedBy ? null : el("span", {}, REPEAT[q.repeat] || ""),
+        canCancel ? el("button", { class: "cancel", onclick: () => guard(store.del("quests", q.id)) }, "取り下げる") : null),
+      el("button", { class: "go", style: `grid-row:1 / span ${2 + !!q.requestedBy + !!q.note}`, disabled: done || !canWrite, onclick: () => complete(q) }, done ? "クリア済" : "やった！"));
+  }
+
+  // anyone in the family can drop in a one-off request in a single line
+  function quickForm() {
+    if (!canWrite) return null;
+    return el("form", { class: "quick", onsubmit: e => {
+      e.preventDefault(); const f = e.target;
+      const title = f.rqtitle.value.trim(); if (!title) { f.rqtitle.focus(); return; }
+      const note = f.rqnote.value.trim();
+      guard(store.set("quests", uid(), { title, note, area: f.rqarea.value, points: +f.rqpoints.value || 10, minutes: 0, repeat: "once", due: f.rqdue.value, requestedBy: me, active: true, createdAt: Date.now() }));
+      f.rqtitle.value = ""; f.rqnote.value = "";
+      toast("おねがいを入れました");
+    } },
+      el("h3", {}, "おねがいを入れる"),
+      el("div", { class: "quick-line" },
+        el("input", { id: "rqtitle", name: "rqtitle", placeholder: "例：洗面所の電球を替えてほしい", maxlength: "40", "aria-label": "おねがいの内容", autocomplete: "off" }),
+        el("button", { class: "btn primary", type: "submit" }, "送る")),
+      el("div", { class: "quick-line" },
+        el("input", { id: "rqnote", name: "rqnote", placeholder: "ひとこと（任意）：替えは棚の上にあります", maxlength: "60", "aria-label": "ひとこと", autocomplete: "off" })),
+      el("div", { class: "quick-opts" },
+        el("label", {}, "お礼 ", el("select", { id: "rqpoints", name: "rqpoints" }, [5, 10, 20, 30, 50].map(n => el("option", { value: n, selected: n === 10 }, `${n}コイン`)))),
+        el("span", { class: "sep" }),
+        el("label", {}, "期限 ", el("select", { id: "rqdue", name: "rqdue" }, Object.entries(DUE).map(([k, v]) => el("option", { value: k, selected: k === "" }, v)))),
+        el("span", { class: "sep" }),
+        el("label", {}, "ジャンル ", el("select", { id: "rqarea", name: "rqarea" }, Object.entries(AREAS).map(([k, a]) => el("option", { value: k, selected: k === "other" }, a.label))))));
+  }
+
+  // finished one-off quests and requests drop off the board the day after they're done
+  function visibleQuest(q) {
+    if (q.active === false) return false;
+    if (q.repeat !== "once") return true;
+    const l = data.logs.find(l => l.questId === q.id);
+    return !l || dayKey(l.at) === dayKey(Date.now());
   }
 
   function renderQuests() {
     const p = $("#panel-quest"); p.replaceChildren();
-    const quests = data.quests.filter(q => q.active !== false);
-    if (!quests.length) {
+    p.append(quickForm() || "");
+    const quests = data.quests.filter(visibleQuest);
+    const requests = quests.filter(q => q.requestedBy).sort((a, b) => doneNow(a) - doneNow(b) || (b.due === "today") - (a.due === "today") || b.createdAt - a.createdAt);
+    if (requests.length) {
+      p.append(el("div", { class: "sec-head" }, el("h3", {}, "届いているおねがい"), el("span", { class: "small muted" }, `${requests.filter(q => !doneNow(q)).length}件`)));
+      p.append(el("div", { class: "list" }, requests.map(questCard)));
+    }
+    const regular = quests.filter(q => !q.requestedBy);
+    if (!regular.length) {
       p.append(el("div", { class: "empty" },
         el("b", {}, "まだクエストがありません"),
         el("div", { class: "small" }, isOwner ? "おすすめのクエストとごほうびをまとめて追加するか、管理タブから自分で作れます。" : "おうちの人がクエストを追加すると、ここに並びます。"),
         isOwner && canWrite ? el("button", { class: "btn primary", onclick: addStarter }, "おすすめセットを追加") : null));
       return;
     }
-    const open = quests.filter(q => !doneNow(q));
+    const open = regular.filter(q => !doneNow(q));
     // today's pick: the 3 highest-reward open quests, rotated by date so it changes daily
     if (open.length) {
       const seed = +dayKey(Date.now()).replace(/-/g, "");
@@ -364,11 +432,12 @@ form.add { background: var(--surface); border: 1px solid var(--line); border-rad
         el("h3", {}, "今日のおすすめ"),
         el("div", { class: "list" }, picks.map(questCard))));
     }
-    const used = [...new Set(quests.map(q => q.area))];
+    p.append(el("div", { class: "sec-head", style: "margin-top:4px" }, el("h3", {}, "いつものクエスト")));
+    const used = [...new Set(regular.map(q => q.area))];
     p.append(el("div", { class: "chips" },
       ["all", ...used].map(a => el("button", { class: "chip", "aria-pressed": String(areaFilter === a), onclick: () => { areaFilter = a; render(); } },
         a === "all" ? "すべて" : (AREAS[a] || AREAS.other).label))));
-    const shown = quests.filter(q => areaFilter === "all" || q.area === areaFilter)
+    const shown = regular.filter(q => areaFilter === "all" || q.area === areaFilter)
       .sort((a, b) => doneNow(a) - doneNow(b) || b.points - a.points);
     p.append(el("div", { class: "list" }, shown.map(questCard)));
   }
@@ -563,14 +632,14 @@ form.add { background: var(--surface); border: 1px solid var(--line); border-rad
     render();
     COLS.forEach(c => db.collection(c).onSnapshot(snap => {
       data[c] = snap.docs.map(d => ({ ...d.data(), id: d.id }));
-      if (c === "logs" || c === "redemptions") resolveNames();
+      resolveNames();
       render();
     }, () => {}));
   })();
 
   async function resolveNames() {
     if (!userApi) return;
-    const ids = [...new Set([...data.logs.flatMap(l => [l.by, l.thankedBy]), ...data.redemptions.map(r => r.by)].filter(Boolean))];
+    const ids = [...new Set([...data.logs.flatMap(l => [l.by, l.thankedBy]), ...data.redemptions.map(r => r.by), ...data.quests.map(q => q.requestedBy)].filter(Boolean))];
     const missing = ids.filter(i => !(i in names) && i !== me);
     if (!missing.length) return;
     const ps = await userApi.profiles(missing);
