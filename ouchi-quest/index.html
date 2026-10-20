@@ -151,6 +151,32 @@ form.quick h3 { font-size: 15px; }
 .req-note { grid-column: 1; font-size: 13px; color: var(--muted); }
 .cancel { background: none; border: 0; padding: 0; font-size: 12px; color: var(--muted); text-decoration: underline; }
 
+/* gift opening */
+.gift { position: fixed; inset: 0; z-index: 70; background: var(--bg); display: grid; place-items: center; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); overflow-y: auto; }
+.gift-stage { display: grid; gap: 18px; justify-items: center; text-align: center; max-width: 380px; width: 100%; }
+.gift-stage .eyebrow { font-size: 12px; letter-spacing: .14em; color: var(--muted); }
+.box { position: relative; width: 168px; height: 150px; border: 0; background: none; padding: 0; }
+.box .body { position: absolute; left: 12px; right: 12px; bottom: 0; height: 104px; background: var(--accent); border: 3px solid var(--fg); border-radius: 8px; }
+.box .lid { position: absolute; left: 0; right: 0; top: 18px; height: 34px; background: var(--accent); border: 3px solid var(--fg); border-radius: 8px; transition: transform .7s cubic-bezier(.3,1.6,.5,1), opacity .5s .3s; }
+.box .rib-v { position: absolute; left: 50%; width: 24px; margin-left: -12px; top: 18px; bottom: 0; background: var(--coin); border-left: 3px solid var(--fg); border-right: 3px solid var(--fg); transition: opacity .3s; }
+.box .bow { position: absolute; left: 50%; top: 0; width: 64px; margin-left: -32px; height: 28px; transition: transform .7s cubic-bezier(.3,1.6,.5,1), opacity .5s .3s; }
+.box .bow::before, .box .bow::after { content: ""; position: absolute; top: 0; width: 30px; height: 24px; background: var(--coin); border: 3px solid var(--fg); border-radius: 50% 50% 8px 50%; }
+.box .bow::before { left: 0; transform: rotate(-12deg); }
+.box .bow::after { right: 0; transform: scaleX(-1) rotate(-12deg); }
+.box:not([disabled]) { animation: wiggle 2.4s ease-in-out infinite; }
+.box.open .lid, .box.open .bow { transform: translateY(-90px) rotate(-14deg); opacity: 0; }
+.box.open .rib-v { opacity: 0; }
+@keyframes wiggle { 0%, 80%, 100% { transform: rotate(0); } 84% { transform: rotate(-4deg); } 88% { transform: rotate(4deg); } 92% { transform: rotate(-3deg); } 96% { transform: rotate(2deg); } }
+.letter { background: var(--surface); border: 2px solid var(--fg); border-radius: 16px; box-shadow: 5px 5px 0 var(--fg); padding: 22px 20px; display: grid; gap: 12px; width: 100%; animation: rise .6s ease both; text-align: left; }
+.letter .to { font-family: var(--font-display); font-weight: 900; font-size: 20px; }
+.letter .body-text { white-space: pre-wrap; line-height: 1.85; font-size: 15px; }
+.letter .from { text-align: right; font-family: var(--font-display); font-weight: 700; color: var(--muted); }
+.welcome-coins { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--coin-soft); border-radius: 12px; padding: 10px; }
+.welcome-coins b { font-family: var(--font-pixel); font-size: 30px; color: var(--coin); line-height: 1; }
+@keyframes rise { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .box:not([disabled]) { animation: none; } .box .lid, .box .bow { transition: none; } .letter { animation: none; } }
+form.add textarea { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; resize: vertical; line-height: 1.7; }
+
 /* celebration */
 .pop { position: fixed; inset: 0; display: grid; place-items: center; z-index: 50; background: color-mix(in srgb, var(--bg) 70%, transparent); padding: 24px; }
 .pop-card { background: var(--surface); border: 3px solid var(--fg); box-shadow: 6px 6px 0 var(--fg); border-radius: 18px; padding: 22px 26px; text-align: center; display: grid; gap: 6px; max-width: 340px; animation: bounce .5s ease; }
@@ -214,6 +240,7 @@ form.quick h3 { font-size: 15px; }
   ];
   const PRESET_THANKS = ["ありがとう、助かった！", "さすが！完璧だね", "おかげでゆっくりできたよ"];
   const THANKS_BONUS = 5;
+  const DEFAULT_GIFT = { to: "", from: "家族より", bonus: 50, message: "いつも仕事おつかれさま。\n家のこと、手伝ってくれて本当に助かっています。\nささやかだけど、家事がちょっと楽しくなるゲームを用意しました。\nたまったコインで、好きなごほうびと交換してね。" };
 
   const $ = (s, r = document) => r.querySelector(s);
   const el = (tag, attrs = {}, ...kids) => {
@@ -271,11 +298,12 @@ form.quick h3 { font-size: 15px; }
     const logs = data.logs.filter(l => l.by === person);
     const xp = logs.reduce((s, l) => s + (l.points || 0) + (l.bonus || 0), 0);
     const spent = data.redemptions.filter(r => r.by === person).reduce((s, r) => s + (r.cost || 0), 0);
-    const days = new Set(logs.map(l => dayKey(l.at)));
+    const days = new Set(logs.filter(l => !l.gift).map(l => dayKey(l.at)));
     let streak = 0; const d = new Date(); if (!days.has(dayKey(d))) d.setDate(d.getDate() - 1);
     while (days.has(dayKey(d))) { streak++; d.setDate(d.getDate() - 1); }
-    const byArea = {}; logs.forEach(l => byArea[l.area] = (byArea[l.area] || 0) + 1);
-    return { logs, xp, coins: xp - spent, streak, count: logs.length, byArea, thanks: logs.filter(l => l.thanks).length, ...levelOf(xp) };
+    const quests = logs.filter(l => !l.gift);
+    const byArea = {}; quests.forEach(l => byArea[l.area] = (byArea[l.area] || 0) + 1);
+    return { logs, xp, coins: xp - spent, streak, count: quests.length, byArea, thanks: logs.filter(l => l.thanks).length, ...levelOf(xp) };
   }
   const BADGES = [
     { name: "はじめの一歩", desc: "初めてクエストをクリア", ok: s => s.count >= 1 },
@@ -303,7 +331,7 @@ form.quick h3 { font-size: 15px; }
   // keep half-typed text, choices and focus when a live update redraws the panel
   function render() {
     const kept = {}; let focusId = null, sel = null;
-    document.querySelectorAll("section.panel input[id], section.panel select[id]").forEach(i => kept[i.id] = i.value);
+    document.querySelectorAll("section.panel input[id], section.panel select[id], section.panel textarea[id]").forEach(i => kept[i.id] = i.value);
     const a = document.activeElement;
     if (a && a.id && a.closest && a.closest("section.panel")) { focusId = a.id; try { sel = [a.selectionStart, a.selectionEnd]; } catch {} }
     draw();
@@ -343,7 +371,7 @@ form.quick h3 { font-size: 15px; }
 
     // tabs
     const pendingCount = data.redemptions.filter(r => r.status === "requested").length;
-    const unthanked = data.logs.filter(l => !l.thanks && l.by !== me).length;
+    const unthanked = data.logs.filter(l => !l.thanks && !l.gift && l.by !== me).length;
     $("#tabs").querySelectorAll("button").forEach(b => {
       b.setAttribute("aria-selected", String(b.dataset.tab === tab));
       const base = { quest: "クエスト", shop: "ごほうび", log: "きろく", admin: "管理" }[b.dataset.tab];
@@ -481,10 +509,10 @@ form.quick h3 { font-size: 15px; }
     for (const l of logs) {
       const k = dayKey(l.at);
       if (k !== last) { list.append(el("div", { class: "day-label" }, fmtDay(k))); last = k; }
-      const canThank = !l.thanks && l.by !== me && canWrite;
+      const canThank = !l.thanks && !l.gift && l.by !== me && canWrite;
       list.append(el("div", { class: "log" },
         el("div", { class: "log-top" },
-          el("span", {}, el("b", {}, nameOf(l.by)), " が ", el("b", {}, l.title), " をクリア"),
+          l.gift ? el("span", {}, el("b", {}, nameOf(l.by)), " がプレゼントを開封") : el("span", {}, el("b", {}, nameOf(l.by)), " が ", el("b", {}, l.title), " をクリア"),
           el("span", { class: "small muted" }, fmtTime(l.at), "  ", el("span", { class: "reward-pill" }, `+${(l.points || 0) + (l.bonus || 0)}`))),
         l.thanks ? el("div", { class: "msg" }, el("b", {}, `${nameOf(l.thankedBy)}より `), l.thanks) : null,
         canThank ? (thankOpen === l.id
@@ -514,6 +542,23 @@ form.quick h3 { font-size: 15px; }
         return el("div", { class: "manage-item" }, el("b", {}, nameOf(id)),
           el("span", { class: "small" }, `Lv${s.lv}・今週${wk}回・連続${s.streak}日・`, el("span", { class: "pixel", style: "color:var(--coin)" }, s.coins), "コイン")); })));
     }
+
+    // gift message shown the first time a family member opens the page
+    const g = gift || DEFAULT_GIFT;
+    p.append(el("form", { class: "add", onsubmit: e => {
+      e.preventDefault(); const f = e.target;
+      saveGift({ to: f.gto.value.trim(), from: f.gfrom.value.trim() || "家族より", message: f.gmsg.value.trim() || DEFAULT_GIFT.message, bonus: +f.gbonus.value || 0, updatedAt: Date.now() });
+    } },
+      el("div", { class: "sec-head" }, el("h3", { style: "font-size:16px" }, "プレゼントのメッセージ"), el("span", { class: "small muted" }, gift ? "保存済み" : "まだ保存していません")),
+      el("div", { class: "small muted" }, "娘さんが初めて開いたとき、ギフトボックスを開けるとこのメッセージが表示されます。"),
+      el("div", { class: "row" },
+        el("label", { class: "field" }, "あて名", el("input", { id: "gto", name: "gto", value: g.to || "", placeholder: "例：さきちゃんへ", maxlength: "20" })),
+        el("label", { class: "field" }, "差出人", el("input", { id: "gfrom", name: "gfrom", value: g.from || "", placeholder: "例：お母さんより", maxlength: "20" })),
+        el("label", { class: "field" }, "はじめのコイン", el("select", { id: "gbonus", name: "gbonus" }, [0, 30, 50, 100].map(n => el("option", { value: n, selected: n === (g.bonus ?? 50) }, n ? `${n}コイン` : "なし"))))),
+      el("label", { class: "field" }, "メッセージ", el("textarea", { id: "gmsg", name: "gmsg", rows: "6", maxlength: "400" }, g.message || "")),
+      el("div", { class: "thank-row" },
+        el("button", { class: "btn primary", type: "submit", disabled: !canWrite }, "保存する"),
+        el("button", { class: "btn", type: "button", onclick: e => { const f = e.target.form; showGift(true, { to: f.gto.value.trim(), from: f.gfrom.value.trim() || "家族より", message: f.gmsg.value.trim() || DEFAULT_GIFT.message, bonus: +f.gbonus.value || 0 }); } }, "見え方を確認"))));
 
     // add quest
     const qf = el("form", { class: "add", onsubmit: e => {
@@ -581,6 +626,46 @@ form.quick h3 { font-size: 15px; }
     toast("おすすめセットを追加しました");
   }
 
+  // ---------- gift ----------
+  let gift = null, giftSeen = null, giftShown = false;
+  function saveGift(body) {
+    if (db) guard(db.doc("settings/gift").set(body).then(() => toast("メッセージを保存しました")));
+    else { gift = body; try { localStorage.setItem("ouchi-quest-gift", JSON.stringify(body)); } catch {} toast("メッセージを保存しました"); render(); }
+  }
+  function maybeShowGift() {
+    if (!isOwner && gift && giftSeen === false && !giftShown) showGift(false, gift);
+  }
+  function showGift(preview, g) {
+    giftShown = true;
+    const o = $("#overlay");
+    const close = () => { o.replaceChildren(); render(); };
+    const stage = el("div", { class: "gift-stage" });
+    const box = el("button", { class: "box", "aria-label": "プレゼントをひらく" }, el("span", { class: "body" }), el("span", { class: "rib-v" }), el("span", { class: "lid" }), el("span", { class: "bow" }));
+    stage.append(
+      el("div", { class: "eyebrow" }, preview ? "プレビュー" : "A GIFT FOR YOU"),
+      el("h2", { style: "font-size:22px" }, g.to ? `${g.to}、プレゼントが届いています` : "プレゼントが届いています"),
+      box,
+      el("div", { class: "small muted", id: "giftHint" }, "タップしてひらく"));
+    box.addEventListener("click", async () => {
+      box.classList.add("open"); box.disabled = true;
+      const hint = $("#giftHint"); if (hint) hint.remove();
+      if (!preview && db) {
+        giftSeen = true;
+        guard(db.doc(`data/users/${me}/profile`).set({ giftOpened: Date.now() }));
+        if (g.bonus > 0 && !data.logs.some(l => l.id === "gift-" + me))
+          await guard(store.set("logs", "gift-" + me, { questId: "gift", title: "プレゼント開封ボーナス", area: "other", points: g.bonus, by: me, at: Date.now(), gift: true }));
+      }
+      setTimeout(() => stage.append(el("div", { class: "letter" },
+        g.to ? el("div", { class: "to" }, g.to) : null,
+        el("div", { class: "body-text" }, g.message),
+        el("div", { class: "from" }, g.from),
+        g.bonus > 0 ? el("div", { class: "welcome-coins" }, el("span", {}, "はじめのコイン"), el("b", {}, `+${g.bonus}`)) : null,
+        el("button", { class: "btn primary", style: "justify-self:center;padding:10px 22px", onclick: close }, preview ? "プレビューを閉じる" : "おうちクエストをはじめる"))), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 550);
+    });
+    o.replaceChildren(el("div", { class: "gift", role: "dialog", "aria-label": "プレゼント" }, stage));
+    box.focus();
+  }
+
   function celebrate(q, s, leveled) {
     const o = $("#overlay");
     const close = () => o.replaceChildren();
@@ -614,6 +699,7 @@ form.quick h3 { font-size: 15px; }
   // ---------- boot ----------
   const saved = local.load();
   if (saved) COLS.forEach(c => data[c] = saved[c] || []);
+  try { gift = JSON.parse(localStorage.getItem("ouchi-quest-gift") || "null"); } catch {}
   render();
 
   (async () => {
@@ -635,6 +721,10 @@ form.quick h3 { font-size: 15px; }
       resolveNames();
       render();
     }, () => {}));
+    db.doc("settings/gift").onSnapshot(d => { gift = d.exists ? d.data() : null; maybeShowGift(); render(); }, () => {});
+    try { const prof = await db.doc(`data/users/${me}/profile`).get(); giftSeen = !!(prof.exists && prof.data().giftOpened); }
+    catch { giftSeen = true; }
+    maybeShowGift();
   })();
 
   async function resolveNames() {
