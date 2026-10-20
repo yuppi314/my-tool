@@ -265,7 +265,7 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
   // ---------- store: shared db when available, this-browser storage otherwise ----------
   const COLS = ["quests", "logs", "rewards", "redemptions", "players"];
   const data = { quests: [], logs: [], rewards: [], redemptions: [], players: [] };
-  let db = null, me = "local", isAdmin = true, activePlayer = null, ownerAcct = true, canWrite = true, shared = false, userApi = null;
+  let db = null, me = "local", isAdmin = true, activePlayer = null, ownerAcct = true, members = {}, parentCode = null, canWrite = true, shared = false, userApi = null;
   const names = {};
 
   const local = {
@@ -331,7 +331,8 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
   const nameOf = id => {
     const p = data.players.find(p => p.id === id); if (p) return p.name;
     if (id === "parent") return "おうちの人";
-    return id === me ? "あなた" : (names[id] || "家族");
+    if (id === me) return "あなた";
+    return names[id] || "家族";
   };
   function choosePlayer(id) {
     activePlayer = id; thankOpen = null; confirmReward = null;
@@ -552,6 +553,13 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
           : el("div", { class: "thank-row" }, el("button", { class: "btn heart", onclick: () => { thankOpen = l.id; render(); } }, "ありがとうを送る"))) : null));
     }
     p.append(list);
+    if (shared && !isAdmin && !ownerAcct) p.append(el("form", { class: "add", style: "margin-top:12px", onsubmit: e => {
+      e.preventDefault(); enterCode(e.target.pcode.value.trim());
+    } },
+      el("div", { class: "small muted" }, "おうちの人として参加する方は、受け取った合言葉を入れてください。"),
+      el("div", { class: "quick-line" },
+        el("input", { id: "pcode", name: "pcode", placeholder: "合言葉", maxlength: "20", autocomplete: "off", "aria-label": "合言葉" }),
+        el("button", { class: "btn", type: "submit" }, "参加する"))));
   }
 
   function renderAdmin() {
@@ -566,6 +574,30 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
       : el("div", { class: "small muted" }, "準備待ちのごほうびはありません。"));
 
     // players
+    // family members: everyone invited is an Editor in the share menu; the role here decides who manages
+    if (shared) {
+      const rows = Object.entries(members).sort((a, b) => (a[1].joinedAt || 0) - (b[1].joinedAt || 0));
+      const codeText = parentCode ? "#" + parentCode : "";
+      p.append(el("div", { class: "add" },
+        el("h3", { style: "font-size:16px" }, "家族メンバー"),
+        el("div", { class: "small muted" }, "招待は画面右上の「共有」から、相手を「Editor（編集者）」にして行います。招待された人は、ふつうに開くとプレイヤーとして参加します。"),
+        parentCode ? el("div", { class: "pick" },
+          el("div", { class: "small" }, "おうちの人として招待するときは、リンクの最後にこの合言葉を付けて送ってください。"),
+          el("div", { class: "quick-line" },
+            el("input", { id: "pcodeShow", value: codeText, readonly: true, "aria-label": "合言葉", class: "pixel" }),
+            el("button", { class: "btn", type: "button", onclick: e => {
+              const inp = $("#pcodeShow");
+              navigator.clipboard.writeText(codeText).then(() => toast("合言葉をコピーしました"), () => { inp.select(); toast("選択したのでコピーしてください"); });
+            } }, "コピー"))) : null,
+        rows.length ? el("div", {}, rows.map(([id, m]) => el("div", { class: "manage-item" },
+          el("span", {}, el("b", {}, m.owner ? `${nameOf(id)}（持ち主）` : nameOf(id)), el("span", { class: "small muted" }, `  ${fmtDay(dayKey(m.joinedAt || Date.now()))}から`)),
+          m.owner || id === me
+            ? el("span", { class: "small muted" }, m.role === "parent" ? "おうちの人" : "プレイヤー")
+            : el("select", { id: "role-" + id, "aria-label": `${nameOf(id)}の役割`, onchange: e => guard(db.doc("members/" + id).update({ role: e.target.value })) },
+                el("option", { value: "player", selected: m.role !== "parent" }, "プレイヤー"),
+                el("option", { value: "parent", selected: m.role === "parent" }, "おうちの人"))))) : null));
+    }
+
     // players who share this account
     p.append(el("form", { class: "add", onsubmit: e => {
       e.preventDefault(); const f = e.target; const name = f.pname.value.trim(); if (!name) return;
@@ -766,7 +798,7 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
     if (!id) return;
     db = dbNs; me = id; shared = true;
     ownerAcct = u ? await u.isOwner() : false;
-    isAdmin = ownerAcct || (u ? await u.canEdit() : false);
+    isAdmin = ownerAcct;
     const w = u ? await u.can("data.write") : null;
     canWrite = w !== false;
     COLS.forEach(c => data[c] = []);
@@ -777,15 +809,43 @@ form.add textarea { font: inherit; color: var(--fg); background: var(--bg); bord
       render();
       if (c === "players") maybeShowGift();
     }, () => {}));
+    db.collection("members").onSnapshot(snap => {
+      members = Object.fromEntries(snap.docs.map(d => [d.id, d.data()]));
+      isAdmin = ownerAcct || (members[me] && members[me].role === "parent");
+      resolveNames(); render();
+    }, () => {});
+    join();
     db.doc("settings/gift").onSnapshot(d => { gift = d.exists ? d.data() : null; maybeShowGift(); render(); }, () => {});
     try { const prof = await db.doc(`data/users/${me}/profile`).get(); giftSeen = !!(prof.exists && prof.data().giftOpened); }
     catch { giftSeen = true; }
     maybeShowGift();
   })();
 
+  // register this account as a family member; the owner, or anyone arriving with the parent code in the link, manages
+  async function join() {
+    try { const d = await db.doc("settings/parentCode").get(); parentCode = d.exists ? d.data().code : null; } catch {}
+    if (ownerAcct && !parentCode) {
+      const abc = "abcdefghjkmnpqrstuvwxyz23456789"; let c = "oya"; for (let i = 0; i < 5; i++) c += abc[Math.floor(Math.random() * abc.length)];
+      await guard(db.doc("settings/parentCode").set({ code: c })); parentCode = c;
+    }
+    const hash = (location.hash || "").slice(1);
+    const wantParent = ownerAcct || (!!parentCode && hash === parentCode);
+    let mine = null;
+    try { const d = await db.doc("members/" + me).get(); mine = d.exists ? d.data() : null; } catch { return; }
+    if (!mine) await guard(db.doc("members/" + me).set({ role: wantParent ? "parent" : "player", joinedAt: Date.now(), ...(ownerAcct ? { owner: true } : {}) }));
+    else if (wantParent && mine.role !== "parent") await guard(db.doc("members/" + me).update({ role: "parent" }));
+    if (wantParent && !ownerAcct) toast("おうちの人として参加しました");
+  }
+  async function enterCode(code) {
+    if (!code) return;
+    try { const d = await db.doc("settings/parentCode").get(); parentCode = d.exists ? d.data().code : null; } catch {}
+    if (parentCode && code.replace(/^#/, "") === parentCode) { await guard(db.doc("members/" + me).set({ ...(members[me] || { joinedAt: Date.now() }), role: "parent" })); toast("おうちの人として参加しました"); }
+    else toast("合言葉がちがいます。もう一度確かめてください");
+  }
+
   async function resolveNames() {
     if (!userApi) return;
-    const ids = [...new Set([...data.logs.flatMap(l => [l.by, l.thankedBy]), ...data.redemptions.map(r => r.by), ...data.quests.map(q => q.requestedBy)].filter(Boolean))];
+    const ids = [...new Set([...data.logs.flatMap(l => [l.by, l.thankedBy]), ...data.redemptions.map(r => r.by), ...data.quests.map(q => q.requestedBy), ...Object.keys(members)].filter(Boolean))];
     const missing = ids.filter(i => !(i in names) && i !== me && i !== "parent" && !i.startsWith("p_"));
     if (!missing.length) return;
     const ps = await userApi.profiles(missing);
