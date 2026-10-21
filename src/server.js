@@ -7,6 +7,7 @@ const diagnosisRoutes = require('./routes/diagnosis');
 const { router: paymentRoutes, stripeWebhookHandler } = require('./routes/payment');
 const adminRoutes = require('./routes/admin');
 const { isMockPayments, paymentsEnabled } = require('./lib/payments');
+const kaji = require('./kaji/routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +16,7 @@ app.use(cors());
 
 // Stripe webhook は署名検証のため raw body が必要。express.json() より前に登録する。
 app.post('/webhook/stripe', express.raw({ type: 'application/json' }), stripeWebhookHandler);
+app.post('/webhook/line', express.raw({ type: '*/*' }), kaji.lineWebhookHandler);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
@@ -22,11 +24,16 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/api', diagnosisRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', kaji.router);
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 
 app.listen(PORT, () => {
   console.log(`吉方位×マイル旅 診断ツール起動: http://localhost:${PORT}`);
+  kaji.startTimers();
+  if (!process.env.LINE_CHANNEL_ACCESS_TOKEN) {
+    console.log('※ LINE_CHANNEL_ACCESS_TOKEN 未設定のため、家事の引き継ぎ表の LINE 送信はログ出力のみです。');
+  }
   if (isMockPayments()) {
     console.log('※ MOCK_PAYMENTS=true のため、決済は開発用モックモードで動作します。');
   } else if (!paymentsEnabled()) {

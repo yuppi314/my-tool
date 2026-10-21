@@ -2,7 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const Database = require('better-sqlite3');
 
-const dataDir = path.join(__dirname, '..', 'data');
+// DATA_DIR はテスト用に別の場所へ逃がすためのもの。通常は未設定でよい。
+const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
 const db = new Database(path.join(dataDir, 'app.db'));

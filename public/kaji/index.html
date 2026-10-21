@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>家事の引き継ぎ表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="/kaji/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>お手伝いじゃなくて、<mark>担当</mark>。</h1>
+    <p class="lead">チェックリストを全部埋めて「やった」を記録すると経験値がたまります。LINE の「ごちそうさま」「おねがい」もここに反映されます。</p>
+  </header>
+
+  <div id="status" class="status">読み込み中です…</div>
+
+  <section class="player" id="player" aria-label="自分のステータス" hidden>
+    <div class="row1">
+      <span class="lv num" id="pLv"></span>
+      <span class="title" id="pTitle"></span>
+      <span class="streak num" id="pStreak"></span>
+    </div>
+    <div class="xpbar"><i id="pBar"></i></div>
+    <div class="sub num" id="pSub"></div>
+  </section>
+
+  <div id="main" hidden style="display:grid;gap:20px">
+    <section>
+      <h2>今日のおねがい</h2>
+      <form class="req-form" id="reqForm">
+        <input type="text" id="reqText" maxlength="60" placeholder="例:19時までにお米を3合といでおいて">
+        <button class="primary" type="submit">おねがいする</button>
+      </form>
+      <div class="row" id="reqQuick"></div>
+      <ul class="reqs" id="reqs"></ul>
+    </section>
+
+    <div class="banners">
+      <div class="banner" id="quest"></div>
+      <div class="banner timer" id="timer">
+        <b>残り物チャレンジ</b>
+        <p class="tip">「ごちそうさま」から30分以内に「食後の片付け」を記録すると経験値2倍。間に合わないと親に LINE が届きます。</p>
+        <div class="row"><button class="small" id="mealBtn" type="button">ごちそうさま</button><span class="count" id="mealCount"></span></div>
+      </div>
+    </div>
+
+    <section>
+      <h2>家事</h2>
+      <div id="list" class="list"></div>
+    </section>
+
+    <section>
+      <h2>今週のランキング(月曜リセット)</h2>
+      <ul class="rank" id="rank"></ul>
+    </section>
+
+    <section>
+      <h2>ごほうび</h2>
+      <div class="reward">
+        <p class="goal" id="rewardGoal"></p>
+        <p class="tip" id="rewardProg"></p>
+        <form id="rewardForm" hidden>
+          <input type="text" id="rewardText" maxlength="40" placeholder="例:好きな晩ごはんをリクエストできる">
+          <input type="number" id="rewardXp" min="50" step="50" placeholder="週XP">
+          <button type="submit">決める</button>
+        </form>
+      </div>
+    </section>
+
+    <section>
+      <h2>最近の記録</h2>
+      <ul class="feed" id="feed"></ul>
+    </section>
+
+    <details id="addBox" hidden>
+      <summary>家事を追加する(親のみ)</summary>
+      <form class="add" id="addForm">
+        <input type="text" id="addTitle" maxlength="30" placeholder="例:お風呂掃除" required>
+        <textarea id="addSteps" required placeholder="手順を1行に1つ。後片付けまで書くのがコツです。&#10;浴槽を洗剤で洗う&#10;シャワーで流す&#10;排水口の髪の毛を捨てる&#10;換気扇を回す"></textarea>
+        <div class="row">
+          <select id="addXp" aria-label="経験値"><option value="10">10 XP</option><option value="20" selected>20 XP</option><option value="30">30 XP</option><option value="40">40 XP</option></select>
+          <button class="primary" type="submit">追加する</button>
+        </div>
+      </form>
+    </details>
+
+    <section>
+      <h2>家族</h2>
+      <p class="tip">家族コード <span class="famcode" id="famCode"></span><br>家族はこの LINE アカウントを友だち追加して、子どもは「参加 コード」、親は「親で参加 コード」と送ります。</p>
+      <p class="tip" id="famList"></p>
+    </section>
+
+    <section>
+      <h2>引き継ぎの4段階</h2>
+      <div class="levels">
+        <div><b>1 いっしょに</b>親と並んでやる</div>
+        <div><b>2 見守り</b>ひとりでやり、親が確認</div>
+        <div><b>3 ひとりで</b>確認なしで任せる</div>
+        <div><b>4 担当</b>言われなくても回す</div>
+      </div>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="/kaji/app.js"></script>
+</body>
+</html>
