@@ -72,7 +72,12 @@ def big(ov,y,t,size,col=WHT,sc=NAVY,sw=6):
 # 1 つかみ: ダムの上から見た紅葉の谷
 ov=E(); pill(ov,820,'2026年10月'); big(ov,910,'行きたい旅が\n凶方位だったら？',86); big(ov,1170,'行ってきました',72,ORG,WHT,8); handle(ov)
 cover=cover_crop(P('IMG_3696.jpg'),0.5,0.5,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/yunishigawa-reel-cover.jpg',quality=92)
-photo_seg(cover_crop(P('IMG_3696.jpg'),0.5,0.5),ov,2.8)
+# 最初の数秒は、ダックツアーが湖へ「ジャブン」と入る動画で目を引く
+ov=E(); pill(ov,820,'2026年10月'); big(ov,910,'行きたい旅が\n凶方位だったら？',86); big(ov,1170,'行ってきました',72,ORG,WHT,8); handle(ov)
+video_seg(os.path.join(SRC,'duck-splash.mov'),6.9,ov,2.6)
+# 1b ダムの上から見た紅葉の谷
+ov=panel_text([('ダムの上から見た',46,SOFT,False),('紅葉の谷',70,NAVY,True)],820,alpha=110); handle(ov)
+photo_seg(cover_crop(P('IMG_3696.jpg'),0.5,0.5),ov,2.4)
 # 2 出発の朝
 ov=panel_text([('紅葉の日光・湯西川へ',58,NAVY,True),('2026年10月23日〜24日',40,SOFT,False)],820,alpha=110); handle(ov)
 photo_seg(cover_crop(P('IMG_3560.jpg'),0.5,0.5),ov,2.6)
@@ -97,11 +102,14 @@ photo_seg(cover_crop(P('IMG_3659.jpg'),0.5,0.5),ov,2.6)
 # 7 露天風呂
 ov=panel_text([('その3',40,ORG,True),('観光より、休む旅に',60,NAVY,True),('紅葉を見ながら露天風呂',42,SOFT,False)],300,alpha=110); handle(ov)
 photo_seg(cover_crop(P('IMG_3671.jpg'),0.5,0.45),ov,2.8,False)
-# 8 ダム見学
-ov=panel_text([('翌日は',46,SOFT,False),('湯西川ダムの見学',62,NAVY,True)],820,alpha=110); handle(ov)
-photo_seg(cover_crop(P('IMG_3697.jpg'),0.5,0.5),ov,2.3)
-# 9 ダックツアー(本人の顔はぼかす)
-ov=panel_text([('その4',40,ORG,True),('行くと決めたら楽しむ',58,NAVY,True),('ダックツアーで湖へ',42,SOFT,False)],760,alpha=110); handle(ov)
+# 8 ダックツアーへ(うしろ姿)
+ov=panel_text([('その4',40,ORG,True),('行くと決めたら楽しむ',58,NAVY,True),('翌日は湯西川ダックツアーへ',42,SOFT,False)],300,alpha=110); handle(ov)
+photo_seg(cover_crop(P('duck-bus.jpg'),0.5,0.5),ov,2.6)
+# 8b 水しぶき
+ov=E(); big(ov,760,'ジャブン！',130,WHT,ORG,8); handle(ov)
+video_seg(os.path.join(SRC,'duck-splash.mov'),7.2,ov,2.2)
+# 9 湖の上(本人の顔はぼかす)
+ov=panel_text([('紅葉の湖を',46,SOFT,False),('ぐるっと一周',62,NAVY,True)],760,alpha=110); handle(ov)
 photo_seg(cover_crop(blur_boxes(P('IMG_3714.jpg'),[(1030,1760,1410,2240)]),0.5,0.5),ov,2.6)
 # 10 天使の鐘
 ov=panel_text([('最後は',46,SOFT,False),('天使の鐘を鳴らして',60,NAVY,True)],820,alpha=110); handle(ov)
