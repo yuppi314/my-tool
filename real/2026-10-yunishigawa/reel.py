@@ -79,12 +79,18 @@ photo_seg(cover_crop(P('IMG_3560.jpg'),0.5,0.5),ov,2.6)
 # 3 方角
 ov=panel_text([('自宅から見ると',44,SOFT,False),('北西',110,ORG,True),('今年の私の「本命殺」',48,NAVY,True)],740,alpha=110); handle(ov)
 photo_seg(cover_crop(P('IMG_3643.jpg'),0.5,0.5),ov,2.8,False)
-# 4 東照宮でお参り
-ov=panel_text([('その1',40,ORG,True),('旅先でお参り',64,NAVY,True),('日光東照宮へごあいさつ',42,SOFT,False)],800,alpha=110); handle(ov)
-photo_seg(cover_crop(P('IMG_3584.jpg'),0.5,0.45),ov,2.6)
+# 4 中禅寺湖(友だちの顔はぼかす)
+ov=panel_text([('いろは坂をこえて',46,SOFT,False),('紅葉の中禅寺湖',64,NAVY,True)],560,alpha=110); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('chuzenji.jpg'),[(1190,1120,1620,1620)]),1.0,0.5),ov,2.6)
+# 5 東照宮でお参り
+ov=panel_text([('その1',40,ORG,True),('旅先でお参り',64,NAVY,True),('日光東照宮へごあいさつ',42,SOFT,False)],300,alpha=110); handle(ov)
+photo_seg(cover_crop(P('toshogu-gate.jpg'),0.5,0.5),ov,2.6,False)
 # 5 眠り猫
-ov=panel_text([('眠り猫にも',46,SOFT,False),('会えました',64,NAVY,True)],820,alpha=110); handle(ov)
-photo_seg(cover_crop(P('IMG_3600.jpg'),0.5,0.3),ov,2.2)
+ov=panel_text([('眠り猫にも',46,SOFT,False),('会えました',64,NAVY,True)],1300,alpha=110); handle(ov)
+photo_seg(cover_crop(P('nemurineko.jpg'),0.5,0.4),ov,2.2)
+# 6b お昼ごはん(動画)
+ov=panel_text([('その土地のものをいただく',44,SOFT,False),('舞茸の天ぷらとおそば',58,NAVY,True)],300,alpha=110); handle(ov)
+video_seg(os.path.join(SRC,'IMG_3610.mov'),1.0,ov,2.8)
 # 6 平家の隠れ里の宿
 ov=panel_text([('その2',40,ORG,True),('長居はせず1泊で',62,NAVY,True),('平家の隠れ里の宿へ',42,SOFT,False)],800,alpha=110); handle(ov)
 photo_seg(cover_crop(P('IMG_3659.jpg'),0.5,0.5),ov,2.6)
