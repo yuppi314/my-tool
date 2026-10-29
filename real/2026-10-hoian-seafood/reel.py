@@ -1,4 +1,4 @@
-# ホイアンのシーフードレストラン紹介リール(本人の旅の写真・動画 + 昼の空テーマの文字)。吉方位の話は入れない
+# ホイアン旅(夜の街・ごはん)リール(本人の旅の写真・動画 + 昼の空テーマの文字)。吉方位の話は入れない
 # 使い方: python3 reel.py <素材フォルダ> <character/v2> <backgrounds> <出力フォルダ> <ffmpeg>
 import os, subprocess, sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps, ImageEnhance
@@ -70,26 +70,46 @@ def big(ov,y,t,size,col=WHT,sc=NAVY,sw=6):
     for i,line in enumerate(t.split('\n')):
         ft=f(size); d.text(((W-d.textlength(line,font=ft))/2,y+i*size*1.3),line,font=ft,fill=col,stroke_width=sw,stroke_fill=sc)
 DAI=[(90,1570,250,1730),(420,1440,520,1540),(1170,1480,1270,1580)]
-# 1 つかみ: 焼きがき(動画)
-ov=E(); pill(ov,820,'ベトナム・ホイアン'); big(ov,910,'旅先で見つけた\nシーフードの店',86); big(ov,1170,'ここ、また行きたい',72,ORG,WHT,8); handle(ov)
-video_seg(os.path.join(SRC,'IMG_4093.mov'),0.6,ov,2.6)
-# 表紙: えび
-ov=E(); pill(ov,1150,'ベトナム・ホイアン'); big(ov,1240,'旅先で見つけた\nシーフードの店',86); handle(ov)
-cover=cover_crop(P('shrimp.jpg'),0.5,0.5,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/seafood-reel-cover.jpg',quality=92)
-# 2 お店
-ov=panel_text([('お店の名前は',44,SOFT,False),('DAI AN(ダイアン)',66,NAVY,True),('シーフードレストラン',44,SOFT,False)],300,alpha=110); handle(ov)
-photo_seg(cover_crop(blur_boxes(P('daian.jpg'),DAI),0.5,0.4),ov,2.8,False)
-# 3 焼きがき
-ov=panel_text([('まずは',46,SOFT,False),('焼きがき',80,NAVY,True),('ネギ油とピーナッツがたっぷり',42,SOFT,False)],1250,alpha=110); handle(ov)
-video_seg(os.path.join(SRC,'IMG_4093.mov'),3.2,ov,2.6)
-# 4 えび
-ov=panel_text([('金色の衣をまとった',46,SOFT,False),('大きなえび',80,NAVY,True)],1300,alpha=110); handle(ov)
-photo_seg(cover_crop(P('shrimp.jpg'),0.5,0.45),ov,2.8)
-# 5 空芯菜
+WEL=[(1330,1570,1450,1760),(0,1900,140,2100)]
+MV=[(90,1110,230,1280),(250,1160,380,1310),(540,1190,680,1300),(820,1150,1000,1300)]
+# 1 つかみ: 夜の川(動画・うしろ姿)
+ov=E(); pill(ov,820,'ベトナム・ホイアン'); big(ov,910,'50代女子旅\nホイアンの夜',90); big(ov,1170,'ぜんぶ見せます',76,ORG,WHT,8); handle(ov)
+video_seg(os.path.join(SRC,'IMG_3861.mov'),0.0,ov,1.2)
+# 表紙: 提灯の街並み(顔はぼかす)
+ov=E(); pill(ov,1150,'ベトナム・ホイアン'); big(ov,1240,'50代女子旅\nホイアンの夜',90); handle(ov)
+cover=cover_crop(blur_boxes(P('lantern.jpg'),[(1260,1220,1390,1370)]),0.5,0.5,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/hoian-reel-cover.jpg',quality=92)
+# 2 出発
+ov=panel_text([('いざ',46,SOFT,False),('ベトナムへ',76,NAVY,True)],300,alpha=110); handle(ov)
+video_seg(os.path.join(SRC,'IMG_3797.mov'),2.0,ov,2.2)
+# 3 到着
+ov=panel_text([('ダナンに',46,SOFT,False),('到着！',80,NAVY,True)],1250,alpha=110); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('welcome.jpg'),WEL),0.5,0.45),ov,2.2)
+# 4 提灯の街
+ov=panel_text([('夜のホイアンは',46,SOFT,False),('提灯の街',76,NAVY,True)],300,alpha=110); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('lantern.jpg'),[(1260,1220,1390,1370)]),0.5,0.5),ov,2.4)
+# 5 黄色い壁のお店
+ov=panel_text([('提灯の灯る',46,SOFT,False),('レトロなお店がずらり',62,NAVY,True)],300,alpha=110); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('missvan.jpg'),MV),0.5,0.5),ov,2.2,False)
+# 6 カオラウ
+ov=panel_text([('ホイアン名物',46,SOFT,False),('カオラウ',80,NAVY,True)],300,alpha=110); handle(ov)
+video_seg(os.path.join(SRC,'IMG_3873.mov'),0.3,ov,2.2)
+# 7 川辺のごはん
+ov=panel_text([('川を見ながら',46,SOFT,False),('ベトナムごはん',70,NAVY,True)],300,alpha=110); handle(ov)
+video_seg(os.path.join(SRC,'IMG_3876.mov'),0.5,ov,2.2)
+# 8 シーフードのお店
+ov=panel_text([('別の日は',44,SOFT,False),('シーフードのお店',66,NAVY,True),('DAI AN(ダイアン)',44,SOFT,False)],300,alpha=110); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('daian.jpg'),DAI),0.5,0.4),ov,2.4,False)
+# 9 焼きがき
+ov=panel_text([('ネギ油とピーナッツの',44,SOFT,False),('焼きがき',80,NAVY,True)],1250,alpha=110); handle(ov)
+video_seg(os.path.join(SRC,'IMG_4093.mov'),3.0,ov,2.2)
+# 10 えび
+ov=panel_text([('金色の衣の',46,SOFT,False),('大きなえび',80,NAVY,True)],1300,alpha=110); handle(ov)
+photo_seg(cover_crop(P('shrimp.jpg'),0.5,0.45),ov,2.2)
+# 11 空芯菜
 ov=panel_text([('野菜もしっかり',46,SOFT,False),('空芯菜の炒めもの',70,NAVY,True)],1300,alpha=110); handle(ov)
 video_seg(os.path.join(SRC,'IMG_4096.mov'),2.8,ov,1.9)
-# 6 まとめ
-im=sky().convert('RGBA'); ov=panel_text([('あなたなら',54,NAVY,True),('どれを食べたい？',72,ORG,True),('',16,NAVY,False),('1 焼きがき',46,NAVY,False),('2 金色のえび',46,NAVY,False),('3 空芯菜の炒めもの',46,NAVY,False),('',16,NAVY,False),('番号でコメントしてね',44,ORG,True)],360)
+# 12 まとめ
+im=sky().convert('RGBA'); ov=panel_text([('あなたなら',54,NAVY,True),('どれを食べたい？',72,ORG,True),('',16,NAVY,False),('1 カオラウ',46,NAVY,False),('2 焼きがき',46,NAVY,False),('3 金色のえび',46,NAVY,False),('4 空芯菜の炒めもの',46,NAVY,False),('',16,NAVY,False),('番号でコメントしてね',44,ORG,True)],340)
 chara(ov,'pose-point-you',290); handle(ov); im.alpha_composite(ov)
 photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),3.8)
 # つなぐ(フェード 0.35 秒)+ 無音の音声
@@ -101,5 +121,5 @@ fc=[]; prev='[0:v]'; off=0
 for i in range(1,len(segs)):
     off+=segs[i-1][1]-T; fc.append(f'{prev}[{i}:v]xfade=transition=fade:duration={T}:offset={off:.2f}[v{i}]'); prev=f'[v{i}]'
 fc.append(f'{prev}format=yuv420p[vout]')
-run(args+['-filter_complex',';'.join(fc),'-map','[vout]','-map',f'{len(segs)}:a','-c:v','libx264','-r',str(FPS),'-pix_fmt','yuv420p','-c:a','aac','-shortest','-movflags','+faststart',f'{OUT}/seafood-raw.mp4'])
+run(args+['-filter_complex',';'.join(fc),'-map','[vout]','-map',f'{len(segs)}:a','-c:v','libx264','-r',str(FPS),'-pix_fmt','yuv420p','-c:a','aac','-shortest','-movflags','+faststart',f'{OUT}/hoian-raw.mp4'])
 print(f'{total:.1f}s',len(segs))
