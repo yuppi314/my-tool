@@ -90,6 +90,9 @@ photo_seg(cover_crop(blur_boxes(P('lantern.jpg'),[(1260,1220,1390,1370)]),0.5,0.
 # 5 黄色い壁のお店
 ov=panel_text([('提灯の灯る',46,SOFT,False),('レトロなお店がずらり',62,NAVY,True)],300,alpha=110); handle(ov)
 photo_seg(cover_crop(blur_boxes(P('missvan.jpg'),MV),0.5,0.5),ov,2.2,False)
+# 5b 夜の通り(動画)
+ov=panel_text([('ビール片手に',46,SOFT,False),('夜の街を見ながら',62,NAVY,True)],300,alpha=110); handle(ov)
+video_seg(os.path.join(SRC,'IMG_3867.mov'),0.2,ov,2.2)
 # 6 カオラウ
 ov=panel_text([('ホイアン名物',46,SOFT,False),('カオラウ',80,NAVY,True)],300,alpha=110); handle(ov)
 video_seg(os.path.join(SRC,'IMG_3873.mov'),0.3,ov,2.2)
@@ -101,7 +104,7 @@ ov=panel_text([('別の日は',44,SOFT,False),('シーフードのお店',66,NAV
 photo_seg(cover_crop(blur_boxes(P('daian.jpg'),DAI),0.5,0.4),ov,2.4,False)
 # 9 焼きがき
 ov=panel_text([('ネギ油とピーナッツの',44,SOFT,False),('焼きがき',80,NAVY,True)],1250,alpha=110); handle(ov)
-video_seg(os.path.join(SRC,'IMG_4093.mov'),3.0,ov,2.2)
+video_seg(os.path.join(SRC,'IMG_4093.mov'),0.3,ov,3.4)
 # 10 えび
 ov=panel_text([('金色の衣の',46,SOFT,False),('大きなえび',80,NAVY,True)],1300,alpha=110); handle(ov)
 photo_seg(cover_crop(P('shrimp.jpg'),0.5,0.45),ov,2.2)
