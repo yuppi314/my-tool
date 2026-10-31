@@ -16,8 +16,16 @@ def cover_crop(im,cx=0.5,cy=0.5,scale=1.12):
     x=min(max(round(im.width*cx-w/2),0),im.width-w); y=min(max(round(im.height*cy-h/2),0),im.height-h)
     return im.crop((x,y,x+w,y+h))
 def blur_boxes(im,boxes):
-    for b in boxes:
-        reg=im.crop(b).filter(ImageFilter.GaussianBlur(28)); im.paste(reg,b)
+    # 顔のぼかし: 四角ではなく、ふちがなじむ楕円にする(少し広めに取り、まわりの色になじませる)
+    W0,H0=im.size
+    for x0,y0,x1,y1 in boxes:
+        w,h=x1-x0,y1-y0; px,py=int(w*.25),int(h*.25)
+        X0,Y0,X1,Y1=max(0,x0-px),max(0,y0-py),min(W0,x1+px),min(H0,y1+py)
+        reg=im.crop((X0,Y0,X1,Y1)); r=max(12,int(min(w,h)*.22))
+        bl=reg.filter(ImageFilter.GaussianBlur(r))
+        m=Image.new('L',reg.size,0); ImageDraw.Draw(m).ellipse([x0-X0,y0-Y0,x1-X0,y1-Y0],fill=255)
+        m=m.filter(ImageFilter.GaussianBlur(max(6,int(min(w,h)*.12))))
+        reg.paste(bl,(0,0),m); im.paste(reg,(X0,Y0))
     return im
 def panel_text(lines,y,align='c',pad=46,alpha=225):
     # lines: [(文字, 大きさ, 色, 太字)] を白い半透明パネルにのせる
