@@ -96,7 +96,7 @@ cover=cover_crop(blur_boxes(P('lantern-two.jpg'),TWO),0.5,0.55,1.0).convert('RGB
 # 2 出発・到着(短く)
 ov=E(); lab(ov,300,'いざベトナムへ',76); handle(ov)
 photo_seg(cover_crop(P('plane.png'),0.55,0.6),ov,1.5)
-ov=E(); lab(ov,300,'ダナンに到着！',76); handle(ov)
+ov=E(); lab(ov,280,'ダナンに到着！',76); big(ov,400,'ここからホイアンへ移動',54,ORG,WHT,8); handle(ov)
 photo_seg(cover_crop(blur_boxes(P('welcome.jpg'),WEL),0.5,0.4),ov,1.5)
 # 3 その1 提灯の旧市街
 ov=E(); num(ov,260,1,'夜の旧市街は\n提灯の街'); handle(ov)
@@ -111,8 +111,8 @@ ov=E(); num(ov,260,3,'名物カオラウを\n川のそばで'); handle(ov)
 video_seg(os.path.join(SRC,'IMG_3873.mov'),0.3,ov,2.4)
 ov=E(); lab(ov,300,'川を見ながらの\n夜ごはん'); handle(ov)
 video_seg(os.path.join(SRC,'IMG_3876.mov'),0.5,ov,1.8)
-# 6 その4 ココナッツ村の丸いボート
-ov=E(); num(ov,220,4,'ココナッツ村で\n丸いボート'); handle(ov)
+# 6 その4 タライ船
+ov=E(); num(ov,220,4,'タライ船で\nのんびり川あそび'); handle(ov)
 photo_seg(cover_crop(blur_boxes(P('boat.jpg'),BOAT),0.5,0.55),ov,2.8)
 # 7 その5 スパのあとはシーフード
 ov=E(); num(ov,220,5,'スパでほぐれたら\nシーフードへ'); handle(ov)
@@ -130,7 +130,7 @@ im=sky().convert('RGBA'); ov=panel_text([('ホイアンは日本から見て',46
 chara(ov,'pose-point-you',290); handle(ov); im.alpha_composite(ov)
 photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),3.4)
 # 9 コメント
-im=sky().convert('RGBA'); ov=panel_text([('いちばん行きたいのは？',56,NAVY,True),('',12,NAVY,False),('1 提灯の旧市街',46,NAVY,False),('2 夜の街でビール',46,NAVY,False),('3 名物カオラウ',46,NAVY,False),('4 丸いボート',46,NAVY,False),('5 スパとシーフード',46,NAVY,False),('',12,NAVY,False),('番号でコメントしてね',46,ORG,True)],330)
+im=sky().convert('RGBA'); ov=panel_text([('いちばん行きたいのは？',56,NAVY,True),('',12,NAVY,False),('1 提灯の旧市街',46,NAVY,False),('2 夜の街でビール',46,NAVY,False),('3 名物カオラウ',46,NAVY,False),('4 タライ船',46,NAVY,False),('5 スパとシーフード',46,NAVY,False),('',12,NAVY,False),('番号でコメントしてね',46,ORG,True)],330)
 chara(ov,'pose-point-you',290); handle(ov); im.alpha_composite(ov)
 photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),3.6)
 # つなぐ(フェード 0.35 秒)+ 無音の音声
