@@ -1,4 +1,4 @@
-# ホイアンの夜 v4「行くならこの3つ」リスト型リール(本人の旅の写真・動画 + 昼の空テーマの文字)。最後に方角の一言(南西)
+# ホイアン旅 v5「50代女子旅で良かった5つ」(旅の順番どおり)(本人の旅の写真・動画 + 昼の空テーマの文字)。最後に方角の一言(南西)
 # 使い方: python3 reel.py <素材フォルダ> <character/v2> <backgrounds> <出力フォルダ> <ffmpeg>
 import os, subprocess, sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps, ImageEnhance
@@ -80,36 +80,59 @@ def big(ov,y,t,size,col=WHT,sc=NAVY,sw=6):
 
 MV=[(90,1110,230,1280),(250,1160,380,1310),(540,1190,680,1300),(820,1150,1000,1300)]
 LAN=[(1260,1220,1390,1370)]
-def num(ov,y,n,t,size=74):
-    # 「その1」バッジ + 大きな見出し
+DAI=[(90,1570,250,1730),(420,1440,520,1540),(1170,1480,1270,1580)]
+WEL=[(1330,1570,1450,1760),(0,1900,140,2100)]
+TWO=[(385,775,475,885),(515,750,605,860),(895,745,950,810)]
+BOAT=[(990,1040,1100,1170),(1255,1060,1380,1190),(1570,1045,1670,1170)]
+SANDY=[(445,795,535,895)]
+def num(ov,y,n,t,size=72):
     pill(ov,y,f'その{n}',42); big(ov,y+92,t,size)
-# 1 つかみ(言い切り)
-ov=E(); pill(ov,700,'ベトナム・ホイアン'); big(ov,790,'ホイアンは\n夜に行って',104); big(ov,1090,'50代女子旅で良かった3つ',58,ORG,WHT,8); handle(ov)
-video_seg(os.path.join(SRC,'IMG_3861.mov'),0.0,ov,2.0)
-# 表紙
-ov=E(); pill(ov,1080,'ベトナム・ホイアン'); big(ov,1170,'ホイアンは\n夜に行って',104); big(ov,1470,'50代女子旅で良かった3つ',58,ORG,WHT,8); handle(ov)
-cover=cover_crop(blur_boxes(P('lantern.jpg'),LAN),0.5,0.5,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/hoian-reel-cover.jpg',quality=92)
-# 2 その1 提灯の旧市街
-ov=E(); num(ov,260,1,'提灯の旧市街を\nおさんぽ'); handle(ov)
-photo_seg(cover_crop(blur_boxes(P('lantern.jpg'),LAN),0.5,0.5),ov,2.6)
-ov=E(); big(ov,300,'レトロなお店が\nずらり',70); handle(ov)
-photo_seg(cover_crop(blur_boxes(P('missvan.jpg'),MV),0.5,0.5),ov,2.0,False)
-# 3 その2 夜の街でビール
+def lab(ov,y,t,size=66): big(ov,y,t,size)
+# 1 つかみ: 提灯の下でハート
+ov=E(); pill(ov,150,'ベトナム・ホイアン'); big(ov,240,'50代女子旅\nホイアンで\n良かった5つ',96); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('lantern-two.jpg'),TWO),0.5,0.55),ov,2.4)
+ov=E(); pill(ov,150,'ベトナム・ホイアン'); big(ov,240,'50代女子旅\nホイアンで\n良かった5つ',96); handle(ov)
+cover=cover_crop(blur_boxes(P('lantern-two.jpg'),TWO),0.5,0.55,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/hoian-reel-cover.jpg',quality=92)
+# 2 出発・到着(短く)
+ov=E(); lab(ov,300,'いざベトナムへ',76); handle(ov)
+photo_seg(cover_crop(P('plane.png'),0.55,0.6),ov,1.5)
+ov=E(); lab(ov,300,'ダナンに到着！',76); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('welcome.jpg'),WEL),0.5,0.4),ov,1.5)
+# 3 その1 提灯の旧市街
+ov=E(); num(ov,260,1,'夜の旧市街は\n提灯の街'); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('lantern.jpg'),LAN),0.5,0.5),ov,2.4)
+ov=E(); lab(ov,300,'レトロなお店が\nずらり'); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('missvan.jpg'),MV),0.5,0.5),ov,1.8,False)
+# 4 その2 ビール
 ov=E(); num(ov,260,2,'ビール片手に\n夜の街をながめる'); handle(ov)
-video_seg(os.path.join(SRC,'IMG_3867.mov'),0.2,ov,2.8)
-# 4 その3 カオラウ・川辺のごはん
+video_seg(os.path.join(SRC,'IMG_3867.mov'),0.2,ov,2.4)
+# 5 その3 カオラウ
 ov=E(); num(ov,260,3,'名物カオラウを\n川のそばで'); handle(ov)
-video_seg(os.path.join(SRC,'IMG_3873.mov'),0.3,ov,2.6)
-ov=E(); big(ov,300,'川を見ながらの\n夜ごはん',70); handle(ov)
-video_seg(os.path.join(SRC,'IMG_3876.mov'),0.5,ov,2.4)
-# 5 方角のひとこと
+video_seg(os.path.join(SRC,'IMG_3873.mov'),0.3,ov,2.4)
+ov=E(); lab(ov,300,'川を見ながらの\n夜ごはん'); handle(ov)
+video_seg(os.path.join(SRC,'IMG_3876.mov'),0.5,ov,1.8)
+# 6 その4 ココナッツ村の丸いボート
+ov=E(); num(ov,220,4,'ココナッツ村で\n丸いボート'); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('boat.jpg'),BOAT),0.5,0.55),ov,2.8)
+# 7 その5 スパのあとはシーフード
+ov=E(); num(ov,220,5,'スパでほぐれたら\nシーフードへ'); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('sandy.jpg'),SANDY),0.45,0.5),ov,2.2)
+ov=E(); lab(ov,300,'人気のシーフード店\nDAI AN(ダイアン)',62); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('daian.jpg'),DAI),0.5,0.4),ov,1.8,False)
+ov=E(); lab(ov,1250,'ネギ油とピーナッツの\n焼きがき',64); handle(ov)
+video_seg(os.path.join(SRC,'IMG_4093.mov'),0.3,ov,2.2)
+ov=E(); lab(ov,1300,'金色の衣の\n大きなえび',70); handle(ov)
+photo_seg(cover_crop(P('shrimp.jpg'),0.5,0.45),ov,1.7)
+ov=E(); lab(ov,1300,'空芯菜の炒めもの',70); handle(ov)
+photo_seg(cover_crop(P('morning-glory.jpg'),0.5,0.5),ov,1.6)
+# 8 方角のひとこと
 im=sky().convert('RGBA'); ov=panel_text([('ホイアンは日本から見て',46,SOFT,False),('南西',96,ORG,True),('',12,NAVY,False),('南西は「家庭」や',50,NAVY,True),('「人とのつながり」の',50,NAVY,True),('方角と言われています',50,NAVY,True)],380)
 chara(ov,'pose-point-you',290); handle(ov); im.alpha_composite(ov)
-photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),3.6)
-# 6 コメント・保存
-im=sky().convert('RGBA'); ov=panel_text([('行ってみたい人は',54,NAVY,True),('「提灯」',84,ORG,True),('とコメントしてね',54,NAVY,True),('',16,NAVY,False),('保存して旅の参考に',44,SOFT,False)],420)
+photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),3.4)
+# 9 コメント
+im=sky().convert('RGBA'); ov=panel_text([('いちばん行きたいのは？',56,NAVY,True),('',12,NAVY,False),('1 提灯の旧市街',46,NAVY,False),('2 夜の街でビール',46,NAVY,False),('3 名物カオラウ',46,NAVY,False),('4 丸いボート',46,NAVY,False),('5 スパとシーフード',46,NAVY,False),('',12,NAVY,False),('番号でコメントしてね',46,ORG,True)],330)
 chara(ov,'pose-point-you',290); handle(ov); im.alpha_composite(ov)
-photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),3.0)
+photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),3.6)
 # つなぐ(フェード 0.35 秒)+ 無音の音声
 T=0.35; args=[]
 for p,s in segs: args+=['-i',p]
