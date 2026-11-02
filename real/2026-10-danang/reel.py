@@ -1,4 +1,4 @@
-# 「石垣島のリベンジ旅」ダナン・ホイアン リール(本人の旅の写真・動画 + 昼の空テーマの文字)
+# ダナン リベンジ旅 v2(石垣島=回想 → 時期を選んで同じ南西へ → 帰って決めたこと)(本人の旅の写真・動画 + 昼の空テーマの文字)。最後に方角の一言(南西)
 # 使い方: python3 reel.py <素材フォルダ> <character/v2> <backgrounds> <出力フォルダ> <ffmpeg>
 import os, subprocess, sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps, ImageEnhance
@@ -63,8 +63,8 @@ def video_seg(path,ss,ov,sec):
     n=len(segs)+1; ovp=f'{OUT}/o{n:02d}.png'; ov.save(ovp)
     tm="zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p,eq=saturation=1.45:contrast=1.08:brightness=0.03"
     run(['-ss',str(ss),'-t',str(sec),'-i',path,'-i',ovp,'-filter_complex',
-         f"[0:v]{tm},scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS}[bg];[bg][1:v]overlay=0:0,format=yuv420p[v]",
-         '-map','[v]','-an','-c:v','libx264','-preset','veryfast','-crf','20',f'{OUT}/seg{n:02d}.mp4'])
+         f"[0:v]{tm},scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS},tpad=stop_mode=clone:stop_duration=2[bg];[bg][1:v]overlay=0:0,format=yuv420p[v]",
+         '-map','[v]','-an','-frames:v',str(int(sec*FPS)),'-c:v','libx264','-preset','veryfast','-crf','20',f'{OUT}/seg{n:02d}.mp4'])
     segs.append((f'{OUT}/seg{n:02d}.mp4',sec))
 def pop(im):
     # 夜の提灯や街並みが映えるよう、くすみを取って少し鮮やかに
@@ -77,40 +77,70 @@ def big(ov,y,t,size,col=WHT,sc=NAVY,sw=6):
     d=ImageDraw.Draw(ov)
     for i,line in enumerate(t.split('\n')):
         ft=f(size); d.text(((W-d.textlength(line,font=ft))/2,y+i*size*1.3),line,font=ft,fill=col,stroke_width=sw,stroke_fill=sc)
-# 1 つかみ: 搭乗口へ歩くうしろ姿(動画)
-ov=E(); pill(ov,820,'2026年10月'); big(ov,910,'本命殺だった\n石垣島の',86); big(ov,1170,'リベンジ旅へ',96,ORG,WHT,8); handle(ov)
-video_seg(os.path.join(SRC,'IMG_3797.mov'),1.5,ov,2.8)
-# 表紙: WELCOME TO DA NANG(人の顔はぼかす)
+
+MV=[(90,1110,230,1280),(250,1160,380,1310),(540,1190,680,1300),(820,1150,1000,1300)]
+LAN=[(1260,1220,1390,1370)]
+DAI=[(90,1570,250,1730),(420,1440,520,1540),(1170,1480,1270,1580)]
 WEL=[(1330,1570,1450,1760),(0,1900,140,2100)]
-ov=E(); pill(ov,1100,'2026年10月'); big(ov,1190,'本命殺だった\n石垣島の',86); big(ov,1450,'リベンジ旅',110,ORG,WHT,8); handle(ov)
-cover=cover_crop(blur_boxes(P('welcome.jpg'),WEL),0.5,0.5,1.0).convert('RGBA'); cover.alpha_composite(ov); cover.convert('RGB').save(f'{OUT}/danang-reel-cover.jpg',quality=92)
-# 2 到着
-ov=panel_text([('行き先は',46,SOFT,False),('ベトナム・ダナン',70,NAVY,True)],1250,alpha=110); handle(ov)
-photo_seg(cover_crop(blur_boxes(P('welcome.jpg'),WEL),0.5,0.45),ov,2.6)
-# 3 方角
-ov=panel_text([('自宅から見ると',44,SOFT,False),('南西',110,ORG,True),('10月の私の「最大吉方」',48,NAVY,True)],740,alpha=110); handle(ov)
-photo_seg(cover_crop(blur_boxes(P('missvan.jpg'),[(90,1110,230,1280),(250,1160,380,1310),(540,1190,680,1300),(820,1150,1000,1300)]),0.5,0.5),ov,2.8,False)
-# 4 ホイアンの提灯の街並み(人の顔はぼかす)
-ov=panel_text([('夜のホイアンは',46,SOFT,False),('提灯の街',70,NAVY,True)],300,alpha=110); handle(ov)
-photo_seg(cover_crop(blur_boxes(P('lantern.jpg'),[(1260,1220,1390,1370)]),0.5,0.5),ov,2.8)
-# 6 カオラウ(動画)
-ov=panel_text([('その土地のものをいただく',44,SOFT,False),('ホイアン名物 カオラウ',58,NAVY,True)],300,alpha=110); handle(ov)
-video_seg(os.path.join(SRC,'IMG_3873.mov'),0.3,ov,2.8)
-# 7 川辺のごはん(動画)
-ov=panel_text([('川を見ながら',46,SOFT,False),('ベトナムごはん',66,NAVY,True)],300,alpha=110); handle(ov)
-video_seg(os.path.join(SRC,'IMG_3876.mov'),0.5,ov,2.8)
-# 8 同じ南西でも(昼の空)
-im=sky().convert('RGBA'); ov=panel_text([('同じ「南西」でも',56,NAVY,True),('',12,NAVY,False),('5月の石垣島は',46,NAVY,False),('本命殺',90,SOFT,True),('10月のダナンは',46,NAVY,False),('最大吉方',100,ORG,True),('',12,NAVY,False),('行く時期で変わると言われています',40,SOFT,False)],330)
-chara(ov,'pose-idea',270); handle(ov); im.alpha_composite(ov)
-photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),4.2)
-# 9 この旅でやりたいこと
-im=sky().convert('RGBA'); ov=panel_text([('吉方位の旅で',52,NAVY,True),('やりたいこと',72,ORG,True),('',16,NAVY,False),('日の出のビーチをお散歩',42,NAVY,False),('黄色い街並みと陶器にふれる',42,NAVY,False),('その土地のごはんを味わう',42,NAVY,False),('温泉でゆっくり休む',42,NAVY,False)],330)
-chara(ov,'pose-compass',270); handle(ov); im.alpha_composite(ov)
-photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),4.2)
-# 10 まとめ
-im=sky().convert('RGBA'); ov=panel_text([('あなたの次の旅は',54,NAVY,True),('吉方位？',80,ORG,True),('',16,NAVY,False),('方角はご自宅から見て決まります',40,NAVY,False),('プロフィールのリンクの無料診断で',40,NAVY,False),('「行きたい場所」を入れると',40,NAVY,False),('いつ行くといいかがわかります',40,NAVY,False),('',16,NAVY,False),('旅の続きもお届けします',40,ORG,False)],360)
-chara(ov,'pose-wave',300); handle(ov); im.alpha_composite(ov)
-photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),3.8)
+TWO=[(385,775,475,885),(515,750,605,860),(895,745,950,810)]
+BOAT=[(990,1040,1100,1170),(1255,1060,1380,1190),(1570,1045,1670,1170)]
+SANDY=[(445,795,535,895)]
+def num(ov,y,n,t,size=72):
+    pill(ov,y,f'その{n}',42); big(ov,y+92,t,size)
+def lab(ov,y,t,size=66): big(ov,y,t,size)
+
+def memory(k):
+    # 5月の石垣島は「思い出」として、やわらかくぼかして色をおさえる(元の文字は読めなくなる)
+    im=Image.open(os.path.join(SRC,k)).convert('RGB').filter(ImageFilter.GaussianBlur(18))
+    im=ImageEnhance.Color(im).enhance(0.55); im=ImageEnhance.Brightness(im).enhance(0.92)
+    sep=Image.new('RGB',im.size,(120,100,80)); return Image.blend(im,sep,0.18)
+def sky_panel(lines,y,pose='pose-point-you',sec=3.4):
+    im=sky().convert('RGBA'); ov=panel_text(lines,y); chara(ov,pose,290); handle(ov); im.alpha_composite(ov)
+    photo_seg(im.resize((round(W*1.12),round(H*1.12))),E(),sec)
+
+MV=[(90,1110,230,1280),(250,1160,380,1310),(540,1190,680,1300),(820,1150,1000,1300)]
+LAN=[(1260,1220,1390,1370)]
+DAI=[(90,1570,250,1730),(420,1440,520,1540),(1170,1480,1270,1580)]
+WEL=[(1330,1570,1450,1760),(0,1900,140,2100)]
+TWO=[(385,775,475,885),(515,750,605,860),(895,745,950,810)]
+BOAT=[(990,1040,1100,1170),(1255,1060,1380,1190),(1570,1045,1670,1170)]
+SANDY=[(445,795,535,895)]
+
+# 1 つかみ: 石垣島(回想)
+ov=E(); pill(ov,640,'2026年5月 石垣島'); big(ov,740,'たくさん見てもらった\nあの旅',84); big(ov,1000,'実は本命殺でした',80,ORG,WHT,8); handle(ov)
+photo_seg(cover_crop(memory('ishi-0.5.png'),0.5,0.5),ov,2.6)
+# 表紙: 上=5月の石垣島(思い出の色) / 下=10月のダナン(あざやか)
+def half(im,h): return cover_crop(im,0.5,0.5,1.0).resize((W,H)).crop((0,(H-h)//2,W,(H-h)//2+h))
+top=half(memory('ishi-0.5.png'),H//2); bot=half(blur_boxes(P('lantern-two.jpg'),TWO),H//2)
+cv=Image.new('RGBA',(W,H)); cv.paste(top,(0,0)); cv.paste(bot,(0,H//2))
+ov=E(); d=ImageDraw.Draw(ov); d.rectangle([0,H//2-6,W,H//2+6],fill=(255,255,255,255))
+pill(ov,330,'5月 石垣島'); big(ov,420,'本命殺',110,(230,230,235),NAVY,7)
+pill(ov,1330,'10月 ダナン'); big(ov,1420,'最大吉方',110,WHT,NAVY,7)
+big(ov,H//2-90,'リベンジ旅',120,ORG,WHT,10); handle(ov)
+cv.alpha_composite(ov); cv.convert('RGB').save(f'{OUT}/danang-reel-cover.jpg',quality=92)
+# 2 本音
+ov=E(); big(ov,640,'大きなトラブルは\nなかった',70); big(ov,880,'でも、チャンスを\nつかみきれなかった',80,ORG,WHT,8); handle(ov)
+photo_seg(cover_crop(memory('ishi-18.6.png'),0.5,0.5),ov,3.0,False)
+# 3 気づき
+sky_panel([('あとで調べたら',44,SOFT,False),('同じ「南西」でも',62,NAVY,True),('',12,NAVY,False),('5月は 本命殺',58,SOFT,True),('10月は 最大吉方',64,ORG,True),('',12,NAVY,False),('行く時期で変わると言われています',38,SOFT,False)],360,'pose-idea',3.6)
+# 4 出発
+ov=E(); big(ov,300,'だから今度は\n時期を選んで',78); handle(ov)
+video_seg(os.path.join(SRC,'IMG_3797.mov'),1.0,ov,2.4)
+ov=E(); big(ov,300,'同じ南西へ',84); handle(ov)
+photo_seg(cover_crop(P('plane.png'),0.55,0.6),ov,1.6)
+ov=E(); pill(ov,260,'2026年10月'); big(ov,350,'ダナンへ\nリベンジ旅',90,WHT,NAVY,7); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('welcome.jpg'),WEL),0.5,0.4),ov,2.0)
+# 5 旅
+ov=E(); big(ov,240,'思いきり笑って',80); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('boat.jpg'),BOAT),0.5,0.55),ov,2.4)
+ov=E(); big(ov,240,'夜の街を歩いて',80); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('lantern-two.jpg'),TWO),0.5,0.5),ov,2.2,False)
+ov=E(); big(ov,240,'自分をいたわって',80); handle(ov)
+photo_seg(cover_crop(blur_boxes(P('sandy.jpg'),SANDY),0.45,0.5),ov,2.2)
+# 6 帰って決めたこと
+sky_panel([('帰ってきて決めたこと',48,SOFT,False),('',8,NAVY,False),('ダイエットと',70,NAVY,True),('自分みがき',84,ORG,True),('',12,NAVY,False),('吉方位の旅の効果は',40,SOFT,False),('あとからゆっくり出てくると',40,SOFT,False),('言われています',40,SOFT,False)],340,'pose-cheer',4.0)
+# 7 これから
+sky_panel([('今度こそ',50,SOFT,False),('チャンスをつかむ',72,ORG,True),('',12,NAVY,False),('結果はここで報告します',44,NAVY,True),('',16,NAVY,False),('あなたの次の旅は吉方位？',44,NAVY,False),('プロフィールのリンクの無料診断で',36,SOFT,False)],360,'pose-point-you',3.6)
 # つなぐ(フェード 0.35 秒)+ 無音の音声
 T=0.35; args=[]
 for p,s in segs: args+=['-i',p]
