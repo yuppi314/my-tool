@@ -70,6 +70,37 @@ function getsumeiInfo(profile) {
   };
 }
 
+// 傾斜宮: 月命星を中宮に置いた盤で、本命星が入る宮。本命星と月命星が同じときは中宮傾斜とする
+const KEISHA = {
+  北: { name: '坎宮傾斜', yomi: 'かんきゅうけいしゃ', words: '思慮深さ・柔軟さ・人の心に寄り添う力',
+    text: '人の気持ちを深く感じとり、相手に合わせてしなやかに動ける本質があると言われています。ひとりで考える時間が、あなたを整えてくれます。' },
+  北東: { name: '艮宮傾斜', yomi: 'ごんきゅうけいしゃ', words: '粘り強さ・変化を力にする・蓄える力',
+    text: 'コツコツ積み重ね、人生の節目で大きく流れを変える力があると言われています。変化のときこそ、あなたの本領が出やすいでしょう。' },
+  東: { name: '震宮傾斜', yomi: 'しんきゅうけいしゃ', words: '行動力・明るさ・新しいことへの挑戦',
+    text: '思い立ったらすぐ動ける、明るく前向きな本質があると言われています。新しい場所や初めてのことが、あなたを元気にしてくれます。' },
+  南東: { name: '巽宮傾斜', yomi: 'そんきゅうけいしゃ', words: '調和・ご縁・信頼される力',
+    text: '人と人をつなぎ、まわりと調和しながら物事を進める本質があると言われています。ご縁を大切にするほど、運が広がりやすいでしょう。' },
+  南: { name: '離宮傾斜', yomi: 'りきゅうけいしゃ', words: 'ひらめき・美意識・華やかさ',
+    text: '感性が豊かで、美しいものやひらめきを形にする本質があると言われています。好きなものに囲まれると、魅力がいっそう輝きます。' },
+  南西: { name: '坤宮傾斜', yomi: 'こんきゅうけいしゃ', words: '支える力・まじめさ・家庭的なあたたかさ',
+    text: 'まわりの人を支え、地道に努力を続けられる本質があると言われています。誰かの役に立てたとき、あなたの心も満たされやすいでしょう。' },
+  西: { name: '兌宮傾斜', yomi: 'だきゅうけいしゃ', words: '楽しむ力・社交性・会話上手',
+    text: '人生を楽しみ、まわりを明るくする本質があると言われています。おいしい食事やおしゃべりの時間が、あなたの運気を整えてくれます。' },
+  北西: { name: '乾宮傾斜', yomi: 'けんきゅうけいしゃ', words: '目標に向かう力・責任感・リーダーシップ',
+    text: '高い目標に向かって努力を続け、人を引っぱっていく本質があると言われています。少し背すじの伸びる場所が、あなたに力をくれます。' },
+  中央: { name: '中宮傾斜', yomi: 'ちゅうぐうけいしゃ', words: '芯の強さ・存在感・まとめる力',
+    text: '表の顔と心の奥が同じ星なので、その星らしさがまっすぐ出る、芯の強い本質があると言われています。' },
+};
+function keishaInfo(profile) {
+  if (!profile.getsumeiId) return null;
+  let palace = '中央';
+  if (profile.getsumeiId !== profile.honmeiId) {
+    const board = houi.buildBoard(profile.getsumeiId);
+    palace = Object.keys(board).find((d) => board[d] === profile.honmeiId);
+  }
+  return { palace, ...KEISHA[palace] };
+}
+
 // 今日の属する節月から数えて i ヶ月後の節月に含まれる日付(各月15日は必ず節入り後)
 function monthDate(from, i) {
   const info = houi.getMonthInfo(from);
@@ -96,6 +127,8 @@ function buildMonth(profile, origin, date, perDirection) {
       monthStar: starName(d.monthStar),
     })),
     bestDirections: h.bestDirections,
+    // 月の吉方位: 月盤で吉で、年盤・月盤のどちらにも凶(五黄殺・本命殺・破など)がない方位(最大吉方は除く)
+    goodDirections: (h.yearBlocked || h.monthBlocked) ? [] : h.directions.filter((d) => d.monthGood && !d.best && d.reasons.length === 0).map((d) => d.direction),
     destinations: travel.recommend(origin, h.bestDirections, perDirection),
   };
 }
@@ -115,10 +148,14 @@ function monthMessage(month) {
   if (month.monthBlocked || month.yearBlocked) {
     return 'あなたの本命星が中宮に入る「八方塞がり」の時期のため、今月は吉方位がありません。遠出は控えめにして、次の吉方位旅の計画を立てるのに向いています。';
   }
+  const good = month.goodDirections && month.goodDirections.length
+    ? `また「${month.goodDirections.join('・')}」は、月盤で吉となる「月の吉方位」です。数日の旅やお出かけの目安になります。` : '';
   if (!month.bestDirections.length) {
-    return '今月は年盤・月盤の両方で吉となる方位(最大吉方)がありません。次に最大吉方が巡る月に向けて、マイルを貯めておきましょう。';
+    return good
+      ? `今月は年盤・月盤の両方で吉となる方位(最大吉方)はありません。${good.replace(/^また/, 'ただし')}`
+      : '今月は年盤・月盤の両方で吉となる方位(最大吉方)がありません。次に最大吉方が巡る月に向けて、マイルを貯めておきましょう。';
   }
-  return `今月の最大吉方は「${month.bestDirections.join('・')}」。年盤・月盤の両方で吉となる、効果が大きいとされる方位です。`;
+  return `今月の最大吉方は「${month.bestDirections.join('・')}」。年盤・月盤の両方で吉となる、効果が大きいとされる方位です。${good}`;
 }
 
 // 出かける日が決まっている人向け: その日の属する節月の最大吉方と旅先、その日(日盤)でも吉の方位
@@ -237,12 +274,15 @@ function buildFreeResult(profile, origin, date = todayInJst()) {
     star: { id: profile.star.id, name: profile.star.name, element: profile.star.element, keyword: profile.star.keyword,
       color: profile.star.color, trait: profile.star.trait },
     getsumei: getsumeiInfo(profile),
+    keisha: keishaInfo(profile),
     today: buildToday(profile.honmeiId, date),
     compatible: buildCompatible(profile.honmeiId),
     origin: origin.name,
     summary: `${profile.star.name}(${profile.star.keyword})のあなた。${profile.star.trait}`,
     month: { ...month, message: monthMessage(month),
-      bestLuck: month.bestDirections.map((d) => ({ direction: d, luck: DIRECTION_LUCK[d] })) },
+      bestLuck: month.bestDirections.map((d) => ({ direction: d, luck: DIRECTION_LUCK[d] })),
+      goodLuck: month.goodDirections.map((d) => ({ direction: d, luck: DIRECTION_LUCK[d] })),
+      goodDestinations: month.bestDirections.length ? [] : travel.recommend(origin, month.goodDirections, 2) },
     nextBestMonth: month.bestDirections.length ? null : findNextBestMonth(profile, origin, date),
   };
 }
