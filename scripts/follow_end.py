@@ -50,6 +50,9 @@ def day_bg(sky):
 
 
 def make(theme, out, cdir, sky=None):
+    # theme に -invite を付けると、別のアカウント(個人のグルメ・旅など)から @secondlife_50s へ案内する版になる
+    invite = theme.endswith('-invite')
+    theme = theme.replace('-invite', '')
     night = theme == 'night'
     im = night_bg(sky) if night else day_bg(sky)
     # 文字の後ろのパネル(夜は紺、昼は白の半透明)
@@ -65,12 +68,22 @@ def make(theme, out, cdir, sky=None):
         for i, line in enumerate(t.split('\n')):
             d.text(((W - d.textlength(line, font=f)) / 2, y + i * size * 1.4), line, font=f, fill=col)
 
-    ctr(370, '最後まで見てくれて\nありがとう', 46, soft, False)
-    ctr(540, 'フォローしてね', 104, accent)
-    ctr(720, 'あなたの星の吉方位と\nマイルで行く開運旅を\n毎週お届けします', 46, text, False)
-    # 動画の中の絵はタップできないので、インスタ本来の「フォロー」ボタン(左下、名前の横)を指し示す
-    f = font(44)
-    label = '左下の名前の横の「フォロー」をタップ'
+    if invite:
+        ctr(370, '最後まで見てくれて\nありがとう', 46, soft, False)
+        ctr(520, '旅の続きと開運の話は', 50, text, False)
+        f = font(80)
+        w = d.textlength(HANDLE, font=f)
+        d.text(((W - w) / 2, 610), HANDLE, font=f, fill=accent)
+        ctr(740, '吉方位で選ぶ開運旅を\n毎週お届けしています', 46, text, False)
+        f = font(42)
+        label = '下の説明の @secondlife_50s をタップ'
+    else:
+        ctr(370, '最後まで見てくれて\nありがとう', 46, soft, False)
+        ctr(540, 'フォローしてね', 104, accent)
+        ctr(720, 'あなたの星の吉方位と\nマイルで行く開運旅を\n毎週お届けします', 46, text, False)
+        f = font(44)
+        label = '左下の名前の横の「フォロー」をタップ'
+    # 動画の中の絵はタップできないので、インスタ本来のボタン・説明文(左下)を指し示す
     w = d.textlength(label, font=f)
     d.rounded_rectangle([W / 2 - w / 2 - 40, 1010, W / 2 + w / 2 + 40, 1110], radius=50, fill=accent)
     d.text(((W - w) / 2, 1032), label, font=f, fill=(20, 26, 60) if night else (255, 255, 255))
