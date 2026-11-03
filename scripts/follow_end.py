@@ -68,16 +68,21 @@ def make(theme, out, cdir, sky=None):
     ctr(370, '最後まで見てくれて\nありがとう', 46, soft, False)
     ctr(540, 'フォローしてね', 104, accent)
     ctr(720, 'あなたの星の吉方位と\nマイルで行く開運旅を\n毎週お届けします', 46, text, False)
-    # フォローボタン風
-    f = font(46)
-    label = f'{HANDLE} をフォロー'
+    # 動画の中の絵はタップできないので、インスタ本来の「フォロー」ボタン(左下、名前の横)を指し示す
+    f = font(44)
+    label = '左下の名前の横の「フォロー」をタップ'
     w = d.textlength(label, font=f)
-    d.rounded_rectangle([W / 2 - w / 2 - 50, 1010, W / 2 + w / 2 + 50, 1110], radius=50, fill=accent)
-    d.text(((W - w) / 2, 1030), label, font=f, fill=(20, 26, 60) if night else (255, 255, 255))
+    d.rounded_rectangle([W / 2 - w / 2 - 40, 1010, W / 2 + w / 2 + 40, 1110], radius=50, fill=accent)
+    d.text(((W - w) / 2, 1032), label, font=f, fill=(20, 26, 60) if night else (255, 255, 255))
     c = Image.open(os.path.join(cdir, 'pose-wave.png')).convert('RGBA')
-    cw = 480
+    cw = 440
     c = c.resize((cw, round(c.height * cw / c.width)))
-    im.paste(c, ((W - cw) // 2, H - c.height), c)
+    im.paste(c, (W - cw - 20, H - c.height), c)
+    # 左下へ向かう矢印(太い線 + 三角)
+    col = accent
+    pts = [(250, 1150), (215, 1330), (175, 1500)]
+    d.line(pts, fill=col, width=18, joint='curve')
+    d.polygon([(110, 1470), (240, 1500), (150, 1610)], fill=col)
     im.save(out)
     return out
 
