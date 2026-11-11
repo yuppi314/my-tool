@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kindle漫画 制作ツール</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark">📖</span><h1>Kindle漫画 制作ツール</h1></div>
+</header>
+
+<main class="container">
+  <div class="card">
+    <h2 style="margin-top:0">新しい作品をつくる</h2>
+    <form id="new-project-form">
+      <div class="row">
+        <div>
+          <label>タイトル(必須)</label>
+          <input type="text" id="np-title" placeholder="例: 深夜のカフェで幽霊と" required>
+        </div>
+        <div>
+          <label>サブタイトル</label>
+          <input type="text" id="np-subtitle" placeholder="例: 第1巻">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>著者名</label>
+          <input type="text" id="np-author">
+        </div>
+        <div>
+          <label>ジャンル</label>
+          <input type="text" id="np-genre" placeholder="例: 日常/ファンタジー/ホラー">
+        </div>
+      </div>
+      <button type="submit" class="primary" style="margin-top:16px">作品を作成する</button>
+    </form>
+  </div>
+
+  <h2>作品一覧</h2>
+  <div id="project-list" class="project-list"></div>
+  <div id="empty-state" class="empty-state" style="display:none">まだ作品がありません。上のフォームから最初の作品を作成しましょう。</div>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>
